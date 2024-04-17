@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FwbButton } from 'flowbite-vue'
-
 import plusPng from '@/assets/plus.png'
+import { RouterLink } from 'vue-router'
 </script>
 
 <template>
@@ -16,9 +16,11 @@ import plusPng from '@/assets/plus.png'
           class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
         >
           <li>
-            <fwb-button color="default" pill square>
-              <img :src="plusPng" alt="" />
-            </fwb-button>
+            <router-link to="/create-card-set">
+              <fwb-button color="default" pill square>
+                <img :src="plusPng" alt="" />
+              </fwb-button>
+            </router-link>
           </li>
         </ul>
       </div>

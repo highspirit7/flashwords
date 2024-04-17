@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 import Navbar from '@/components/Navbar.vue'
+
+// TODO : Need to use the code to extract the theme of OS later after handling styling for dark mode in all pages
+if (localStorage.getItem('color-theme') === 'dark') {
+  document.documentElement.classList.add('dark')
+} else {
+  document.documentElement.classList.remove('dark')
+}
 </script>
 
 <template>
