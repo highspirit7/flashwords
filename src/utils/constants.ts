@@ -1,0 +1,3 @@
+const CARD_SET_LOCALSTORAGE_KEY = 'cardSet'
+
+export { CARD_SET_LOCALSTORAGE_KEY }

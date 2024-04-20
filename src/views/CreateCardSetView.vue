@@ -1,59 +1,126 @@
 <script setup lang="ts">
 import { FwbHeading, FwbButton, FwbInput, FwbTextarea } from 'flowbite-vue'
-import { ref } from 'vue'
+import { ref, type Ref, onMounted, computed } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
+
+import { useCardSetStore } from '@/stores/cardSet'
 import PlusDarkSvg from '@/assets/plus-dark.svg'
+import type { CardSet } from '@/stores/cardSet'
+import { useRouter } from 'vue-router'
 
 const loading = ref(false)
+const hasSubmittedOnce = ref(false)
+const newCardSet: Ref<CardSet> = ref({
+  id: uuidv4(),
+  title: '',
+  description: '',
+  createdAt: undefined,
+  updatedAt: undefined,
+  cards: [],
+})
+const { createCardSet } = useCardSetStore()
+const router = useRouter()
+
+const hasAtLeastOneFilledCard = computed(() => {
+  if (!hasSubmittedOnce.value) return true
+  else {
+    if (newCardSet.value.cards.length > 0) {
+      const { term, definition } = newCardSet.value.cards[0]
+      return term.trim() !== '' && definition.trim() !== ''
+    } else return true
+  }
+})
+
+function addCard() {
+  newCardSet.value.cards.push({
+    id: uuidv4(),
+    term: '',
+    definition: '',
+    examples: [],
+  })
+}
+
+onMounted(() => {
+  if (newCardSet.value.cards.length < 1) {
+    addCard()
+  }
+})
+
+function onSubmit() {
+  hasSubmittedOnce.value = true
+  newCardSet.value.updatedAt = new Date()
+  newCardSet.value.createdAt = new Date()
+  try {
+    createCardSet(newCardSet.value)
+  } catch (error) {
+    console.log(error)
+  } finally {
+    router.push('/')
+  }
+}
 </script>
 
 <template>
   <div class="mt-8 p-2">
     <div class="flex justify-between">
       <fwb-heading tag="h1">Create a new card set</fwb-heading>
-      <fwb-button size="md" :disabled="loading" :loading="loading">Create</fwb-button>
+      <fwb-button size="md" :disabled="loading" :loading="loading" @click="onSubmit"
+        >Create</fwb-button
+      >
     </div>
-    <div class="my-8">
+    <div class="mt-8 mb-4">
       <fwb-input
-        v-model="name"
+        v-model="newCardSet.title"
         label="Title"
         placeholder="Enter a title for this cards set"
-        required
         class="mb-2"
+        :class="{ error: hasSubmittedOnce && newCardSet.title.trim() === '' }"
       />
+
       <fwb-textarea
-        v-model="message"
+        v-model="newCardSet.description"
         :rows="4"
-        label="Description"
+        label="Description(Not required)"
         placeholder="Add a description"
         class="resize-none"
       />
     </div>
+
+    <div
+      class="bg-white text-lg font-semibold text-red-500 rounded-lg mb-4 border-red-500 border-2 p-3 w-full flex justify-center"
+      v-if="!hasAtLeastOneFilledCard"
+    >
+      <span>You must have at least 1 card with a term and a definition!</span>
+    </div>
+
     <ul>
-      <li class="bg-white p-4 rounded-lg">
-        <fwb-heading tag="h5">1</fwb-heading>
+      <li
+        class="bg-white p-4 rounded-lg my-1"
+        v-for="(card, index) in newCardSet.cards"
+        :key="card.id"
+      >
+        <fwb-heading tag="h5">{{ index + 1 }}</fwb-heading>
         <hr class="mb-2" />
         <div class="grid grid-cols-2 gap-4">
-          <fwb-input v-model="name" label="Term" required class="w-full" />
-          <fwb-input v-model="name" label="Definition" required class="w-full" />
+          <fwb-input
+            v-model="card.term"
+            label="Term"
+            class="w-full"
+            :class="{ error: hasSubmittedOnce && card.term.trim() === '' }"
+          />
+          <fwb-input
+            v-model="card.definition"
+            label="Definition"
+            class="w-full"
+            :class="{ error: hasSubmittedOnce && card.definition.trim() === '' }"
+          />
         </div>
       </li>
     </ul>
     <div class="flex justify-center p-4 my-4 bg-white rounded-lg">
-      <fwb-button color="light" pill>
+      <fwb-button color="light" pill @click="addCard">
         Add a card
         <template #suffix>
-          <!-- <svg
-            class="w-5 h-5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              clip-rule="evenodd"
-              d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-              fill-rule="evenodd"
-            />
-          </svg> -->
           <PlusDarkSvg />
         </template>
       </fwb-button>
@@ -61,4 +128,12 @@ const loading = ref(false)
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.error :deep(input) {
+  @apply bg-red-50 border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500;
+}
+
+.error :deep(label) {
+  @apply text-red-700 dark:text-red-500;
+}
+</style>
