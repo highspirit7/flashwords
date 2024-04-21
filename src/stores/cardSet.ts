@@ -21,7 +21,7 @@ export interface CardSet {
 }
 
 export const useCardSetStore = defineStore('cardSets', () => {
-  const cardSets: Ref<CardSet[]> = ref([])
+  const cardSets: Ref<CardSet[]> = ref(localStorage.getItem(CARD_SET_LOCALSTORAGE_KEY) ?? [])
 
   function saveInLocalStorage() {
     localStorage.setItem(CARD_SET_LOCALSTORAGE_KEY, cardSets.value)
