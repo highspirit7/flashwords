@@ -7,9 +7,9 @@ import { RouterLink } from 'vue-router'
 <template>
   <nav class="bg-white border-gray-200 dark:bg-gray-900 max-w-3xl w-full">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-      <a href="https://flowbite.com/" class="flex items-center space-x-3 rtl:space-x-reverse">
+      <router-link to="/" class="flex items-center space-x-3 rtl:space-x-reverse">
         <img src="https://flowbite.com/docs/images/logo.svg" class="h-10" alt="Flowbite Logo" />
-      </a>
+      </router-link>
 
       <div class="hidden w-full md:block md:w-auto" id="navbar-default">
         <ul

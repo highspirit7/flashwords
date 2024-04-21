@@ -1,35 +1,39 @@
 <script setup lang="ts">
-import { FwbHeading, FwbInput } from 'flowbite-vue'
-import { ref } from 'vue'
-
-import { useCardSetStore } from '@/stores/cardSet'
+import { FwbHeading } from 'flowbite-vue'
+import { ref, watch } from 'vue'
+import { useRoute, useRouter, type LocationQuery } from 'vue-router'
+import { useCardSetStore, type CardSet } from '@/stores/cardSet'
 import TermsCard from '@/components/TermsCard.vue'
 
+const route = useRoute()
+const router = useRouter()
 const { cardSets } = useCardSetStore()
-// const mockCardsSet = [
-//   {
-//     title: 'Nederland in Gang : Chapter 1',
-//     numberOfCards: 22,
-//   },
-//   {
-//     title: 'Nederland in Gang : Chapter 2',
-//     numberOfCards: 12,
-//   },
-//   {
-//     title: 'Nederland in Actie : Chapter 1',
-//     numberOfCards: 44,
-//   },
-//   {
-//     title: 'Nederland in Actie : Chapter 2',
-//     numberOfCards: 22,
-//   },
-//   {
-//     title: 'Nederland in Gang : Chapter 3',
-//     numberOfCards: 56,
-//   },
-// ]
+const searchQuery = ref('')
+const filteredCardSets = ref([...cardSets])
 
-const searchKeyword = ref('')
+function updateRouteWithSearchQuery() {
+  if (searchQuery.value) {
+    router.push(`/?search_query=${searchQuery.value.trim()}`)
+  }
+}
+
+watch(
+  () => route.query,
+  (newQuery: LocationQuery) => {
+    if (newQuery.search_query && typeof newQuery.search_query === 'string') {
+      const lowerCasedQuery = newQuery.search_query.toLocaleLowerCase()
+      console.log('Query parameters changed:', lowerCasedQuery)
+      filteredCardSets.value = cardSets.filter((cardSet: CardSet) =>
+        cardSet.title.toLocaleLowerCase().includes(lowerCasedQuery),
+      )
+      searchQuery.value = newQuery.search_query
+    } else {
+      searchQuery.value = ''
+      filteredCardSets.value = [...cardSets]
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -40,13 +44,13 @@ const searchKeyword = ref('')
         <input
           type="search"
           id="search-dropdown"
-          class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-white rounded-s-lg border-s-gray-50  focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
-          placeholder="Search"
-          required
-        >
-    
+          class="block p-2.5 w-full text-sm text-gray-900 bg-white rounded-s-lg border-s-gray-50 border-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+          placeholder="Search with a keyword"
+          v-model="searchQuery"
+          @keydown.enter="updateRouteWithSearchQuery"
+        />
         <button
-          type="submit"
+          @click="updateRouteWithSearchQuery"
           class="text-sm font-medium text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 px-2"
         >
           <svg
@@ -66,30 +70,10 @@ const searchKeyword = ref('')
           </svg>
           <span class="sr-only">Search</span>
         </button>
-    </input>
       </div>
-      <!-- <fwb-input v-model="searchKeyword" placeholder="Search">
-        <template #suffix>
-          <svg
-            aria-hidden="true"
-            class="w-5 h-5 text-gray-500 dark:text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </template>
-      </fwb-input> -->
     </div>
     <ul class="card-sets-list">
-      <li v-for="cardSet in cardSets" class="mb-2 md:mb-0">
+      <li v-for="cardSet in filteredCardSets" class="mb-2 md:mb-0">
         <TermsCard :title="cardSet.title" :number-of-cards="cardSet.cards.length" />
       </li>
     </ul>
