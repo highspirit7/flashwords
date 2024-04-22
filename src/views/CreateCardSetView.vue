@@ -48,6 +48,7 @@ onMounted(() => {
 
 function onSubmit() {
   hasSubmittedOnce.value = true
+  loading.value = true
   newCardSet.value.updatedAt = new Date()
   newCardSet.value.createdAt = new Date()
   try {
@@ -55,6 +56,7 @@ function onSubmit() {
   } catch (error) {
     console.log(error)
   } finally {
+    loading.value = false
     router.push('/')
   }
 }

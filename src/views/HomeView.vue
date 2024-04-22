@@ -22,7 +22,6 @@ watch(
   (newQuery: LocationQuery) => {
     if (newQuery.search_query && typeof newQuery.search_query === 'string') {
       const lowerCasedQuery = newQuery.search_query.toLocaleLowerCase()
-      console.log('Query parameters changed:', lowerCasedQuery)
       filteredCardSets.value = cardSets.filter((cardSet: CardSet) =>
         cardSet.title.toLocaleLowerCase().includes(lowerCasedQuery),
       )
@@ -50,6 +49,7 @@ watch(
           @keydown.enter="updateRouteWithSearchQuery"
         />
         <button
+          type="button"
           @click="updateRouteWithSearchQuery"
           class="text-sm font-medium text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 px-2"
         >
@@ -73,8 +73,8 @@ watch(
       </div>
     </div>
     <ul class="card-sets-list">
-      <li v-for="cardSet in filteredCardSets" class="mb-2 md:mb-0">
-        <TermsCard :title="cardSet.title" :number-of-cards="cardSet.cards.length" />
+      <li v-for="cardSet in filteredCardSets" class="mb-2 md:mb-0" :key="cardSet.id">
+        <TermsCard :data="cardSet" />
       </li>
     </ul>
   </div>
