@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar.vue'
 if (localStorage.getItem('color-theme') === 'dark') {
   document.documentElement.classList.add('dark')
 } else {
+  console.log('')
   document.documentElement.classList.remove('dark')
 }
 </script>

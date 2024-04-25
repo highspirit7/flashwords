@@ -23,12 +23,12 @@ const router = useRouter()
 
 const hasAtLeastOneFilledCard = computed(() => {
   if (!hasSubmittedOnce.value) return true
-  else {
-    if (newCardSet.value.cards.length > 0) {
-      const { term, definition } = newCardSet.value.cards[0]
-      return term.trim() !== '' && definition.trim() !== ''
-    } else return true
+
+  if (newCardSet.value.cards.length > 0) {
+    const { term, definition } = newCardSet.value.cards[0]
+    return term.trim() !== '' && definition.trim() !== ''
   }
+  return true
 })
 
 function addCard() {

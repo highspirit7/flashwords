@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { FwbHeading } from 'flowbite-vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { useCardSetStore, type CardSet } from '@/stores/cardSet'
 import { ref, type Ref } from 'vue'
+
+import { useCardSetStore, type CardSet } from '@/stores/cardSet'
+import TermCard from '@/components/TermCard.vue'
 
 const route = useRoute()
 const { cardSets } = useCardSetStore()
@@ -56,29 +59,15 @@ const selectedCardSet: Ref<CardSet> = ref(
           >
         </div>
       </li>
-      <!-- <li aria-current="page">
-        <div class="flex items-center">
-          <svg
-            class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 6 10"
-          >
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="m1 9 4-4-4-4"
-            />
-          </svg>
-          <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400"
-            >Flashcards</span
-          >
-        </div>
-      </li> -->
     </ol>
+    <fwb-heading tag="h2">{{ selectedCardSet.title }}</fwb-heading>
+    <p class="text-gray-500 dark:text-gray-400">
+      {{ selectedCardSet.description }}
+    </p>
+
+    <ul class="my-4">
+      <TermCard v-for="card in selectedCardSet.cards" :key="card.id" :card="card" />
+    </ul>
   </div>
 </template>
 

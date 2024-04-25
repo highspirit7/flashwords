@@ -32,5 +32,17 @@ export const useCardSetStore = defineStore('cardSets', () => {
     saveInLocalStorage()
   }
 
-  return { cardSets, createCardSet }
+  //   function updateCard(newData: Card, cardSetId: string) {
+  //     const selectedCardSet = cardSets.value.filter((cardSet: CardSet) => cardSet.id === cardSetId)[0]
+  //     selectedCardSet.cards = selectedCardSet.cards.map((card: Card) => {
+  //       if (card.id === newData.id) {
+  //         return newData
+  //       }
+  //       return card
+  //     })
+
+  //     saveInLocalStorage()
+  //   }
+
+  return { cardSets, createCardSet, saveInLocalStorage }
 })
