@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { FwbHeading } from 'flowbite-vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { ref, type Ref } from 'vue'
 
-import { useCardSetStore, type CardSet } from '@/stores/cardSet'
+import { useCardSetStore } from '@/stores/cardSet'
 import TermCard from '@/components/TermCard.vue'
 
+function isString(variable: any): variable is string {
+  return typeof variable === 'string'
+}
+
 const route = useRoute()
-const { cardSets } = useCardSetStore()
-const selectedCardSet: Ref<CardSet> = ref(
-  cardSets.filter(cardSet => cardSet.id === route.params.id)[0],
-)
+const { selectCardSet, selectedCardSet } = useCardSetStore()
+if (isString(route.params.id)) {
+  selectCardSet(route.params.id)
+}
 </script>
 
 <template>

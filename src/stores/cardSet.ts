@@ -22,6 +22,14 @@ export interface CardSet {
 
 export const useCardSetStore = defineStore('cardSets', () => {
   const cardSets: Ref<CardSet[]> = ref(localStorage.getItem(CARD_SET_LOCALSTORAGE_KEY) ?? [])
+  const selectedCardSet: Ref<CardSet> = ref({
+    id: '',
+    title: '',
+    description: '',
+    cards: [],
+    createdAt: undefined,
+    updatedAt: undefined,
+  })
 
   function saveInLocalStorage() {
     localStorage.setItem(CARD_SET_LOCALSTORAGE_KEY, cardSets.value)
@@ -30,6 +38,11 @@ export const useCardSetStore = defineStore('cardSets', () => {
   function createCardSet(data: CardSet) {
     cardSets.value.push(data)
     saveInLocalStorage()
+  }
+
+  function selectCardSet(id: string) {
+    const [oneCardSet] = cardSets.value.filter(cardSet => cardSet.id === id)
+    selectedCardSet.value = oneCardSet
   }
 
   //   function updateCard(newData: Card, cardSetId: string) {
@@ -44,5 +57,5 @@ export const useCardSetStore = defineStore('cardSets', () => {
   //     saveInLocalStorage()
   //   }
 
-  return { cardSets, createCardSet, saveInLocalStorage }
+  return { cardSets, createCardSet, saveInLocalStorage, selectCardSet, selectedCardSet }
 })
