@@ -1,21 +1,30 @@
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core'
 import { ref, type Ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 import { type Card } from '@/stores/cardSet'
 import { useCardSetStore } from '@/stores/cardSet'
 
+const router = useRouter()
+const route = useRoute()
 const isEditing = ref(false)
 const target: Ref<HTMLLIElement | null> = ref(null)
 const props = defineProps<{ card: Card }>()
 const { card } = props
-const { saveInLocalStorage } = useCardSetStore()
+const { saveCardSetsinLS, selectCard } = useCardSetStore()
 
 // ? The card data used in this component share the same reference of card data in cardSets data by pinia. So no need to create another function to update card data in cardSet store file.
 // ? But is this way okay?
 function handleFinishEditing() {
   isEditing.value = false
-  saveInLocalStorage()
+  saveCardSetsinLS()
+  // TODO : Need to 'updatedAt' in cardSet
+}
+
+function handleClickOpenBookIcon() {
+  selectCard(card)
+  router.push(`${route.path}/${card.term}`)
 }
 
 onClickOutside(target, () => {
@@ -82,7 +91,7 @@ function isHTMLInputElement(
 
         <span class="sr-only">Edit Icon</span>
       </button>
-      <button type="button" class="h-fit mx-2">
+      <button type="button" class="h-fit mx-2" @click="handleClickOpenBookIcon">
         <svg
           class="w-[18px] h-[18px] text-gray-800 dark:text-white"
           aria-hidden="true"
@@ -98,7 +107,7 @@ function isHTMLInputElement(
             clip-rule="evenodd"
           />
         </svg>
-        <span class="sr-only">Go into a term Icon</span>
+        <span class="sr-only">Open Term Icon</span>
       </button>
     </div>
   </li>

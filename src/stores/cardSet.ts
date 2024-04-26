@@ -1,7 +1,6 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
 
-import { CARD_SET_LOCALSTORAGE_KEY } from '@/utils/constants'
 import * as localStorage from '@/utils/localStorage'
 
 export interface Card {
@@ -21,7 +20,7 @@ export interface CardSet {
 }
 
 export const useCardSetStore = defineStore('cardSets', () => {
-  const cardSets: Ref<CardSet[]> = ref(localStorage.getItem(CARD_SET_LOCALSTORAGE_KEY) ?? [])
+  const cardSets: Ref<CardSet[]> = ref(localStorage.getItem(localStorage.CARD_SETS_KEY) ?? [])
   const selectedCardSet: Ref<CardSet> = ref({
     id: '',
     title: '',
@@ -30,32 +29,42 @@ export const useCardSetStore = defineStore('cardSets', () => {
     createdAt: undefined,
     updatedAt: undefined,
   })
+  const selectedCard: Ref<Card> = ref(
+    localStorage.getItem(localStorage.SELECTED_CARD_KEY) ?? {
+      id: '',
+      term: '',
+      definition: '',
+      examples: [],
+    },
+  )
 
-  function saveInLocalStorage() {
-    localStorage.setItem(CARD_SET_LOCALSTORAGE_KEY, cardSets.value)
+  function getCardSetById(id: string) {
+    return cardSets.value.filter(cardSet => cardSet.id === id)[0]
+  }
+
+  function saveCardSetsinLS() {
+    localStorage.setItem(localStorage.CARD_SETS_KEY, cardSets.value)
+  }
+
+  function saveSelectedCardInLS() {
+    localStorage.setItem(localStorage.SELECTED_CARD_KEY, cardSets.value)
   }
 
   function createCardSet(data: CardSet) {
     cardSets.value.push(data)
-    saveInLocalStorage()
+    saveCardSetsinLS()
   }
 
-  function selectCardSet(id: string) {
-    const [oneCardSet] = cardSets.value.filter(cardSet => cardSet.id === id)
-    selectedCardSet.value = oneCardSet
+  function selectCard(data: Card) {
+    selectedCard.value = data
   }
 
-  //   function updateCard(newData: Card, cardSetId: string) {
-  //     const selectedCardSet = cardSets.value.filter((cardSet: CardSet) => cardSet.id === cardSetId)[0]
-  //     selectedCardSet.cards = selectedCardSet.cards.map((card: Card) => {
-  //       if (card.id === newData.id) {
-  //         return newData
-  //       }
-  //       return card
-  //     })
-
-  //     saveInLocalStorage()
-  //   }
-
-  return { cardSets, createCardSet, saveInLocalStorage, selectCardSet, selectedCardSet }
+  return {
+    cardSets,
+    createCardSet,
+    saveCardSetsinLS,
+    selectedCard,
+    selectCard,
+    getCardSetById,
+  }
 })

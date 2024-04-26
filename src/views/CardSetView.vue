@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { FwbHeading } from 'flowbite-vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { ref, type Ref } from 'vue'
 
-import { useCardSetStore } from '@/stores/cardSet'
+import { useCardSetStore, type CardSet } from '@/stores/cardSet'
 import TermCard from '@/components/TermCard.vue'
 
 function isString(variable: any): variable is string {
@@ -10,9 +11,18 @@ function isString(variable: any): variable is string {
 }
 
 const route = useRoute()
-const { selectCardSet, selectedCardSet } = useCardSetStore()
+const { getCardSetById } = useCardSetStore()
+const currentCardSet: Ref<CardSet> = ref({
+  id: '',
+  title: '',
+  description: '',
+  cards: [],
+  createdAt: undefined,
+  updatedAt: undefined,
+})
+
 if (isString(route.params.id)) {
-  selectCardSet(route.params.id)
+  currentCardSet.value = getCardSetById(route.params.id)
 }
 </script>
 
@@ -58,18 +68,18 @@ if (isString(route.params.id)) {
           <router-link
             :to="`/card-set/${route.params.id}`"
             class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white"
-            >{{ selectedCardSet.title }}</router-link
+            >{{ currentCardSet.title }}</router-link
           >
         </div>
       </li>
     </ol>
-    <fwb-heading tag="h2">{{ selectedCardSet.title }}</fwb-heading>
+    <fwb-heading tag="h2">{{ currentCardSet.title }}</fwb-heading>
     <p class="text-gray-500 dark:text-gray-400">
-      {{ selectedCardSet.description }}
+      {{ currentCardSet.description }}
     </p>
 
     <ul class="my-4">
-      <TermCard v-for="card in selectedCardSet.cards" :key="card.id" :card="card" />
+      <TermCard v-for="card in currentCardSet.cards" :key="card.id" :card="card" />
     </ul>
   </div>
 </template>

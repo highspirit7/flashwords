@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CardSet } from '@/stores/cardSet'
+import { type CardSet } from '@/stores/cardSet'
 import { RouterLink } from 'vue-router'
 
 const props = defineProps<{

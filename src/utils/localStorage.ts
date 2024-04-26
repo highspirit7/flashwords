@@ -1,3 +1,6 @@
+const CARD_SETS_KEY = 'cardSets'
+const SELECTED_CARD_KEY = 'selectedCard'
+
 function setItem(key: string, value: any) {
   try {
     localStorage.setItem(key, JSON.stringify(value))
@@ -16,4 +19,4 @@ function getItem(key: string) {
   }
 }
 
-export { setItem, getItem }
+export { setItem, getItem, CARD_SETS_KEY, SELECTED_CARD_KEY }
