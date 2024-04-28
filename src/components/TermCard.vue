@@ -28,7 +28,7 @@ function handleClickOpenBookIcon() {
 }
 
 onClickOutside(target, () => {
-  handleFinishEditing()
+  if (isEditing.value) handleFinishEditing()
 })
 
 function isHTMLInputElement(
