@@ -10,25 +10,14 @@ import useModalStore from '@/stores/modal'
 import ExampleCard from '@/components/ExampleCard.vue'
 import AddExampleModal from '@/components/AddExampleModal.vue'
 import DeleteExampleModal from '@/components/DeleteExampleModal.vue'
-import { isString } from '@/utils/typePredicates'
+import getCurrentCardSet from '@/utils/currentCardSet'
 
 const route = useRoute()
 const exampleIdToDelete = ref(0)
 const { showModal } = useModalStore()
-const { getCardSetById, selectedCard } = useCardSetStore()
-const currentCardset: Ref<CardSet> = ref({
-  id: '',
-  title: '',
-  description: '',
-  cards: [],
-  createdAt: undefined,
-  updatedAt: undefined,
-})
+const { selectedCard } = useCardSetStore()
+const currentCardset: Ref<CardSet> = ref(getCurrentCardSet(route.params.cardSetId))
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
-
-if (isString(route.params.cardSetId)) {
-  currentCardset.value = getCardSetById(route.params.cardSetId)
-}
 
 onMounted(() => {
   deleteExampleModal.value = new Modal(document.getElementById('delete-example-modal'), {

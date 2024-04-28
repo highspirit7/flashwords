@@ -1,26 +1,17 @@
 <script setup lang="ts">
-import { FwbHeading } from 'flowbite-vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { FwbHeading, FwbButton } from 'flowbite-vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ref, type Ref } from 'vue'
 
-import { useCardSetStore, type CardSet } from '@/stores/cardSet'
+import { type CardSet } from '@/stores/cardSet'
 import TermCard from '@/components/TermCard.vue'
-import { isString } from '@/utils/typePredicates'
+import getCurrentCardSet from '@/utils/currentCardSet'
+import { useCardSetStore } from '@/stores/cardSet'
 
 const route = useRoute()
-const { getCardSetById } = useCardSetStore()
-const currentCardSet: Ref<CardSet> = ref({
-  id: '',
-  title: '',
-  description: '',
-  cards: [],
-  createdAt: undefined,
-  updatedAt: undefined,
-})
-
-if (isString(route.params.id)) {
-  currentCardSet.value = getCardSetById(route.params.id)
-}
+const router = useRouter()
+const { updateCardSet } = useCardSetStore()
+const currentCardSet: Ref<CardSet> = ref(getCurrentCardSet(route.params.id))
 </script>
 
 <template>
@@ -76,9 +67,35 @@ if (isString(route.params.id)) {
     </p>
 
     <ul class="my-4">
-      <TermCard v-for="card in currentCardSet.cards" :key="card.id" :card="card" />
+      <TermCard
+        v-for="card in currentCardSet.cards"
+        :key="card.id"
+        :card="card"
+        @finish-editing="() => updateCardSet({ ...currentCardSet, updatedAt: new Date() })"
+      />
     </ul>
+    <div class="flex justify-center">
+      <fwb-button color="dark" outline square @click="router.push(`${route.path}/edit`)">
+        Add or Remove terms
+        <template #suffix>
+          <svg
+            class="w-[20px] h-[20px]"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 12h14m-7 7V5"
+            />
+          </svg>
+        </template>
+      </fwb-button>
+    </div>
   </div>
 </template>
-
-<style scoped></style>

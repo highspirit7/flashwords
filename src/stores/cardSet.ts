@@ -66,6 +66,13 @@ export const useCardSetStore = defineStore('cardSets', () => {
     saveCardSetsinLS()
   }
 
+  function updateCardSet(data: CardSet) {
+    cardSets.value = cardSets.value.map((cardSet: CardSet) =>
+      data.id === cardSet.id ? data : cardSet,
+    )
+    saveCardSetsinLS()
+  }
+
   function addExampleOfCard(sentence: string, cardSetId: string) {
     selectedCard.value.examples.push({
       id: generateNewExampleId(selectedCard.value.examples),
@@ -102,5 +109,6 @@ export const useCardSetStore = defineStore('cardSets', () => {
     updateCardInCardSet,
     deleteExampleInCard,
     updateDateInCardSet,
+    updateCardSet,
   }
 })

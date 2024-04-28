@@ -5,23 +5,19 @@ import { useRouter, useRoute } from 'vue-router'
 
 import { type Card } from '@/stores/cardSet'
 import { useCardSetStore } from '@/stores/cardSet'
-import { isString } from '@/utils/typePredicates'
 
 const router = useRouter()
 const route = useRoute()
 const isEditing = ref(false)
 const target: Ref<HTMLLIElement | null> = ref(null)
 const props = defineProps<{ card: Card }>()
+const emit = defineEmits<{ (e: 'finishEditing'): void }>()
 const { card } = props
-const { selectCard, updateDateInCardSet } = useCardSetStore()
+const { selectCard } = useCardSetStore()
 
-// ? The card data used in this component share the same reference of card data in cardSets data by pinia. So no need to create another function to update card data in cardSet store file.
-// ? But is this way okay?
 function handleFinishEditing() {
   isEditing.value = false
-  if (isString(route.params.id)) {
-    updateDateInCardSet(route.params.id)
-  }
+  emit('finishEditing')
 }
 
 function handleClickOpenBookIcon() {
