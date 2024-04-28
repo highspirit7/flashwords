@@ -5,10 +5,7 @@ import { ref, type Ref } from 'vue'
 
 import { useCardSetStore, type CardSet } from '@/stores/cardSet'
 import TermCard from '@/components/TermCard.vue'
-
-function isString(variable: any): variable is string {
-  return typeof variable === 'string'
-}
+import { isString } from '@/utils/typePredicates'
 
 const route = useRoute()
 const { getCardSetById } = useCardSetStore()

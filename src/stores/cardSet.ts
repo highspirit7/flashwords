@@ -21,14 +21,7 @@ export interface CardSet {
 
 export const useCardSetStore = defineStore('cardSets', () => {
   const cardSets: Ref<CardSet[]> = ref(localStorage.getItem(localStorage.CARD_SETS_KEY) ?? [])
-  const selectedCardSet: Ref<CardSet> = ref({
-    id: '',
-    title: '',
-    description: '',
-    cards: [],
-    createdAt: undefined,
-    updatedAt: undefined,
-  })
+
   const selectedCard: Ref<Card> = ref(
     localStorage.getItem(localStorage.SELECTED_CARD_KEY) ?? {
       id: '',
@@ -37,6 +30,10 @@ export const useCardSetStore = defineStore('cardSets', () => {
       examples: [],
     },
   )
+
+  function generateNewExampleId(examples: { id: number; sentence: string }[]) {
+    return examples.length < 1 ? 0 : examples[examples.length - 1].id + 1
+  }
 
   function getCardSetById(id: string) {
     return cardSets.value.filter(cardSet => cardSet.id === id)[0]
@@ -47,7 +44,7 @@ export const useCardSetStore = defineStore('cardSets', () => {
   }
 
   function saveSelectedCardInLS() {
-    localStorage.setItem(localStorage.SELECTED_CARD_KEY, cardSets.value)
+    localStorage.setItem(localStorage.SELECTED_CARD_KEY, selectedCard.value)
   }
 
   function createCardSet(data: CardSet) {
@@ -57,6 +54,40 @@ export const useCardSetStore = defineStore('cardSets', () => {
 
   function selectCard(data: Card) {
     selectedCard.value = data
+    saveSelectedCardInLS()
+  }
+
+  function updateCardInCardSet(cardSetId: string) {
+    const cardSet = getCardSetById(cardSetId)
+    cardSet.cards = cardSet.cards.map((card: Card) => {
+      return card.id === selectedCard.value.id ? selectedCard.value : card
+    })
+    cardSet.updatedAt = new Date()
+    saveCardSetsinLS()
+  }
+
+  function addExampleOfCard(sentence: string, cardSetId: string) {
+    selectedCard.value.examples.push({
+      id: generateNewExampleId(selectedCard.value.examples),
+      sentence,
+    })
+    saveSelectedCardInLS()
+    updateCardInCardSet(cardSetId)
+  }
+
+  function deleteExampleInCard(exampleId: number, cardSetId: string) {
+    selectedCard.value.examples = selectedCard.value.examples.filter(
+      (example: { id: number; sentence: string }) => example.id !== exampleId,
+    )
+    saveSelectedCardInLS()
+    updateCardInCardSet(cardSetId)
+  }
+
+  function updateDateInCardSet(cardSetId: string) {
+    const cardSet = getCardSetById(cardSetId)
+    cardSet.updatedAt = new Date()
+
+    saveCardSetsinLS()
   }
 
   return {
@@ -66,5 +97,10 @@ export const useCardSetStore = defineStore('cardSets', () => {
     selectedCard,
     selectCard,
     getCardSetById,
+    addExampleOfCard,
+    saveSelectedCardInLS,
+    updateCardInCardSet,
+    deleteExampleInCard,
+    updateDateInCardSet,
   }
 })

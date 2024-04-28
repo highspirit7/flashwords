@@ -19,6 +19,10 @@ const router = createRouter({
       name: 'cardSet',
       component: () => import('../views/CardSetView.vue'),
     },
+    {
+      path: '/card-set/:cardSetId/:term',
+      component: () => import('../views/TermView.vue'),
+    },
   ],
 })
 
