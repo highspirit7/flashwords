@@ -20,7 +20,13 @@ const router = createRouter({
       component: () => import('../views/CardSetView.vue'),
     },
     {
+      path: '/card-set/:id/edit',
+      name: 'editCardSet',
+      component: () => import('../views/CardSetEditView.vue'),
+    },
+    {
       path: '/card-set/:cardSetId/:term',
+      name: 'termInCardSet',
       component: () => import('../views/TermView.vue'),
     },
   ],
