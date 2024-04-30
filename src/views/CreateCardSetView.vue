@@ -22,13 +22,11 @@ const { createCardSet } = useCardSetStore()
 const router = useRouter()
 
 const hasAtLeastOneFilledCard = computed(() => {
-  if (!hasSubmittedOnce.value) return true
-
   if (newCardSet.value.cards.length > 0) {
     const { term, definition } = newCardSet.value.cards[0]
     return term.trim() !== '' && definition.trim() !== ''
   }
-  return true
+  return false
 })
 
 function addCard() {
@@ -48,28 +46,37 @@ onMounted(() => {
 
 function onSubmit() {
   hasSubmittedOnce.value = true
-  loading.value = true
-  newCardSet.value.updatedAt = new Date()
-  newCardSet.value.createdAt = new Date()
-  try {
-    createCardSet(newCardSet.value)
-  } catch (error) {
-    console.log(error)
-  } finally {
-    loading.value = false
-    router.push('/')
+
+  if (newCardSet.value.title !== '') {
+    loading.value = true
+    newCardSet.value.updatedAt = new Date()
+    newCardSet.value.createdAt = new Date()
+    try {
+      createCardSet(newCardSet.value)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      loading.value = false
+      router.push('/')
+    }
   }
 }
 </script>
 
 <template>
-  <div class="mt-8 p-2">
+  <div class="md:mt-8 p-4 md:p-2">
     <div class="flex justify-between">
-      <fwb-heading tag="h1">Create a new card set</fwb-heading>
-      <fwb-button size="md" :disabled="loading" :loading="loading" @click="onSubmit"
+      <fwb-heading tag="h1" class="text-4xl md:text-5xl">Create a new card set</fwb-heading>
+      <fwb-button
+        size="md"
+        :disabled="loading"
+        :loading="loading"
+        @click="onSubmit"
+        class="hidden md:block"
         >Create</fwb-button
       >
     </div>
+
     <div class="mt-8 mb-4">
       <fwb-input
         v-model="newCardSet.title"
@@ -90,7 +97,7 @@ function onSubmit() {
 
     <div
       class="bg-white text-lg font-semibold text-red-500 rounded-lg mb-4 border-red-500 border-2 p-3 w-full flex justify-center"
-      v-if="!hasAtLeastOneFilledCard"
+      v-if="hasSubmittedOnce && !hasAtLeastOneFilledCard"
     >
       <span>You must have at least 1 card with a term and a definition!</span>
     </div>
@@ -126,6 +133,11 @@ function onSubmit() {
           <PlusDarkSvg />
         </template>
       </fwb-button>
+    </div>
+    <div class="flex justify-center mt-4 md:hidden">
+      <fwb-button size="lg" :disabled="loading" :loading="loading" @click="onSubmit"
+        >Create</fwb-button
+      >
     </div>
   </div>
 </template>
