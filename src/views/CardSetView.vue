@@ -39,8 +39,8 @@ function handleClickFlashCArdPrev() {
 </script>
 
 <template>
-  <div class="p-2">
-    <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+  <div class="p-4 md:p-2">
+    <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse mb-4">
       <li class="inline-flex items-center">
         <router-link
           to="/"
@@ -85,8 +85,8 @@ function handleClickFlashCArdPrev() {
         </div>
       </li>
     </ol>
-    <fwb-heading tag="h2">{{ currentCardSet.title }}</fwb-heading>
-    <p class="text-gray-500 dark:text-gray-400">
+    <fwb-heading class="mb-4" tag="h2">{{ currentCardSet.title }}</fwb-heading>
+    <p class="text-gray-500 dark:text-gray-400 mb-8">
       {{ currentCardSet.description }}
     </p>
 

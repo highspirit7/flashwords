@@ -38,7 +38,7 @@ onClickOutside(target, () => {
 })
 </script>
 <template>
-  <li class="bg-white p-4 rounded-lg my-1" ref="target">
+  <li class="bg-white p-2 md:p-4 rounded-lg my-2" ref="target">
     <div class="flex items-center">
       <input
         type="text"

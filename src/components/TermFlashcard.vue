@@ -25,7 +25,7 @@ function toggleIsFlipped() {
           <fwb-button
             color="alternative"
             @click.stop="isHintShown = !isHintShown"
-            class="focus:ring-0 absolute top-4 left-10"
+            class="focus:ring-0 absolute top-4 left-6 md:left-10"
             pill
             size="xs"
             v-if="card.examples.length > 0"
@@ -69,10 +69,7 @@ function toggleIsFlipped() {
 .flashcard-container,
 .question,
 .answer {
-  @apply w-full;
-
-  height: 380px;
-  cursor: pointer;
+  @apply w-full h-56 md:h-96 cursor-pointer;
 }
 
 .flashcard-container:focus-visible {

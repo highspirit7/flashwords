@@ -22,26 +22,27 @@ const currentCardSet: Ref<CardSet> = ref(getCurrentCardSet(route.params.id))
 // 카드셋 하나 가져오는 경우에 로컬스토리지의 cardSets에서 가져와야하지 않나..싶다
 
 const hasAtLeastOneFilledCard = computed(() => {
-  if (!hasSubmittedOnce.value) return true
-
   if (currentCardSet.value.cards.length > 0) {
     const { term, definition } = currentCardSet.value.cards[0]
     return term.trim() !== '' && definition.trim() !== ''
   }
-  return true
+  return false
 })
 
 function onEditingDone() {
   hasSubmittedOnce.value = true
-  loading.value = true
 
-  try {
-    updateCardSet({ ...currentCardSet.value, updatedAt: new Date() })
-  } catch (error) {
-    console.log(error)
-  } finally {
-    loading.value = false
-    router.push({ name: 'cardSet', params: { id: currentCardSet.value.id } })
+  if (currentCardSet.value.title !== '') {
+    loading.value = true
+
+    try {
+      updateCardSet({ ...currentCardSet.value, updatedAt: new Date() })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      loading.value = false
+      router.push({ name: 'cardSet', params: { id: currentCardSet.value.id } })
+    }
   }
 }
 
@@ -60,7 +61,7 @@ function handleClickTrashBinIcon(cardId: string) {
 </script>
 
 <template>
-  <div class="mt-8 p-2">
+  <div class="md:mt-8 p-4 md:p-2">
     <div class="flex justify-between">
       <fwb-button outline @click="$router.go(-1)">Back to card set</fwb-button>
       <fwb-button size="md" :disabled="loading" :loading="loading" @click="onEditingDone"
@@ -94,7 +95,7 @@ function handleClickTrashBinIcon(cardId: string) {
 
     <ul>
       <li
-        class="bg-white p-4 rounded-lg my-1"
+        class="bg-white p-4 rounded-lg my-2"
         v-for="(card, index) in currentCardSet.cards"
         :key="card.id"
       >

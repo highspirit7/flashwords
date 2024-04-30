@@ -36,9 +36,9 @@ watch(
 </script>
 
 <template>
-  <div class="mt-8 p-2">
+  <div class="p-4 md:mt-8 md:p-2">
     <fwb-heading tag="h1">Card sets</fwb-heading>
-    <div class="my-4">
+    <div class="my-8 md:my-4">
       <div class="w-full flex">
         <input
           type="search"

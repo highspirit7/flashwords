@@ -96,7 +96,7 @@ function onSubmit() {
     </div>
 
     <div
-      class="bg-white text-lg font-semibold text-red-500 rounded-lg mb-4 border-red-500 border-2 p-3 w-full flex justify-center"
+      class="bg-white text-sm text-center md:text-lg font-semibold text-red-500 rounded-lg mb-4 border-red-500 border-2 p-3 w-full flex justify-center"
       v-if="hasSubmittedOnce && !hasAtLeastOneFilledCard"
     >
       <span>You must have at least 1 card with a term and a definition!</span>

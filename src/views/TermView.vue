@@ -30,8 +30,8 @@ function toggleDeleteExampleModal() {
 }
 </script>
 <template>
-  <div class="p-2">
-    <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+  <div class="p-4 md:p-2">
+    <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse mb-4">
       <li class="inline-flex items-center">
         <router-link
           to="/"
@@ -99,12 +99,15 @@ function toggleDeleteExampleModal() {
       </li>
     </ol>
     <div class="flex justify-between">
-      <fwb-heading tag="h2">{{ selectedCard.term }}</fwb-heading>
-      <fwb-button @click="showModal"> Add a example </fwb-button>
+      <fwb-heading tag="h2" class="truncate">{{ selectedCard.term }}</fwb-heading>
+      <fwb-button @click="showModal" class="hidden md:block"> Add a example </fwb-button>
     </div>
-    <p class="text-gray-500 dark:text-gray-400">
+    <p class="text-gray-500 dark:text-gray-400 mt-2">
       {{ selectedCard.definition }}
     </p>
+    <div class="flex justify-center md:hidden mt-6">
+      <fwb-button @click="showModal"> Add a example </fwb-button>
+    </div>
     <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
     <fwb-heading tag="h4">Examples</fwb-heading>
     <ul v-if="selectedCard">
