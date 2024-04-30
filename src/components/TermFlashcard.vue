@@ -6,6 +6,7 @@ import { type Card } from '@/stores/cardSet'
 
 const props = defineProps<{ card: Card }>()
 const isFlipped = ref(false)
+const isHintShown = ref(false)
 
 function toggleIsFlipped() {
   isFlipped.value = !isFlipped.value
@@ -21,7 +22,14 @@ function toggleIsFlipped() {
     >
       <div class="flashcard" :class="{ 'flashcard-flipped': isFlipped }">
         <div class="question flex justify-center items-center relative">
-          <fwb-button class="absolute top-4 left-10" pill outline>
+          <fwb-button
+            color="alternative"
+            @click.stop="isHintShown = !isHintShown"
+            class="focus:ring-0 absolute top-4 left-10"
+            pill
+            size="xs"
+            v-if="card.examples.length > 0"
+          >
             <template #prefix>
               <svg
                 class="w-[18px] h-[18px] text-gray-800 dark:text-white"
@@ -29,20 +37,21 @@ function toggleIsFlipped() {
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
-                fill="none"
+                fill="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 9a3 3 0 0 1 3-3m-2 15h4m0-3c0-4.1 4-4.9 4-9A6 6 0 1 0 6 9c0 4 4 5 4 9h4Z"
+                  fill-rule="evenodd"
+                  d="M7.05 4.05A7 7 0 0 1 19 9c0 2.407-1.197 3.874-2.186 5.084l-.04.048C15.77 15.362 15 16.34 15 18a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1c0-1.612-.77-2.613-1.78-3.875l-.045-.056C6.193 12.842 5 11.352 5 9a7 7 0 0 1 2.05-4.95ZM9 21a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2h-4a1 1 0 0 1-1-1Zm1.586-13.414A2 2 0 0 1 12 7a1 1 0 1 0 0-2 4 4 0 0 0-4 4 1 1 0 0 0 2 0 2 2 0 0 1 .586-1.414Z"
+                  clip-rule="evenodd"
                 />
               </svg>
             </template>
-            Get a hint
-          </fwb-button>
+            <span v-if="!isHintShown">Get a hint(example sentence)</span
+            ><span v-else class="underline decoration-sky-600 font-semibold italic">{{
+              card.examples[Math.floor(Math.random() * card.examples.length)].sentence
+            }}</span></fwb-button
+          >
           <div class="text-5xl">{{ props.card.term }}</div>
         </div>
         <div class="answer flex justify-center items-center">
