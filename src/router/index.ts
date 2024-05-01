@@ -30,6 +30,9 @@ const router = createRouter({
       component: () => import('../views/TermView.vue'),
     },
   ],
+  scrollBehavior() {
+    return { top: 0, behavior: 'smooth' }
+  },
 })
 
 // TODO : Navigation Guard
