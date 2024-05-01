@@ -23,7 +23,7 @@ const dropdown: Ref<DropdownInterface | null> = ref(null)
 // TODO : give focus to flashcard from the beginning
 onMounted(() => {
   initFlowbite()
-  deleteExampleModal.value = new Modal(document.getElementById('delete-example-modal'), {
+  deleteExampleModal.value = new Modal(document.getElementById('delete-modal'), {
     placement: 'center',
   })
   dropdown.value = new Dropdown(
@@ -148,6 +148,7 @@ function handleDeleteCardSet() {
               type="button"
               class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-left"
               @click="toggleDeleteModal"
+              data-modal-target="delete-modal"
             >
               Delete
             </button>

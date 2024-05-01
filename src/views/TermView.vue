@@ -19,7 +19,7 @@ const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
 const addExampleModal: Ref<ModalInterface | null> = ref(null)
 
 onMounted(() => {
-  deleteExampleModal.value = new Modal(document.getElementById('delete-example-modal'), {
+  deleteExampleModal.value = new Modal(document.getElementById('delete-modal'), {
     placement: 'center',
   })
   addExampleModal.value = new Modal(document.getElementById('add-example-modal'), {

@@ -79,8 +79,7 @@ onClickOutside(target, () => {
       <button
         type="button"
         class="h-fit mx-2"
-        data-modal-target="delete-example-modal"
-        data-modal-toggle="delete-example-modal"
+        data-modal-target="delete-modal"
         @click="handleClickTrashBinIcon"
       >
         <svg
