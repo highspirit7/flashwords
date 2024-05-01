@@ -45,7 +45,7 @@ function handleClickFlashCardNext() {
   }
 }
 
-function handleClickFlashCArdPrev() {
+function handleClickFlashCardPrev() {
   if (currentFlashCardIndex.value === 0) {
     currentFlashCardIndex.value = currentCardSet.value.cards.length
   } else if (currentCardSet.value.cards.length > 1) {
@@ -179,7 +179,7 @@ function handleDeleteCardSet() {
           type="button"
           class="flex items-center justify-center px-4 cursor-pointer group focus:outline-none"
           data-carousel-prev
-          @click="handleClickFlashCArdPrev"
+          @click="handleClickFlashCardPrev"
         >
           <span
             class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none"
@@ -243,8 +243,8 @@ function handleDeleteCardSet() {
         @finish-editing="() => updateCardSet({ ...currentCardSet, updatedAt: new Date() })"
       />
     </ul>
-    <div class="flex justify-center">
-      <fwb-button color="dark" outline square @click="router.push(`${route.path}/edit`)">
+    <div class="flex justify-center mb-4">
+      <fwb-button outline square @click="router.push(`${route.path}/edit`)">
         Add or Remove terms
         <template #suffix>
           <svg
@@ -268,7 +268,7 @@ function handleDeleteCardSet() {
     </div>
     <DeleteModal
       :handleDeleteFunction="handleDeleteCardSet"
-      :toggleDeleteModal="toggleDeleteModal"
+      :toggleModal="toggleDeleteModal"
       :message="`Are you sure you want to delete this card set(${currentCardSet.title})`"
     />
   </div>
