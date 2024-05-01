@@ -63,7 +63,28 @@ function handleClickTrashBinIcon(cardId: string) {
 <template>
   <div class="md:mt-8 p-4 md:p-2">
     <div class="flex justify-between">
-      <fwb-button outline @click="$router.go(-1)">Back to card set</fwb-button>
+      <fwb-button color="dark" outline @click="$router.go(-1)">
+        <template #prefix>
+          <svg
+            class="w-[18px] h-[18px]"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="m15 19-7-7 7-7"
+            />
+          </svg>
+        </template>
+        Back to card set</fwb-button
+      >
       <fwb-button size="md" :disabled="loading" :loading="loading" @click="onEditingDone"
         >Done</fwb-button
       >
