@@ -116,15 +116,13 @@ function handleDeleteExample() {
     </ol>
     <div class="flex justify-between">
       <fwb-heading tag="h2" class="truncate">{{ selectedCard.term }}</fwb-heading>
-      <fwb-button @click="toggleAddExampleModal" class="hidden md:block">
-        Add a example
-      </fwb-button>
+      <fwb-button @click="toggleAddExampleModal" class="hidden md:block"> Add example </fwb-button>
     </div>
     <p class="text-gray-500 dark:text-gray-400 mt-2">
       {{ selectedCard.definition }}
     </p>
     <div class="flex justify-center md:hidden mt-6">
-      <fwb-button @click="toggleAddExampleModal"> Add a example </fwb-button>
+      <fwb-button @click="toggleAddExampleModal"> Add example </fwb-button>
     </div>
     <hr class="h-px mb-6 md:my-8 bg-gray-200 border-0 dark:bg-gray-700" />
     <fwb-heading tag="h4" class="mb-4">Examples</fwb-heading>
