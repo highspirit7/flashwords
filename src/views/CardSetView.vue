@@ -2,26 +2,42 @@
 import { FwbHeading, FwbButton } from 'flowbite-vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ref, type Ref, onMounted } from 'vue'
-import { initFlowbite } from 'flowbite'
+import { initFlowbite, Modal, Dropdown } from 'flowbite'
+import type { ModalInterface, DropdownInterface } from 'flowbite'
 
 import { type CardSet } from '@/stores/cardSet'
 import TermCard from '@/components/TermCard.vue'
 import getCurrentCardSet from '@/utils/currentCardSet'
 import { useCardSetStore } from '@/stores/cardSet'
 import TermFlashcard from '@/components/TermFlashcard.vue'
+import DeleteModal from '@/components/DeleteModal.vue'
 
 const route = useRoute()
 const router = useRouter()
-const { updateCardSet } = useCardSetStore()
+const { updateCardSet, deleteCardSet } = useCardSetStore()
 const currentFlashCardIndex = ref(1)
 const currentCardSet: Ref<CardSet> = ref(getCurrentCardSet(route.params.id))
+const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
+const dropdown: Ref<DropdownInterface | null> = ref(null)
 
 // TODO : give focus to flashcard from the beginning
 onMounted(() => {
   initFlowbite()
+  deleteExampleModal.value = new Modal(document.getElementById('delete-example-modal'), {
+    placement: 'center',
+  })
+  dropdown.value = new Dropdown(
+    document.getElementById('dropdownDotsHorizontal'),
+    document.getElementById('dropdownMenuIconHorizontalButton'),
+  )
 })
 
-function handleClickFlashCArdNext() {
+function toggleDeleteModal() {
+  deleteExampleModal.value?.toggle()
+  dropdown.value?.hide()
+}
+
+function handleClickFlashCardNext() {
   if (currentFlashCardIndex.value === currentCardSet.value.cards.length) {
     currentFlashCardIndex.value = 1
   } else {
@@ -34,6 +50,17 @@ function handleClickFlashCArdPrev() {
     currentFlashCardIndex.value = currentCardSet.value.cards.length
   } else if (currentCardSet.value.cards.length > 1) {
     currentFlashCardIndex.value -= 1
+  }
+}
+
+function handleDeleteCardSet() {
+  try {
+    deleteCardSet(currentCardSet.value.id)
+  } catch (error) {
+    console.log(error)
+  } finally {
+    toggleDeleteModal()
+    router.push('/')
   }
 }
 </script>
@@ -85,7 +112,49 @@ function handleClickFlashCArdPrev() {
         </div>
       </li>
     </ol>
-    <fwb-heading class="mb-4" tag="h2">{{ currentCardSet.title }}</fwb-heading>
+    <div class="flex justify-between">
+      <fwb-heading class="mb-4" tag="h2">{{ currentCardSet.title }}</fwb-heading>
+      <fwb-button
+        color="alternative"
+        size="sm"
+        id="dropdownMenuIconHorizontalButton"
+        data-dropdown-toggle="dropdownDotsHorizontal"
+        class="h-fit p-2"
+      >
+        <svg
+          class="w-5 h-5"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 16 3"
+        >
+          <path
+            d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"
+          />
+        </svg>
+      </fwb-button>
+
+      <!-- Dropdown menu -->
+      <div
+        id="dropdownDotsHorizontal"
+        class="z-50 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+      >
+        <ul
+          class="py-2 text-sm text-gray-700 dark:text-gray-200"
+          aria-labelledby="dropdownMenuIconHorizontalButton"
+        >
+          <li>
+            <button
+              type="button"
+              class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-left"
+              @click="toggleDeleteModal"
+            >
+              Delete
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
     <p class="text-gray-500 dark:text-gray-400 mb-8">
       {{ currentCardSet.description }}
     </p>
@@ -140,7 +209,7 @@ function handleClickFlashCArdPrev() {
           type="button"
           class="flex items-center justify-center px-4 cursor-pointer group focus:outline-none"
           data-carousel-next
-          @click="handleClickFlashCArdNext"
+          @click="handleClickFlashCardNext"
         >
           <span
             class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none"
@@ -197,5 +266,10 @@ function handleClickFlashCArdPrev() {
         </template>
       </fwb-button>
     </div>
+    <DeleteModal
+      :handleDeleteFunction="handleDeleteCardSet"
+      :toggleDeleteModal="toggleDeleteModal"
+      :message="`Are you sure you want to delete this card set(${currentCardSet.title})`"
+    />
   </div>
 </template>

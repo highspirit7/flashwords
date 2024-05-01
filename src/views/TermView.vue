@@ -9,13 +9,13 @@ import { useCardSetStore, type CardSet } from '@/stores/cardSet'
 import useModalStore from '@/stores/modal'
 import ExampleCard from '@/components/ExampleCard.vue'
 import AddExampleModal from '@/components/AddExampleModal.vue'
-import DeleteExampleModal from '@/components/DeleteExampleModal.vue'
+import DeleteModal from '@/components/DeleteModal.vue'
 import getCurrentCardSet from '@/utils/currentCardSet'
 
 const route = useRoute()
 const exampleIdToDelete = ref(0)
 const { showModal } = useModalStore()
-const { selectedCard } = useCardSetStore()
+const { selectedCard, deleteExampleInCard } = useCardSetStore()
 const currentCardset: Ref<CardSet> = ref(getCurrentCardSet(route.params.cardSetId))
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
 
@@ -25,8 +25,18 @@ onMounted(() => {
   })
 })
 
-function toggleDeleteExampleModal() {
+function toggleDeleteModal() {
   deleteExampleModal.value?.toggle()
+}
+
+function handleDeleteExample() {
+  try {
+    deleteExampleInCard(exampleIdToDelete.value, currentCardset.value.id)
+  } catch (error) {
+    console.log(error)
+  } finally {
+    toggleDeleteModal()
+  }
 }
 </script>
 <template>
@@ -116,14 +126,14 @@ function toggleDeleteExampleModal() {
         :key="example.id"
         :example="example"
         @delete="id => (exampleIdToDelete = id)"
-        :toggleDeleteExampleModal="toggleDeleteExampleModal"
+        :toggleDeleteExampleModal="toggleDeleteModal"
       />
     </ul>
     <AddExampleModal />
-    <DeleteExampleModal
-      :exampleId="exampleIdToDelete"
-      :cardSetId="currentCardset.id"
-      :toggleDeleteExampleModal="toggleDeleteExampleModal"
+    <DeleteModal
+      :handleDeleteFunction="handleDeleteExample"
+      :toggleDeleteModal="toggleDeleteModal"
+      :message="'Are you sure you want to delete this example?'"
     />
   </div>
 </template>

@@ -97,6 +97,11 @@ export const useCardSetStore = defineStore('cardSets', () => {
     saveCardSetsinLS()
   }
 
+  function deleteCardSet(id: string) {
+    cardSets.value = cardSets.value.filter((cardSet: CardSet) => id !== cardSet.id)
+    saveCardSetsinLS()
+  }
+
   return {
     cardSets,
     createCardSet,
@@ -110,5 +115,6 @@ export const useCardSetStore = defineStore('cardSets', () => {
     deleteExampleInCard,
     updateDateInCardSet,
     updateCardSet,
+    deleteCardSet,
   }
 })
