@@ -6,7 +6,6 @@ import { Modal } from 'flowbite'
 import type { ModalInterface } from 'flowbite'
 
 import { useCardSetStore, type CardSet } from '@/stores/cardSet'
-import useModalStore from '@/stores/modal'
 import ExampleCard from '@/components/ExampleCard.vue'
 import AddExampleModal from '@/components/AddExampleModal.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
@@ -14,18 +13,25 @@ import getCurrentCardSet from '@/utils/currentCardSet'
 
 const route = useRoute()
 const exampleIdToDelete = ref(0)
-const { showModal } = useModalStore()
 const { selectedCard, deleteExampleInCard } = useCardSetStore()
 const currentCardset: Ref<CardSet> = ref(getCurrentCardSet(route.params.cardSetId))
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
+const addExampleModal: Ref<ModalInterface | null> = ref(null)
 
 onMounted(() => {
   deleteExampleModal.value = new Modal(document.getElementById('delete-example-modal'), {
     placement: 'center',
   })
+  addExampleModal.value = new Modal(document.getElementById('add-example-modal'), {
+    placement: 'center',
+  })
 })
 
-function toggleDeleteModal() {
+function toggleAddExampleModal() {
+  addExampleModal.value?.toggle()
+}
+
+function toggleDeleteExampleModal() {
   deleteExampleModal.value?.toggle()
 }
 
@@ -35,7 +41,7 @@ function handleDeleteExample() {
   } catch (error) {
     console.log(error)
   } finally {
-    toggleDeleteModal()
+    toggleDeleteExampleModal()
   }
 }
 </script>
@@ -110,29 +116,31 @@ function handleDeleteExample() {
     </ol>
     <div class="flex justify-between">
       <fwb-heading tag="h2" class="truncate">{{ selectedCard.term }}</fwb-heading>
-      <fwb-button @click="showModal" class="hidden md:block"> Add a example </fwb-button>
+      <fwb-button @click="toggleAddExampleModal" class="hidden md:block">
+        Add a example
+      </fwb-button>
     </div>
     <p class="text-gray-500 dark:text-gray-400 mt-2">
       {{ selectedCard.definition }}
     </p>
     <div class="flex justify-center md:hidden mt-6">
-      <fwb-button @click="showModal"> Add a example </fwb-button>
+      <fwb-button @click="toggleAddExampleModal"> Add a example </fwb-button>
     </div>
-    <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-    <fwb-heading tag="h4">Examples</fwb-heading>
+    <hr class="h-px mb-6 md:my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+    <fwb-heading tag="h4" class="mb-4">Examples</fwb-heading>
     <ul v-if="selectedCard">
       <ExampleCard
         v-for="example in selectedCard.examples"
         :key="example.id"
         :example="example"
         @delete="id => (exampleIdToDelete = id)"
-        :toggleDeleteExampleModal="toggleDeleteModal"
+        :toggleDeleteExampleModal="toggleDeleteExampleModal"
       />
     </ul>
-    <AddExampleModal />
+    <AddExampleModal :toggleModal="toggleAddExampleModal" />
     <DeleteModal
       :handleDeleteFunction="handleDeleteExample"
-      :toggleDeleteModal="toggleDeleteModal"
+      :toggleModal="toggleDeleteExampleModal"
       :message="'Are you sure you want to delete this example?'"
     />
   </div>
