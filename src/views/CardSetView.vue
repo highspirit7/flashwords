@@ -137,7 +137,7 @@ function handleDeleteCardSet() {
       <!-- Dropdown menu -->
       <div
         id="dropdownDotsHorizontal"
-        class="z-50 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+        class="z-50 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-800 dark:divide-gray-600"
       >
         <ul
           class="py-2 text-sm text-gray-700 dark:text-gray-200"
@@ -146,7 +146,7 @@ function handleDeleteCardSet() {
           <li>
             <button
               type="button"
-              class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-left"
+              class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white text-left"
               @click="toggleDeleteModal"
               data-modal-target="delete-modal"
             >
@@ -178,15 +178,15 @@ function handleDeleteCardSet() {
       >
         <button
           type="button"
-          class="flex items-center justify-center px-4 cursor-pointer group focus:outline-none"
+          class="flex items-center justify-center px-4 cursor-pointer focus:outline-none"
           data-carousel-prev
           @click="handleClickFlashCardPrev"
         >
           <span
-            class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none"
+            class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800 hover:bg-white/50 dark:hover:bg-gray-700 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none text-gray dark:text-gray-400 dark:hover:text-white"
           >
             <svg
-              class="w-4 h-4 text-gray dark:text-gray-800 rtl:rotate-180"
+              class="w-4 h-4 rtl:rotate-180"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -203,7 +203,7 @@ function handleDeleteCardSet() {
             <span class="sr-only">Previous</span>
           </span>
         </button>
-        <div class="text-xl font-semibold">
+        <div class="text-xl font-semibold dark:text-gray-400">
           {{ `${currentFlashCardIndex} / ${currentCardSet.cards.length}` }}
         </div>
         <button
@@ -213,10 +213,10 @@ function handleDeleteCardSet() {
           @click="handleClickFlashCardNext"
         >
           <span
-            class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none"
+            class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800 hover:bg-white/50 dark:hover:bg-gray-700 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none text-gray dark:text-gray-400 dark:hover:text-white"
           >
             <svg
-              class="w-4 h-4 text-gray dark:text-gray-800 rtl:rotate-180"
+              class="w-4 h-4 rtl:rotate-180"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

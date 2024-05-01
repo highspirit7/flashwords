@@ -52,10 +52,10 @@ function toggleIsFlipped() {
               card.examples[Math.floor(Math.random() * card.examples.length)].sentence
             }}</span></fwb-button
           >
-          <div class="text-5xl">{{ props.card.term }}</div>
+          <div class="text-5xl dark:text-white">{{ props.card.term }}</div>
         </div>
         <div class="answer flex justify-center items-center">
-          <div class="text-5xl">{{ props.card.definition }}</div>
+          <div class="text-5xl dark:text-white">{{ props.card.definition }}</div>
         </div>
       </div>
     </div>
@@ -93,6 +93,7 @@ function toggleIsFlipped() {
 .answer {
   @apply bg-white rounded-xl text-center border-4 border-blue-700;
   @apply absolute top-0 left-0;
+  @apply dark:bg-gray-900 dark:border-blue-500;
 
   backface-visibility: hidden;
 }

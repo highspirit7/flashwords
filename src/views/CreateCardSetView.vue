@@ -104,7 +104,7 @@ function onSubmit() {
 
     <ul>
       <li
-        class="bg-white p-4 rounded-lg my-1"
+        class="bg-white dark:bg-gray-900 p-4 rounded-lg my-1"
         v-for="(card, index) in newCardSet.cards"
         :key="card.id"
       >
@@ -126,11 +126,27 @@ function onSubmit() {
         </div>
       </li>
     </ul>
-    <div class="flex justify-center p-4 my-4 bg-white rounded-lg">
-      <fwb-button color="light" pill @click="addCard">
+    <div class="flex justify-center p-4 my-4 bg-white dark:bg-gray-900 rounded-lg">
+      <fwb-button color="light" class="dark:hover:bg-gray-700" pill @click="addCard">
         Add a card
         <template #suffix>
-          <PlusDarkSvg />
+          <svg
+            class="w-[18px] h-[18px]"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 12h14m-7 7V5"
+            />
+          </svg>
         </template>
       </fwb-button>
     </div>

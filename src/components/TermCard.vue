@@ -36,7 +36,7 @@ function isHTMLInputElement(
 }
 </script>
 <template>
-  <li class="bg-white p-4 rounded-lg my-1" ref="target">
+  <li class="bg-white dark:bg-gray-900 p-4 rounded-lg my-1" ref="target">
     <div class="flex items-center">
       <input
         type="text"

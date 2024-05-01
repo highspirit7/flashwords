@@ -47,6 +47,7 @@ watch(
           placeholder="Search with a keyword"
           v-model="searchQuery"
           @keydown.enter="updateRouteWithSearchQuery"
+          autocomplete="off"
         />
         <button
           type="button"
