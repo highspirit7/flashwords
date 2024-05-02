@@ -2,11 +2,11 @@
 import { FwbHeading, FwbButton, FwbInput, FwbTextarea } from 'flowbite-vue'
 import { ref, type Ref, onMounted, computed } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
+import { useRouter } from 'vue-router'
 
 import { useCardSetStore } from '@/stores/cardSet'
-import PlusDarkSvg from '@/assets/plus-dark.svg'
+import { useToasterStore } from '@/stores/toaster'
 import type { CardSet } from '@/stores/cardSet'
-import { useRouter } from 'vue-router'
 
 const loading = ref(false)
 const hasSubmittedOnce = ref(false)
@@ -19,6 +19,7 @@ const newCardSet: Ref<CardSet> = ref({
   cards: [],
 })
 const { createCardSet } = useCardSetStore()
+const toasterStore = useToasterStore()
 const router = useRouter()
 
 const hasAtLeastOneFilledCard = computed(() => {
@@ -53,11 +54,15 @@ function onSubmit() {
     newCardSet.value.createdAt = new Date()
     try {
       createCardSet(newCardSet.value)
+      toasterStore.success({ text: 'You just created a new card set!' })
+      router.push('/')
     } catch (error) {
-      console.log(error)
+      if (error instanceof Error) {
+        console.log(error)
+        toasterStore.danger({ text: error.message })
+      }
     } finally {
       loading.value = false
-      router.push('/')
     }
   }
 }

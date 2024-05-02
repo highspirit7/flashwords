@@ -5,6 +5,7 @@ import { useRouter, useRoute } from 'vue-router'
 
 import { type Card } from '@/stores/cardSet'
 import { useCardSetStore } from '@/stores/cardSet'
+import { isHTMLInputElement } from '@/utils/typePredicates'
 
 const router = useRouter()
 const route = useRoute()
@@ -28,12 +29,6 @@ function handleClickOpenBookIcon() {
 onClickOutside(target, () => {
   if (isEditing.value) handleFinishEditing()
 })
-
-function isHTMLInputElement(
-  targetElement: EventTarget | null | HTMLInputElement,
-): targetElement is HTMLInputElement {
-  return (targetElement as HTMLInputElement).value !== undefined
-}
 </script>
 <template>
   <li class="bg-white dark:bg-gray-900 p-4 rounded-lg my-1" ref="target">

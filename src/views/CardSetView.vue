@@ -11,10 +11,12 @@ import getCurrentCardSet from '@/utils/currentCardSet'
 import { useCardSetStore } from '@/stores/cardSet'
 import TermFlashcard from '@/components/TermFlashcard.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
+import { useToasterStore } from '@/stores/toaster'
 
 const route = useRoute()
 const router = useRouter()
 const { updateCardSet, deleteCardSet } = useCardSetStore()
+const toasterStore = useToasterStore()
 const currentFlashCardIndex = ref(1)
 const currentCardSet: Ref<CardSet> = ref(getCurrentCardSet(route.params.id))
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
@@ -56,11 +58,15 @@ function handleClickFlashCardPrev() {
 function handleDeleteCardSet() {
   try {
     deleteCardSet(currentCardSet.value.id)
+    toasterStore.success({ text: 'Successfully deleted' })
+    router.push('/')
   } catch (error) {
-    console.log(error)
+    if (error instanceof Error) {
+      console.log(error)
+      toasterStore.danger({ text: error.message })
+    }
   } finally {
     toggleDeleteModal()
-    router.push('/')
   }
 }
 </script>

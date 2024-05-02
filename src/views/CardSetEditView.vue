@@ -8,12 +8,14 @@ import PlusDarkSvg from '@/assets/plus-dark.svg'
 import type { CardSet, Card } from '@/stores/cardSet'
 import getCurrentCardSet from '@/utils/currentCardSet'
 import { useCardSetStore } from '@/stores/cardSet'
+import { useToasterStore } from '@/stores/toaster'
 
 const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
 const hasSubmittedOnce = ref(false)
 const { updateCardSet } = useCardSetStore()
+const toasterStore = useToasterStore()
 const currentCardSet: Ref<CardSet> = ref(getCurrentCardSet(route.params.id))
 
 // ! 스프레드연산자 사용해서 얕은 복사로 해도 cards는 그대로 같은 레퍼런스로 연결되어 있다.
@@ -37,11 +39,15 @@ function onEditingDone() {
 
     try {
       updateCardSet({ ...currentCardSet.value, updatedAt: new Date() })
+      toasterStore.success({ text: 'This card set was successfully editted!' })
+      router.push({ name: 'cardSet', params: { id: currentCardSet.value.id } })
     } catch (error) {
-      console.log(error)
+      if (error instanceof Error) {
+        console.log(error)
+        toasterStore.danger({ text: error.message })
+      }
     } finally {
       loading.value = false
-      router.push({ name: 'cardSet', params: { id: currentCardSet.value.id } })
     }
   }
 }

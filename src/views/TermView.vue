@@ -10,9 +10,11 @@ import ExampleCard from '@/components/ExampleCard.vue'
 import AddExampleModal from '@/components/AddExampleModal.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
 import getCurrentCardSet from '@/utils/currentCardSet'
+import { useToasterStore } from '@/stores/toaster'
 
 const route = useRoute()
 const exampleIdToDelete = ref(0)
+const toasterStore = useToasterStore()
 const { selectedCard, deleteExampleInCard } = useCardSetStore()
 const currentCardset: Ref<CardSet> = ref(getCurrentCardSet(route.params.cardSetId))
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
@@ -38,8 +40,12 @@ function toggleDeleteExampleModal() {
 function handleDeleteExample() {
   try {
     deleteExampleInCard(exampleIdToDelete.value, currentCardset.value.id)
+    toasterStore.success({ text: 'Successfully deleted' })
   } catch (error) {
-    console.log(error)
+    if (error instanceof Error) {
+      console.log(error)
+      toasterStore.danger({ text: error.message })
+    }
   } finally {
     toggleDeleteExampleModal()
   }

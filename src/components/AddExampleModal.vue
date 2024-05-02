@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router'
 
 import { isString } from '@/utils/typePredicates'
 import { useCardSetStore } from '@/stores/cardSet'
+import { useToasterStore } from '@/stores/toaster'
 
 const route = useRoute()
 const sentence = ref('')
@@ -12,15 +13,19 @@ const props = defineProps<{
   toggleModal: () => void
 }>()
 const { toggleModal } = props
-
+const toasterStore = useToasterStore()
 const { addExampleOfCard } = useCardSetStore()
 
 function handleClickAdd() {
   if (isString(route.params.cardSetId)) {
     try {
       addExampleOfCard(sentence.value, route.params.cardSetId)
+      toasterStore.success({ text: 'Successfully added an example!' })
     } catch (error) {
-      console.log(error)
+      if (error instanceof Error) {
+        console.log(error)
+        toasterStore.danger({ text: error.message })
+      }
     } finally {
       sentence.value = ''
       toggleModal()
