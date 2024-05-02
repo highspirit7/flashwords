@@ -132,7 +132,7 @@ function handleDeleteExample() {
     </div>
     <hr class="h-px mb-6 md:my-8 bg-gray-200 border-0 dark:bg-gray-700" />
     <fwb-heading tag="h4" class="mb-4">Examples</fwb-heading>
-    <ul v-if="selectedCard">
+    <ul v-if="selectedCard.examples.length > 0">
       <ExampleCard
         v-for="example in selectedCard.examples"
         :key="example.id"
@@ -141,6 +141,9 @@ function handleDeleteExample() {
         :toggleDeleteExampleModal="toggleDeleteExampleModal"
       />
     </ul>
+    <div v-else class="mt-16">
+      <fwb-heading tag="h6" class="text-center text-gray-500">No examples</fwb-heading>
+    </div>
     <AddExampleModal :toggleModal="toggleAddExampleModal" />
     <DeleteModal
       :handleDeleteFunction="handleDeleteExample"

@@ -73,11 +73,14 @@ watch(
         </button>
       </div>
     </div>
-    <ul class="card-sets-list">
+    <ul class="card-sets-list" v-if="filteredCardSets.length > 0">
       <li v-for="cardSet in filteredCardSets" class="mb-2 md:mb-0" :key="cardSet.id">
         <TermsCard :data="cardSet" />
       </li>
     </ul>
+    <div v-else class="mt-16">
+      <fwb-heading tag="h4" class="text-gray-500 text-center">No card sets </fwb-heading>
+    </div>
   </div>
 </template>
 <style scoped>
