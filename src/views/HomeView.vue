@@ -79,7 +79,10 @@ watch(
       </li>
     </ul>
     <div v-else class="mt-16">
-      <fwb-heading tag="h4" class="text-gray-500 text-center">No card sets </fwb-heading>
+      <fwb-heading tag="h5" class="text-gray-500 text-center"
+        >No card sets.. <br />
+        Please click a plus button to create your first card set.
+      </fwb-heading>
     </div>
   </div>
 </template>
