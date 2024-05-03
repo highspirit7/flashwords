@@ -48,7 +48,7 @@ function handleClickFlashCardNext() {
 }
 
 function handleClickFlashCardPrev() {
-  if (currentFlashCardIndex.value === 0) {
+  if (currentFlashCardIndex.value === 1) {
     currentFlashCardIndex.value = currentCardSet.value.cards.length
   } else if (currentCardSet.value.cards.length > 1) {
     currentFlashCardIndex.value -= 1
