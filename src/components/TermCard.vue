@@ -31,11 +31,11 @@ onClickOutside(target, () => {
 })
 </script>
 <template>
-  <li class="bg-white dark:bg-gray-900 p-4 rounded-lg my-1" ref="target">
+  <li class="bg-white dark:bg-gray-900 p-4 rounded-lg my-1" ref="target" data-testid="term-card">
     <div class="flex items-center">
       <input
         type="text"
-        id="floating_standard"
+        aria-label="term-card--term"
         class="block py-2.5 px-0 me-4 w-2/5 text-sm text-gray-900 bg-transparent border-0 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
         :value="card.term"
         @input="
@@ -51,7 +51,7 @@ onClickOutside(target, () => {
       />
       <input
         type="text"
-        id="floating_standard"
+        aria-label="term-card--definition"
         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
         :value="card.definition"
         @input="

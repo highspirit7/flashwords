@@ -22,7 +22,6 @@ const currentCardSet: Ref<CardSet> = ref(getCurrentCardSet(route.params.id))
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
 const dropdown: Ref<DropdownInterface | null> = ref(null)
 
-// TODO : give focus to flashcard from the beginning
 onMounted(() => {
   initFlowbite()
   deleteExampleModal.value = new Modal(document.getElementById('delete-modal'), {
@@ -119,7 +118,9 @@ function handleDeleteCardSet() {
       </li>
     </ol>
     <div class="flex justify-between">
-      <fwb-heading class="mb-4" tag="h2">{{ currentCardSet.title }}</fwb-heading>
+      <fwb-heading class="mb-4" tag="h2" data-testid="cardset-title">{{
+        currentCardSet.title
+      }}</fwb-heading>
       <fwb-button
         color="alternative"
         size="sm"

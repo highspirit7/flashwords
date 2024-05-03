@@ -20,7 +20,7 @@ function toggleIsFlipped() {
       @keydown.space="toggleIsFlipped"
       tabindex="0"
     >
-      <div class="flashcard" :class="{ 'flashcard-flipped': isFlipped }">
+      <div class="flashcard" :class="{ 'flashcard-flipped': isFlipped }" data-testid="flashcard">
         <div class="question flex justify-center items-center relative">
           <fwb-button
             color="alternative"
@@ -52,10 +52,14 @@ function toggleIsFlipped() {
               card.examples[Math.floor(Math.random() * card.examples.length)].sentence
             }}</span></fwb-button
           >
-          <div class="text-5xl dark:text-white">{{ props.card.term }}</div>
+          <div class="text-5xl dark:text-white" data-testid="flashcard-term">
+            {{ props.card.term }}
+          </div>
         </div>
         <div class="answer flex justify-center items-center">
-          <div class="text-5xl dark:text-white">{{ props.card.definition }}</div>
+          <div class="text-5xl dark:text-white" data-testid="flashcard-definition">
+            {{ props.card.definition }}
+          </div>
         </div>
       </div>
     </div>

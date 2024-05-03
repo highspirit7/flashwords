@@ -160,12 +160,14 @@ function handleClickTrashBinIcon(cardId: string) {
             label="Term"
             class="w-full"
             :class="{ error: hasSubmittedOnce && card.term.trim() === '' }"
+            data-testid="term-input--edit"
           />
           <fwb-input
             v-model="card.definition"
             label="Definition"
             class="w-full"
             :class="{ error: hasSubmittedOnce && card.definition.trim() === '' }"
+            data-testid="definition-input--edit"
           />
         </div>
       </li>
