@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { FwbButton } from 'flowbite-vue'
-import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import { type Card } from '@/stores/cardSet'
+import useFlashcardStore from '@/stores/flashcard'
 
 const props = defineProps<{ card: Card }>()
-const isFlipped = ref(false)
-const isHintShown = ref(false)
 
-function toggleIsFlipped() {
-  isFlipped.value = !isFlipped.value
-}
+const { isFlipped, isHintShown } = storeToRefs(useFlashcardStore())
+const { toggleIsFlipped, toggleIsHintShown } = useFlashcardStore()
 </script>
 <template>
   <div class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
@@ -24,7 +22,7 @@ function toggleIsFlipped() {
         <div class="question flex justify-center items-center relative">
           <fwb-button
             color="alternative"
-            @click.stop="isHintShown = !isHintShown"
+            @click.stop="toggleIsHintShown"
             class="focus:ring-0 absolute top-4 left-6 md:left-10"
             pill
             size="xs"

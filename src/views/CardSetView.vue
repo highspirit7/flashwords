@@ -12,11 +12,13 @@ import { useCardSetStore } from '@/stores/cardSet'
 import TermFlashcard from '@/components/TermFlashcard.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
 import { useToasterStore } from '@/stores/toaster'
+import useFlashcardStore from '@/stores/flashcard'
 
 const route = useRoute()
 const router = useRouter()
 const { updateCardSet, deleteCardSet } = useCardSetStore()
 const toasterStore = useToasterStore()
+const flashcardStore = useFlashcardStore()
 const currentFlashCardIndex = ref(1)
 const currentCardSet: Ref<CardSet> = ref(getCurrentCardSet(route.params.id))
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
@@ -44,6 +46,8 @@ function handleClickFlashCardNext() {
   } else {
     currentFlashCardIndex.value += 1
   }
+
+  flashcardStore.$reset()
 }
 
 function handleClickFlashCardPrev() {
@@ -52,6 +56,8 @@ function handleClickFlashCardPrev() {
   } else if (currentCardSet.value.cards.length > 1) {
     currentFlashCardIndex.value -= 1
   }
+
+  flashcardStore.$reset()
 }
 
 function handleDeleteCardSet() {
@@ -167,7 +173,7 @@ function handleDeleteCardSet() {
       {{ currentCardSet.description }}
     </p>
 
-    <div id="controls-carousel" class="relative w-full mb-16" data-carousel="static">
+    <div id="flashcards-carousel" class="relative w-full mb-16" data-carousel="static">
       <!-- Carousel wrapper -->
       <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
         <div
