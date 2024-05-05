@@ -6,7 +6,7 @@ import NotificationToaster from '@/components/NotificationToaster.vue'
 import * as localStorage from '@/utils/localStorage'
 
 if (
-  localStorage.getItem('color-theme') === 'dark' &&
+  localStorage.getItem('color-theme') === 'dark' ||
   window.matchMedia('(prefers-color-scheme: dark)').matches
 ) {
   document.documentElement.classList.add('dark')
