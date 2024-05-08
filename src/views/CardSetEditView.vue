@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FwbHeading, FwbButton, FwbInput, FwbTextarea } from 'flowbite-vue'
-import { ref, type Ref, computed } from 'vue'
+import { ref, type Ref, computed, nextTick } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -16,11 +16,6 @@ const hasSubmittedOnce = ref(false)
 const { updateCardSet } = useCardSetStore()
 const toasterStore = useToasterStore()
 const currentCardSet: Ref<CardSet> = ref(getCurrentCardSet(route.params.id))
-
-// ! 스프레드연산자 사용해서 얕은 복사로 해도 cards는 그대로 같은 레퍼런스로 연결되어 있다.
-// ! 스프레드 연산자마저 사용하지 않으면 모든 데이터가 cardSets 데이터와 동기화되어있다.
-// ! 이러한 상황에서 Done 버튼 안 누르고 그냥 뒤로 가면 문제가 생긴다..
-// 카드셋 하나 가져오는 경우에 로컬스토리지의 cardSets에서 가져와야하지 않나..싶다
 
 const hasAtLeastOneFilledCard = computed(() => {
   if (currentCardSet.value.cards.length > 0) {
@@ -51,13 +46,16 @@ function onEditingDone() {
   }
 }
 
-function addCard() {
+async function onClickAddCard() {
   currentCardSet.value.cards.push({
     id: uuidv4(),
     term: '',
     definition: '',
     examples: [],
   })
+
+  await nextTick()
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
 }
 
 function handleClickTrashBinIcon(cardId: string) {
@@ -172,7 +170,7 @@ function handleClickTrashBinIcon(cardId: string) {
       </li>
     </ul>
     <div class="flex justify-center p-4 my-4 bg-white dark:bg-gray-900 rounded-lg">
-      <fwb-button color="light" pill @click="addCard" class="dark:hover:bg-gray-700">
+      <fwb-button color="light" pill @click="onClickAddCard" class="dark:hover:bg-gray-700">
         Add a card
         <template #suffix>
           <svg

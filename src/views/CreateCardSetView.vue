@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FwbHeading, FwbButton, FwbInput, FwbTextarea } from 'flowbite-vue'
-import { ref, type Ref, onMounted, computed } from 'vue'
+import { ref, type Ref, onMounted, computed, nextTick } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'vue-router'
 
@@ -30,18 +30,21 @@ const hasAtLeastOneFilledCard = computed(() => {
   return false
 })
 
-function addCard() {
+async function onClickAddCard() {
   newCardSet.value.cards.push({
     id: uuidv4(),
     term: '',
     definition: '',
     examples: [],
   })
+
+  await nextTick()
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
 }
 
 onMounted(() => {
   if (newCardSet.value.cards.length < 1) {
-    addCard()
+    onClickAddCard()
   }
 })
 
@@ -134,7 +137,7 @@ function onSubmit() {
       </li>
     </ul>
     <div class="flex justify-center p-4 my-4 bg-white dark:bg-gray-900 rounded-lg">
-      <fwb-button color="light" class="dark:hover:bg-gray-700" pill @click="addCard">
+      <fwb-button color="light" class="dark:hover:bg-gray-700" pill @click="onClickAddCard">
         Add a card
         <template #suffix>
           <svg
