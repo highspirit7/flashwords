@@ -4,7 +4,6 @@ import { ref, type Ref, computed } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useRouter, useRoute } from 'vue-router'
 
-import PlusDarkSvg from '@/assets/plus-dark.svg'
 import type { CardSet, Card } from '@/stores/cardSet'
 import getCurrentCardSet from '@/utils/currentCardSet'
 import { useCardSetStore } from '@/stores/cardSet'
@@ -122,7 +121,7 @@ function handleClickTrashBinIcon(cardId: string) {
 
     <ul>
       <li
-        class="bg-white p-4 rounded-lg my-2"
+        class="bg-white dark:bg-gray-900 p-4 rounded-lg my-2"
         v-for="(card, index) in currentCardSet.cards"
         :key="card.id"
       >
@@ -172,11 +171,27 @@ function handleClickTrashBinIcon(cardId: string) {
         </div>
       </li>
     </ul>
-    <div class="flex justify-center p-4 my-4 bg-white rounded-lg">
-      <fwb-button color="light" pill @click="addCard">
+    <div class="flex justify-center p-4 my-4 bg-white dark:bg-gray-900 rounded-lg">
+      <fwb-button color="light" pill @click="addCard" class="dark:hover:bg-gray-700">
         Add a card
         <template #suffix>
-          <PlusDarkSvg />
+          <svg
+            class="w-[18px] h-[18px]"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 12h14m-7 7V5"
+            />
+          </svg>
         </template>
       </fwb-button>
     </div>
