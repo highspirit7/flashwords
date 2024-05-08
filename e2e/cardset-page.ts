@@ -1,5 +1,5 @@
 /* eslint-disable no-plusplus */
-import type { Page, Locator } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 export default class CardSetPage {
   constructor(public readonly page: Page) {

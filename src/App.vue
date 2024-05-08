@@ -3,7 +3,7 @@ import { RouterView } from 'vue-router'
 
 import TopNavbar from '@/components/TopNavbar.vue'
 import NotificationToaster from '@/components/NotificationToaster.vue'
-import * as localStorage from '@/utils/localStorage'
+import * as localStorage from '@/utils/storage'
 
 if (
   localStorage.getItem('color-theme') === 'dark' ||

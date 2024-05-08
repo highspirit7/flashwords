@@ -17,11 +17,11 @@ const emit = defineEmits<{
   (e: 'delete', id: number): void
 }>()
 const { example, toggleDeleteExampleModal } = props
-const { saveSelectedCardInLS, updateCardInCardSet } = useCardSetStore()
+const { saveSelectedCardInStorage, updateCardInCardSet } = useCardSetStore()
 
 function handleFinishEditing() {
   isEditing.value = false
-  saveSelectedCardInLS()
+  saveSelectedCardInStorage()
 
   if (isString(route.params.cardSetId)) {
     updateCardInCardSet(route.params.cardSetId)

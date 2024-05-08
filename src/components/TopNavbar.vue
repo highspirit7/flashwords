@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 import { ref, type Ref } from 'vue'
 
 import plusPng from '@/assets/plus.png'
-import * as localStorage from '@/utils/localStorage'
+import * as localStorage from '@/utils/storage'
 
 const theme: Ref<string> = ref(localStorage.getItem('color-theme') ?? 'light')
 

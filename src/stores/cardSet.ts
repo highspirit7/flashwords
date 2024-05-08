@@ -1,7 +1,7 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
 
-import * as localStorage from '@/utils/localStorage'
+import * as localStorage from '@/utils/storage'
 
 export interface Card {
   id: string
@@ -39,22 +39,22 @@ export const useCardSetStore = defineStore('cardSets', () => {
     return cardSets.value.filter(cardSet => cardSet.id === id)[0]
   }
 
-  function saveCardSetsinLS() {
+  function saveCardSetsInStorage() {
     localStorage.setItem(localStorage.CARD_SETS_KEY, cardSets.value)
   }
 
-  function saveSelectedCardInLS() {
+  function saveSelectedCardInStorage() {
     localStorage.setItem(localStorage.SELECTED_CARD_KEY, selectedCard.value)
   }
 
   function createCardSet(data: CardSet) {
     cardSets.value.push(data)
-    saveCardSetsinLS()
+    saveCardSetsInStorage()
   }
 
-  function selectCard(data: Card) {
+  function setSelectedCard(data: Card) {
     selectedCard.value = data
-    saveSelectedCardInLS()
+    saveSelectedCardInStorage()
   }
 
   function updateCardInCardSet(cardSetId: string) {
@@ -63,14 +63,14 @@ export const useCardSetStore = defineStore('cardSets', () => {
       return card.id === selectedCard.value.id ? selectedCard.value : card
     })
     cardSet.updatedAt = new Date()
-    saveCardSetsinLS()
+    saveCardSetsInStorage()
   }
 
   function updateCardSet(data: CardSet) {
     cardSets.value = cardSets.value.map((cardSet: CardSet) =>
       data.id === cardSet.id ? data : cardSet,
     )
-    saveCardSetsinLS()
+    saveCardSetsInStorage()
   }
 
   function addExampleOfCard(sentence: string, cardSetId: string) {
@@ -78,7 +78,7 @@ export const useCardSetStore = defineStore('cardSets', () => {
       id: generateNewExampleId(selectedCard.value.examples),
       sentence,
     })
-    saveSelectedCardInLS()
+    saveSelectedCardInStorage()
     updateCardInCardSet(cardSetId)
   }
 
@@ -86,35 +86,41 @@ export const useCardSetStore = defineStore('cardSets', () => {
     selectedCard.value.examples = selectedCard.value.examples.filter(
       (example: { id: number; sentence: string }) => example.id !== exampleId,
     )
-    saveSelectedCardInLS()
+    saveSelectedCardInStorage()
     updateCardInCardSet(cardSetId)
   }
 
+  // TODO : better to add return type of function as well
+  // TODO : even void bettter to add anyway
   function updateDateInCardSet(cardSetId: string) {
     const cardSet = getCardSetById(cardSetId)
     cardSet.updatedAt = new Date()
 
-    saveCardSetsinLS()
+    saveCardSetsInStorage()
   }
 
   function deleteCardSet(id: string) {
     cardSets.value = cardSets.value.filter((cardSet: CardSet) => id !== cardSet.id)
-    saveCardSetsinLS()
+    saveCardSetsInStorage()
   }
 
   return {
+    // selectors
     cardSets,
-    createCardSet,
-    saveCardSetsinLS,
     selectedCard,
-    selectCard,
+    // getters
     getCardSetById,
+    // actions
+    setSelectedCard,
+    createCardSet,
     addExampleOfCard,
-    saveSelectedCardInLS,
     updateCardInCardSet,
     deleteExampleInCard,
     updateDateInCardSet,
     updateCardSet,
     deleteCardSet,
+    // storage
+    saveSelectedCardInStorage,
+    saveCardSetsInStorage,
   }
 })

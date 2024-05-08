@@ -2,6 +2,7 @@
 import { useToasterStore } from '@/stores/toaster'
 import { FwbAlert } from 'flowbite-vue'
 
+// TODO : no need to use global store for this toast
 const toatserStore = useToasterStore()
 </script>
 

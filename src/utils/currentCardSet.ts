@@ -1,5 +1,5 @@
 import { isString } from '@/utils/typePredicates'
-import * as localStorage from '@/utils/localStorage'
+import * as localStorage from '@/utils/storage'
 import { type CardSet } from '@/stores/cardSet'
 
 const defaultCardSet: CardSet = {

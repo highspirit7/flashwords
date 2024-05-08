@@ -14,7 +14,7 @@ const target: Ref<HTMLLIElement | null> = ref(null)
 const props = defineProps<{ card: Card }>()
 const emit = defineEmits<{ (e: 'finishEditing'): void }>()
 const { card } = props
-const { selectCard } = useCardSetStore()
+const { setSelectedCard } = useCardSetStore()
 
 function handleFinishEditing() {
   isEditing.value = false
@@ -22,7 +22,7 @@ function handleFinishEditing() {
 }
 
 function handleClickOpenBookIcon() {
-  selectCard(card)
+  setSelectedCard(card)
   router.push(`${route.path}/${card.term}`)
 }
 
