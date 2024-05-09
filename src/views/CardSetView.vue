@@ -5,9 +5,9 @@ import { ref, type Ref, onMounted } from 'vue'
 import { initFlowbite, Modal, Dropdown } from 'flowbite'
 import type { ModalInterface, DropdownInterface } from 'flowbite'
 
-import { type CardSet } from '@/stores/cardSet'
+import type { CardSet, Card } from '@/stores/cardSet'
 import TermCard from '@/components/TermCard.vue'
-import getCurrentCardSet from '@/utils/currentCardSet'
+import { getCurrentCardSet, getCardsOfCurrentCardSet } from '@/utils/currentCardSet'
 import { useCardSetStore } from '@/stores/cardSet'
 import TermFlashcard from '@/components/TermFlashcard.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
@@ -21,6 +21,7 @@ const toasterStore = useToasterStore()
 const flashcardStore = useFlashcardStore()
 const currentFlashCardIndex = ref(1)
 const currentCardSet: Ref<CardSet> = ref(getCurrentCardSet(route.params.id))
+const flashcards: Ref<Card[]> = ref(getCardsOfCurrentCardSet(route.params.id))
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
 const dropdown: Ref<DropdownInterface | null> = ref(null)
 
@@ -34,6 +35,12 @@ onMounted(() => {
     document.getElementById('dropdownMenuIconHorizontalButton'),
   )
 })
+
+function onFinishEditingCard() {
+  updateCardSet({ ...currentCardSet.value, updatedAt: new Date() })
+
+  flashcards.value = getCardsOfCurrentCardSet(route.params.id)
+}
 
 function toggleDeleteModal() {
   deleteExampleModal.value?.toggle()
@@ -179,7 +186,7 @@ function handleDeleteCardSet() {
         <div
           class="hidden duration-700 ease-in-out"
           data-carousel-item
-          v-for="card in currentCardSet.cards"
+          v-for="card in flashcards"
           :key="card.id"
         >
           <TermFlashcard :card="card" />
@@ -254,7 +261,7 @@ function handleDeleteCardSet() {
         v-for="card in currentCardSet.cards"
         :key="card.id"
         :card="card"
-        @finish-editing="() => updateCardSet({ ...currentCardSet, updatedAt: new Date() })"
+        @finish-editing="onFinishEditingCard"
       />
     </ul>
     <div class="flex justify-center mb-4">

@@ -1,6 +1,6 @@
 import { isString } from '@/utils/typePredicates'
 import * as localStorage from '@/utils/storage'
-import { type CardSet } from '@/stores/cardSet'
+import type { CardSet, Card } from '@/stores/cardSet'
 
 const defaultCardSet: CardSet = {
   id: '',
@@ -11,7 +11,7 @@ const defaultCardSet: CardSet = {
   updatedAt: undefined,
 }
 
-function getCardSetByIdFromLS(id: string) {
+function getCardSetByIdFromStorage(id: string): CardSet {
   return localStorage.getItem(localStorage.CARD_SETS_KEY)
     ? localStorage
         .getItem(localStorage.CARD_SETS_KEY)
@@ -19,8 +19,14 @@ function getCardSetByIdFromLS(id: string) {
     : defaultCardSet
 }
 
-function getCurrentCardSet(id: unknown) {
-  return isString(id) ? getCardSetByIdFromLS(id) : defaultCardSet
+function getCurrentCardSet(id: unknown): CardSet {
+  return isString(id) ? getCardSetByIdFromStorage(id) : defaultCardSet
 }
 
-export default getCurrentCardSet
+function getCardsOfCurrentCardSet(id: unknown): Card[] {
+  const currentCardSet = getCurrentCardSet(id)
+  console.log(currentCardSet.cards)
+  return currentCardSet.cards
+}
+
+export { getCurrentCardSet, getCardsOfCurrentCardSet }
