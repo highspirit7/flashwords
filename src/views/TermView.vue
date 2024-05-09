@@ -9,7 +9,7 @@ import { useCardSetStore, type CardSet } from '@/stores/cardSet'
 import ExampleCard from '@/components/ExampleCard.vue'
 import AddExampleModal from '@/components/AddExampleModal.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
-import getCurrentCardSet from '@/utils/currentCardSet'
+import { getCurrentCardSet } from '@/utils/currentCardSet'
 import { useToasterStore } from '@/stores/toaster'
 
 const route = useRoute()
@@ -17,6 +17,7 @@ const exampleIdToDelete = ref(0)
 const toasterStore = useToasterStore()
 const { selectedCard, deleteExampleInCard } = useCardSetStore()
 const currentCardset: Ref<CardSet> = ref(getCurrentCardSet(route.params.cardSetId))
+
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
 const addExampleModal: Ref<ModalInterface | null> = ref(null)
 
@@ -92,7 +93,7 @@ function handleDeleteExample() {
           </svg>
           <router-link
             :to="`/card-set/${currentCardset.id}`"
-            class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white"
+            class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white max-w-40 truncate"
             >{{ currentCardset.title }}</router-link
           >
         </div>
@@ -114,17 +115,20 @@ function handleDeleteExample() {
               d="m1 9 4-4-4-4"
             />
           </svg>
-          <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">{{
-            route.params.term
-          }}</span>
+          <span
+            class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400 truncate max-w-48"
+            >{{ route.params.term }}</span
+          >
         </div>
       </li>
     </ol>
     <div class="flex justify-between">
       <fwb-heading tag="h2" class="truncate">{{ selectedCard.term }}</fwb-heading>
-      <fwb-button @click="toggleAddExampleModal" class="hidden md:block"> Add example </fwb-button>
+      <fwb-button @click="toggleAddExampleModal" class="hidden md:block ml-4">
+        Add example
+      </fwb-button>
     </div>
-    <p class="text-gray-500 dark:text-gray-400 mt-2">
+    <p class="text-gray-500 dark:text-gray-400 mt-2 truncate">
       {{ selectedCard.definition }}
     </p>
     <div class="flex justify-center md:hidden mt-6">

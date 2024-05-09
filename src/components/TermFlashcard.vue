@@ -50,12 +50,15 @@ const { toggleIsFlipped, toggleIsHintShown } = useFlashcardStore()
               card.examples[Math.floor(Math.random() * card.examples.length)].sentence
             }}</span></fwb-button
           >
-          <div class="text-5xl dark:text-white" data-testid="flashcard-term">
+          <div class="text-5xl dark:text-white w-full px-16 truncate" data-testid="flashcard-term">
             {{ props.card.term }}
           </div>
         </div>
         <div class="answer flex justify-center items-center">
-          <div class="text-5xl dark:text-white" data-testid="flashcard-definition">
+          <div
+            class="text-5xl dark:text-white w-full px-16 truncate"
+            data-testid="flashcard-definition"
+          >
             {{ props.card.definition }}
           </div>
         </div>

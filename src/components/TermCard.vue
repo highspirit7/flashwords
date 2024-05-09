@@ -36,7 +36,7 @@ onClickOutside(target, () => {
       <input
         type="text"
         aria-label="term-card--term"
-        class="block py-2.5 px-0 me-4 w-2/5 text-sm text-gray-900 bg-transparent border-0 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+        class="block py-2.5 px-0 me-4 w-2/5 text-sm text-gray-900 bg-transparent border-0 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 truncate"
         :value="card.term"
         @input="
           (event: Event) => {
@@ -52,7 +52,7 @@ onClickOutside(target, () => {
       <input
         type="text"
         aria-label="term-card--definition"
-        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 truncate"
         :value="card.definition"
         @input="
           (event: Event) => {

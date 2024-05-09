@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useRouter, useRoute } from 'vue-router'
 
 import type { CardSet, Card } from '@/stores/cardSet'
-import getCurrentCardSet from '@/utils/currentCardSet'
+import { getCurrentCardSet } from '@/utils/currentCardSet'
 import { useCardSetStore } from '@/stores/cardSet'
 import { useToasterStore } from '@/stores/toaster'
 
