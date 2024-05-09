@@ -51,7 +51,7 @@ onMounted(() => {
 function onSubmit() {
   hasSubmittedOnce.value = true
 
-  if (newCardSet.value.title !== '') {
+  if (newCardSet.value.title !== '' && hasAtLeastOneFilledCard.value) {
     loading.value = true
     newCardSet.value.updatedAt = new Date()
     newCardSet.value.createdAt = new Date()
@@ -123,14 +123,14 @@ function onSubmit() {
             v-model="card.term"
             label="Term"
             class="w-full"
-            :class="{ error: hasSubmittedOnce && card.term.trim() === '' }"
+            :class="{ error: hasSubmittedOnce && card.term.trim() === '' && index < 1 }"
             data-testid="term-input"
           />
           <fwb-input
             v-model="card.definition"
             label="Definition"
             class="w-full"
-            :class="{ error: hasSubmittedOnce && card.definition.trim() === '' }"
+            :class="{ error: hasSubmittedOnce && card.definition.trim() === '' && index < 1 }"
             data-testid="definition-input"
           />
         </div>

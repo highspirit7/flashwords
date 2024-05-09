@@ -25,7 +25,7 @@ function getCurrentCardSet(id: unknown): CardSet {
 
 function getCardsOfCurrentCardSet(id: unknown): Card[] {
   const currentCardSet = getCurrentCardSet(id)
-  console.log(currentCardSet.cards)
+
   return currentCardSet.cards
 }
 

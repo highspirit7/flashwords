@@ -28,7 +28,7 @@ const hasAtLeastOneFilledCard = computed(() => {
 function onEditingDone() {
   hasSubmittedOnce.value = true
 
-  if (currentCardSet.value.title !== '') {
+  if (currentCardSet.value.title !== '' && hasAtLeastOneFilledCard.value) {
     loading.value = true
 
     try {
@@ -112,7 +112,7 @@ function handleClickTrashBinIcon(cardId: string) {
 
     <div
       class="bg-white text-lg font-semibold text-red-500 rounded-lg mb-4 border-red-500 border-2 p-3 w-full flex justify-center"
-      v-if="!hasAtLeastOneFilledCard"
+      v-if="!hasAtLeastOneFilledCard && hasSubmittedOnce"
     >
       <span>You must have at least 1 card with a term and a definition!</span>
     </div>
@@ -131,6 +131,7 @@ function handleClickTrashBinIcon(cardId: string) {
             data-modal-target="delete-example-modal"
             data-modal-toggle="delete-example-modal"
             @click="() => handleClickTrashBinIcon(card.id)"
+            v-if="index > 0"
           >
             <svg
               class="w-[18px] h-[18px] text-gray-800 dark:text-white"
@@ -156,14 +157,14 @@ function handleClickTrashBinIcon(cardId: string) {
             v-model="card.term"
             label="Term"
             class="w-full"
-            :class="{ error: hasSubmittedOnce && card.term.trim() === '' }"
+            :class="{ error: hasSubmittedOnce && card.term.trim() === '' && index < 1 }"
             data-testid="term-input--edit"
           />
           <fwb-input
             v-model="card.definition"
             label="Definition"
             class="w-full"
-            :class="{ error: hasSubmittedOnce && card.definition.trim() === '' }"
+            :class="{ error: hasSubmittedOnce && card.definition.trim() === '' && index < 1 }"
             data-testid="definition-input--edit"
           />
         </div>
