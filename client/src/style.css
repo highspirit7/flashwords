@@ -1,4 +1,4 @@
-@import url('/node_modules/flowbite-vue/dist/index.css');
+@import url('../../node_modules/flowbite-vue/dist/index.css');
 
 @tailwind base;
 @tailwind components;
