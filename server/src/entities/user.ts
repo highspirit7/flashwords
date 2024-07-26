@@ -35,7 +35,7 @@ export const userKeysPublic = [
 ] as const
 
 export type UserPublic = Pick<Selectable<User>, (typeof userKeysPublic)[number]>
-export type CreatableUser = Pick<User, 'email' | 'username' | 'password'>
+
 // a specific schema for authenticated user that is used in JWT
 export const authUserSchema = userSchema.pick({ id: true })
 export type AuthUser = z.infer<typeof authUserSchema>

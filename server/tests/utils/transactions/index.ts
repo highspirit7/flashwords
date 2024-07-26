@@ -36,6 +36,7 @@ export async function wrapInRollbacks<T = any, K extends Kysely<T> = any>(
   // Swap out the database instance with the transaction instance.
   dbProxy[symbolSetInstance](transaction.trx)
 
+  // * If beforeEach is also executed in a test file, this beforeEach is executed later than the one in a test file.
   beforeEach(async () => {
     const preTestState = createSavePoint(dbProxy)
 
