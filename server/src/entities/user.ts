@@ -5,28 +5,37 @@ import { idSchema } from './shared'
 
 export const userSchema = z.object({
   id: idSchema,
-
-  // Trim and lowercase all emails so there are no issues
-  // due to users mistyping their emails as "Email@example.com "
-  // either during signup or login.
   email: z.string().trim().toLowerCase().email(),
-
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters long')
-    .max(64, 'Password must be at most 64 characters long'),
-
-  firstName: z.string().min(1).max(500),
-  lastName: z.string().min(1).max(500),
+    .max(64, 'Password must be at most 64 characters long')
+    .regex(/[A-Z]/, {
+      message: 'Password must include at least one uppercase letter',
+    })
+    .regex(/[a-z]/, {
+      message: 'Password must include at least one lowercase letter',
+    })
+    .regex(/[0-9]/, { message: 'Password must include at least one number' }),
+  username: z.string().min(4).max(24),
+  refreshToken: z.string().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 })
 
 // list keys that we will return to the client
 export const userKeysAll = Object.keys(userSchema.shape) as (keyof User)[]
 
-export const userKeysPublic = ['id', 'firstName', 'lastName'] as const
+export const userKeysPublic = [
+  'id',
+  'username',
+  'email',
+  'createdAt',
+  'updatedAt',
+] as const
 
 export type UserPublic = Pick<Selectable<User>, (typeof userKeysPublic)[number]>
-
+export type CreatableUser = Pick<User, 'email' | 'username' | 'password'>
 // a specific schema for authenticated user that is used in JWT
 export const authUserSchema = userSchema.pick({ id: true })
 export type AuthUser = z.infer<typeof authUserSchema>
