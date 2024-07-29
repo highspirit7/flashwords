@@ -6,23 +6,33 @@ import {
   userKeysPublic,
 } from '@server/entities/user'
 import type { Selectable } from 'kysely'
-import type { CreatableUser } from '../entities/user'
 
 export function userRepository(db: Database) {
   return {
-    async create(user: CreatableUser): Promise<UserPublic> {
+    async create(
+      user: Pick<User, 'username' | 'email' | 'password'>
+    ): Promise<UserPublic> {
       return db
         .insertInto('user')
         .values(user)
         .returning(userKeysPublic)
         .executeTakeFirstOrThrow()
     },
-
     async findByEmail(email: string): Promise<Selectable<User> | undefined> {
       const foundUser = await db
         .selectFrom('user')
         .select(userKeysAll)
         .where('email', '=', email)
+        .executeTakeFirst()
+      return foundUser
+    },
+    async findByRefreshToken(
+      refreshToken: string
+    ): Promise<Selectable<User> | undefined> {
+      const foundUser = await db
+        .selectFrom('user')
+        .select(userKeysAll)
+        .where('refreshToken', '=', refreshToken)
         .executeTakeFirst()
       return foundUser
     },

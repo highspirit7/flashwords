@@ -22,9 +22,9 @@ const schema = z
     auth: z.object({
       accessTokenSecret: z.string(),
       // TODO : For development, set very short time for now, but need to be replaced later
-      accessTokenExpiresIn: z.string().default('15m'),
+      accessTokenExpiresIn: z.string().default('10m'),
       refreshTokenSecret: z.string(),
-      refreshTokenExpiresIn: z.string().default('1d'),
+      refreshTokenExpiresIn: z.string().default(isDevTest ? '1s' : '1d'),
       passwordCost: z.coerce.number().default(isDevTest ? 6 : 12),
     }),
 

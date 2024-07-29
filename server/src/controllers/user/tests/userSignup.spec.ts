@@ -51,6 +51,47 @@ it('should require a password with at least 8 characters', async () => {
   ).rejects.toThrow(/password/i) // throws out some error complaining about "password"
 })
 
+it('should require a password with at most 64 characters', async () => {
+  await expect(
+    signup(
+      fakeUser({
+        password:
+          'passWORD.123passWORD.123passWORD.123passWORD.123passWORD.123passWORD.123passWORD.123passWORD.123passWORD.123passWORD.123',
+      })
+    )
+  ).rejects.toThrow(/password/i) // throws out some error complaining about "password"
+})
+
+it('should require a password with at least 1 digit', async () => {
+  await expect(
+    signup(
+      fakeUser({
+        password: 'passWORD',
+      })
+    )
+  ).rejects.toThrow(/password/i)
+})
+
+it('should require a password with at least 1 uppercase letter', async () => {
+  await expect(
+    signup(
+      fakeUser({
+        password: 'password123',
+      })
+    )
+  ).rejects.toThrow(/password/i)
+})
+
+it('should require a password with at least 1 lowercase letter', async () => {
+  await expect(
+    signup(
+      fakeUser({
+        password: 'PASSWORD123',
+      })
+    )
+  ).rejects.toThrow(/password/i)
+})
+
 it('throws an error for invalid email', async () => {
   await expect(
     signup(

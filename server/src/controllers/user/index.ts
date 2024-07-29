@@ -1,10 +1,11 @@
 import { router } from '@server/trpc'
 import login from './login'
 import signup from './signup'
+import verify from './verify'
 
 export default router({
   login,
-
+  verify,
   // We could name it create, signup, createUser, signupUser...
   // This time we have chosen to name it signup. Then, this name
   // suggests that this is public user signup procedure, in contrast

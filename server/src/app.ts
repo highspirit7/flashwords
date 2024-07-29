@@ -4,6 +4,7 @@ import {
   type CreateExpressContextOptions,
 } from '@trpc/server/adapters/express'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import { renderTrpcPanel } from 'trpc-panel'
 import type { Database } from './database'
 import { appRouter } from './controllers'
@@ -15,7 +16,7 @@ export default function createApp(db: Database) {
 
   app.use(cors())
   app.use(express.json())
-
+  app.use(cookieParser())
   // Endpoint for health checks - pinging the server to see if it's alive.
   // This can be used by tests, load balancers, monitoring tools, etc.
   app.use('/api/health', (_, res) => {
