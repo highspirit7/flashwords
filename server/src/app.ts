@@ -9,12 +9,12 @@ import { renderTrpcPanel } from 'trpc-panel'
 import type { Database } from './database'
 import { appRouter } from './controllers'
 import type { Context } from './trpc'
-import config from './config'
+import config, { corsOptions } from './config'
 
 export default function createApp(db: Database) {
   const app = express()
 
-  app.use(cors())
+  app.use(cors(corsOptions))
   app.use(express.json())
   app.use(cookieParser())
   // Endpoint for health checks - pinging the server to see if it's alive.

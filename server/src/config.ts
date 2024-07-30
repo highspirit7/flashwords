@@ -1,3 +1,4 @@
+import type { CorsOptions } from 'cors'
 import 'dotenv/config'
 import { z } from 'zod'
 
@@ -53,6 +54,19 @@ const config = schema.parse({
 })
 
 export default config
+
+const allowedOrigins = ['http://localhost:5173']
+
+export const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.indexOf(origin as string) !== -1 || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true,
+}
 
 // utility functions
 function coerceBoolean(value: unknown) {
