@@ -15,16 +15,19 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@trpc/client": "^10.45.2",
     "@types/uuid": "^9.0.8",
     "@vueuse/core": "^10.9.0",
     "flowbite": "^2.3.0",
     "flowbite-vue": "^0.1.3",
     "pinia": "^2.1.7",
+    "superjson": "^2.2.1",
     "uuid": "^9.0.1",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
+    "@flashwords/server": "^1.0.0",
     "@playwright/test": "^1.43.1",
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",

@@ -1,17 +1,20 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
-  "exclude": ["src/**/__tests__/*"],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "../server/src/shared/**/*"],
+  "exclude": ["src/**/tests/*", "node_modules"],
   "compilerOptions": {
+    "rootDir": "..",
     "baseUrl": ".",
     "composite": true,
     "strict": true,
+    "preserveSymlinks": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@server/*": ["../server/src/*"]
     }
   }
 }

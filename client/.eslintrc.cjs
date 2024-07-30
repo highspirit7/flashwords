@@ -1,7 +1,7 @@
 /* eslint-env node */
 require('@rushstack/eslint-patch/modern-module-resolution')
 
-const path = require('node:path')
+const nodePath = require('node:path')
 
 module.exports = {
   root: true,
@@ -20,11 +20,35 @@ module.exports = {
   ],
   parserOptions: {
     ecmaVersion: 'latest',
+    tsconfigRootDir: __dirname,
   },
   rules: {
+    'vue/multi-word-component-names': 'off',
+    'import/no-relative-parent-imports': 'off',
     'import/no-extraneous-dependencies': 'off',
     'import/extensions': 'off',
     'no-console': 0,
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            // using gitignore syntax
+            group: [
+              'app',
+              'config',
+              'database',
+              'entities',
+              'modules',
+              'repositories',
+              'trpc',
+              'utils',
+            ].flatMap(path => [`@server/${path}`, `@flashwords/server/src/${path}`]),
+            message: 'Please only import from @server/shared or @flashwords/server/src/shared.',
+          },
+        ],
+      },
+    ],
   },
   settings: {
     // to make our custom @ alias resolvable by ESLint import rules
@@ -32,7 +56,7 @@ module.exports = {
       [require.resolve('eslint-import-resolver-node')]: {},
       [require.resolve('eslint-import-resolver-custom-alias')]: {
         alias: {
-          '@': `${path.resolve(__dirname, './src')}`,
+          '@': `${nodePath.resolve(__dirname, './src')}`,
         },
         extensions: ['.mjs', '.js', '.jsx', '.json', '.node', '.ts', '.tsx'],
       },
