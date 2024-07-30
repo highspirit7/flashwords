@@ -5,6 +5,10 @@ import { ref, type Ref } from 'vue'
 
 import plusPng from '@/assets/plus.png'
 import * as localStorage from '@/utils/storage'
+import useAuthStore from '@/stores/auth'
+
+const authStore = useAuthStore()
+const { isLoggedIn } = authStore
 
 const theme: Ref<string> = ref(localStorage.getItem('color-theme') ?? 'light')
 
@@ -28,7 +32,9 @@ function handleClickTheme() {
       </router-link>
 
       <div id="navbar-default">
-        <ul class="font-medium rounded-lg bg-white dark:bg-gray-900 dark:border-gray-700 flex">
+        <ul
+          class="font-medium rounded-lg bg-white dark:bg-gray-900 dark:border-gray-700 flex items-center"
+        >
           <li class="mx-2">
             <button
               type="button"
@@ -69,6 +75,26 @@ function handleClickTheme() {
               </fwb-button>
             </router-link>
           </li>
+          <!-- TODO : isLoggedIn => logout button or login & signup button  -->
+          <div v-if="!isLoggedIn" class="flex px-4 gap-2">
+            <li>
+              <router-link to="login">
+                <fwb-button color="alternative">Log in</fwb-button>
+              </router-link>
+            </li>
+            <li>
+              <router-link to="login">
+                <fwb-button gradient="cyan-blue">Sign up</fwb-button>
+              </router-link>
+            </li>
+          </div>
+          <div v-else>
+            <li class="ml-4">
+              <router-link to="login">
+                <fwb-button gradient="purple-blue">Log out</fwb-button>
+              </router-link>
+            </li>
+          </div>
         </ul>
       </div>
     </div>
