@@ -2,6 +2,7 @@ import { router } from '@server/trpc'
 import login from './login'
 import signup from './signup'
 import verify from './verify'
+import logout from './logout'
 
 export default router({
   login,
@@ -12,4 +13,5 @@ export default router({
   // to a possible direct user creation, which might be available
   // some time in the future for administators.
   signup,
+  logout,
 })
