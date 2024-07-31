@@ -75,7 +75,6 @@ function handleClickTheme() {
               </fwb-button>
             </router-link>
           </li>
-          <!-- TODO : isLoggedIn => logout button or login & signup button  -->
           <div v-if="!isLoggedIn" class="flex px-4 gap-2">
             <li>
               <router-link to="login">
