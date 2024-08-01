@@ -8,10 +8,13 @@ module.exports = {
   extends: [
     'plugin:vue/vue3-essential',
     'eslint:recommended',
-    '@vue/eslint-config-airbnb',
-    '@vue/eslint-config-typescript',
+    'plugin:@typescript-eslint/recommended',
+    // '@vue/eslint-config-airbnb',
+    // '@vue/eslint-config-typescript',
     '@vue/eslint-config-prettier/skip-formatting',
   ],
+  plugins: ['@typescript-eslint/parser', 'vitest'],
+  parser: '@typescript-eslint/parser',
   overrides: [
     {
       files: ['e2e/**/*.{test,spec}.{js,ts,jsx,tsx}'],
