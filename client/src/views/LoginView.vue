@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 import useAuthStore from '@/stores/auth'
 import { useToasterStore } from '@/stores/toaster'
 import { TRPCClientError } from '@trpc/client'
+import { DEFAULT_SERVER_ERROR } from '@/consts'
 
 const { login } = useAuthStore()
 const router = useRouter()
@@ -15,28 +16,35 @@ const loginForm: Ref<{ email: string; password: string }> = ref({
   password: '',
 })
 const toasterStore = useToasterStore()
+const errorMessage = ref('')
+
+function checkIfFormIsBlank() {
+  if (loginForm.value.password === '') {
+    errorMessage.value = 'Password cannot be left blank.'
+  }
+
+  if (loginForm.value.email === '') {
+    errorMessage.value = 'Email cannot be left blank.'
+  }
+}
 
 async function onClickLogin() {
+  errorMessage.value = ''
+  checkIfFormIsBlank()
+
+  if (errorMessage.value) return
+
   try {
     await login(loginForm.value)
     toasterStore.success({ text: 'Successfully logged in!', timeout: 2000 })
+    router.push('/')
   } catch (error: unknown) {
-    let errorMessage = ''
-
     if (error instanceof TRPCClientError) {
-      if (error.data.code === 'UNAUTHORIZED') {
-        errorMessage = error.message
-      } else {
-        errorMessage = JSON.parse(error.message)[0].message
-      }
-
-      toasterStore.danger({ text: errorMessage, timeout: 5000 })
+      if (error.data.httpStatus === 500) errorMessage.value = DEFAULT_SERVER_ERROR
     }
 
-    throw error
+    errorMessage.value = 'Your login details are not correct. Please try again.'
   }
-
-  router.push('/')
 }
 </script>
 <template>
@@ -61,6 +69,14 @@ async function onClickLogin() {
           class="mb-2"
         />
       </div>
+
+      <div
+        v-show="errorMessage !== ''"
+        class="my-4 w-full font-semibold p-4 border-2 rounded-md border-red-500 text-red-500"
+      >
+        {{ errorMessage }}
+      </div>
+
       <div class="flex justify-center items-center">
         <fwb-button size="lg" gradient="blue">Log in</fwb-button>
       </div>
