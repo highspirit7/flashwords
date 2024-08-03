@@ -1,1 +1,1 @@
-export const DEFAULT_SERVER_ERROR = 'Something went wrong.'
+export const DEFAULT_SERVER_ERROR = 'Something went wrong. Please try again.'

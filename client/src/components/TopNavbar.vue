@@ -82,16 +82,14 @@ function handleClickTheme() {
               </router-link>
             </li>
             <li>
-              <router-link to="login">
+              <router-link to="signup">
                 <fwb-button gradient="cyan-blue">Sign up</fwb-button>
               </router-link>
             </li>
           </div>
           <div v-else>
             <li class="ml-4">
-              <router-link to="login">
-                <fwb-button gradient="purple-blue">Log out</fwb-button>
-              </router-link>
+              <fwb-button gradient="purple-blue">Log out</fwb-button>
             </li>
           </div>
         </ul>

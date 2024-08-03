@@ -16,6 +16,11 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue'),
     },
     {
+      path: '/signup',
+      name: 'signup',
+      component: () => import('../views/SignupView.vue'),
+    },
+    {
       path: '/create-card-set',
       name: 'createCardSet',
       component: () => import('../views/CreateCardSetView.vue'),
@@ -45,7 +50,7 @@ router.beforeEach(to => {
   const authStore = useAuthStore()
   const { isLoggedIn } = authStore
 
-  if (!isLoggedIn && to.name !== 'login') {
+  if (!isLoggedIn && to.name !== 'login' && to.name !== 'signup') {
     return { name: 'login' }
   }
 
