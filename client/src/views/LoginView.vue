@@ -41,9 +41,11 @@ async function onClickLogin() {
     router.replace('/')
   } catch (error: unknown) {
     if (error instanceof TRPCClientError) {
-      if (error.data?.httpStatus === 401)
+      if (error.data?.httpStatus === 500) {
+        errorMessage.value = DEFAULT_SERVER_ERROR
+      } else {
         errorMessage.value = 'Your login details are not correct. Please try again.'
-      else errorMessage.value = DEFAULT_SERVER_ERROR
+      }
     } else {
       assertError(error)
       errorMessage.value = error.message
