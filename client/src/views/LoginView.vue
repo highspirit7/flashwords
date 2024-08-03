@@ -7,6 +7,7 @@ import useAuthStore from '@/stores/auth'
 import { useToasterStore } from '@/stores/toaster'
 import { TRPCClientError } from '@trpc/client'
 import { DEFAULT_SERVER_ERROR } from '@/consts'
+import { assertError } from '@/utils/errors'
 
 const { login } = useAuthStore()
 const router = useRouter()
@@ -37,13 +38,16 @@ async function onClickLogin() {
   try {
     await login(loginForm.value)
     toasterStore.success({ text: 'Successfully logged in!', timeout: 2000 })
-    router.push('/')
+    router.replace('/')
   } catch (error: unknown) {
     if (error instanceof TRPCClientError) {
-      if (error.data.httpStatus === 500) errorMessage.value = DEFAULT_SERVER_ERROR
+      if (error.data?.httpStatus === 401)
+        errorMessage.value = 'Your login details are not correct. Please try again.'
+      else errorMessage.value = DEFAULT_SERVER_ERROR
+    } else {
+      assertError(error)
+      errorMessage.value = error.message
     }
-
-    errorMessage.value = 'Your login details are not correct. Please try again.'
   }
 }
 </script>
