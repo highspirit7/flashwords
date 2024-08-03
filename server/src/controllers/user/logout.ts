@@ -32,6 +32,4 @@ export default publicProcedure
       sameSite: 'none',
       secure: true,
     })
-
-    return null
   })

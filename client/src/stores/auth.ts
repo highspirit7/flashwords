@@ -15,8 +15,8 @@ const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout() {
-    const response = await trpc.user.logout.mutate()
-    return response
+    await trpc.user.logout.mutate()
+    authToken.value = null
   }
 
   return { authToken, authUserId, isLoggedIn, login, logout }
