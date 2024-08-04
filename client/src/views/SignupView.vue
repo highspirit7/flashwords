@@ -4,7 +4,7 @@ import { ref, watch } from 'vue'
 import { z } from 'zod'
 import type { Ref } from 'vue'
 import { useRouter } from 'vue-router'
-import trpc from '@/trpc'
+import { publicTrpc } from '@/trpc'
 import { useToasterStore } from '@/stores/toaster'
 import { assertError } from '@/utils/errors'
 import { TRPCClientError } from '@trpc/client'
@@ -71,7 +71,7 @@ watch(
 
 async function onClickSignup() {
   try {
-    await trpc.user.signup.mutate(signupForm.value)
+    await publicTrpc.user.signup.mutate(signupForm.value)
     toasterStore.success({ text: 'Successfully signed up!', timeout: 2000 })
     router.replace('/login')
   } catch (error: unknown) {
