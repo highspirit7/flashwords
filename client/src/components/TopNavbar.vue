@@ -82,7 +82,7 @@ async function onClickLogout() {
               <span class="sr-only">Toggle dark mode</span>
             </button>
           </li>
-          <li>
+          <li v-if="authStore.isLoggedIn">
             <router-link to="/create-card-set">
               <fwb-button color="default" pill square>
                 <img :src="plusPng" alt="" />
