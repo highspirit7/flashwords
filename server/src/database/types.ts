@@ -7,6 +7,32 @@ export type Generated<T> =
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>
 
+export interface Card {
+  cardsetId: number
+  createdAt: Generated<Timestamp>
+  definition: string
+  id: Generated<number>
+  term: string
+  updatedAt: Generated<Timestamp>
+}
+
+export interface Cardset {
+  createdAt: Generated<Timestamp>
+  description: string | null
+  id: Generated<number>
+  title: string
+  updatedAt: Generated<Timestamp>
+  userId: number
+}
+
+export interface Teachers {
+  firstName: string | null
+  gradeLevel: number | null
+  id: number
+  lastName: string | null
+  subject: string | null
+}
+
 export interface User {
   createdAt: Generated<Timestamp>
   email: string
@@ -18,5 +44,8 @@ export interface User {
 }
 
 export interface DB {
+  card: Card
+  cardset: Cardset
+  teachers: Teachers
   user: User
 }
