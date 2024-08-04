@@ -2,13 +2,20 @@
 import { FwbButton } from 'flowbite-vue'
 import { RouterLink } from 'vue-router'
 import { ref, type Ref } from 'vue'
-
+import { useRouter } from 'vue-router'
 import plusPng from '@/assets/plus.png'
 import * as localStorage from '@/utils/storage'
+import useAuthStore from '@/stores/auth'
+import { assertError } from '@/utils/errors'
+import { useToasterStore } from '@/stores/toaster'
+import { DEFAULT_SERVER_ERROR } from '@/consts'
 
+const authStore = useAuthStore()
+const router = useRouter()
+const toaster = useToasterStore()
 const theme: Ref<string> = ref(localStorage.getItem('color-theme') ?? 'light')
 
-function handleClickTheme() {
+function onClickTheme() {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
   localStorage.setItem('color-theme', theme.value)
 
@@ -16,6 +23,17 @@ function handleClickTheme() {
     document.documentElement.classList.add('dark')
   } else {
     document.documentElement.classList.remove('dark')
+  }
+}
+
+async function onClickLogout() {
+  try {
+    await authStore.logout()
+    toaster.success({ text: 'Successfully logged out.' })
+    router.replace('/login')
+  } catch (error) {
+    assertError(error)
+    toaster.danger({ text: DEFAULT_SERVER_ERROR })
   }
 }
 </script>
@@ -28,11 +46,13 @@ function handleClickTheme() {
       </router-link>
 
       <div id="navbar-default">
-        <ul class="font-medium rounded-lg bg-white dark:bg-gray-900 dark:border-gray-700 flex">
+        <ul
+          class="font-medium rounded-lg bg-white dark:bg-gray-900 dark:border-gray-700 flex items-center"
+        >
           <li class="mx-2">
             <button
               type="button"
-              @click="handleClickTheme"
+              @click="onClickTheme"
               class="text-gray-500 inline-flex items-center justify-center dark:text-gray-400 hover:bg-gray-100 w-10 h-10 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
             >
               <svg
@@ -62,13 +82,30 @@ function handleClickTheme() {
               <span class="sr-only">Toggle dark mode</span>
             </button>
           </li>
-          <li>
+          <li v-if="authStore.isLoggedIn">
             <router-link to="/create-card-set">
               <fwb-button color="default" pill square>
                 <img :src="plusPng" alt="" />
               </fwb-button>
             </router-link>
           </li>
+          <div v-if="!authStore.isLoggedIn" class="flex px-4 gap-2">
+            <li>
+              <router-link to="login">
+                <fwb-button color="alternative">Log in</fwb-button>
+              </router-link>
+            </li>
+            <li>
+              <router-link to="signup">
+                <fwb-button gradient="cyan-blue">Sign up</fwb-button>
+              </router-link>
+            </li>
+          </div>
+          <div v-else>
+            <li class="ml-4">
+              <fwb-button gradient="purple-blue" @click="onClickLogout">Log out</fwb-button>
+            </li>
+          </div>
         </ul>
       </div>
     </div>

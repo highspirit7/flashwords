@@ -7,32 +7,16 @@ export type Generated<T> =
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>
 
-export interface Article {
-  content: string
-  id: Generated<number>
-  title: string
-  userId: number
-}
-
-export interface Comment {
-  articleId: number
-  content: string
-  createdAt: Generated<Timestamp>
-  id: Generated<number>
-  isSpam: Generated<boolean>
-  userId: number
-}
-
 export interface User {
+  createdAt: Generated<Timestamp>
   email: string
-  firstName: string
   id: Generated<number>
-  lastName: string
   password: string
+  refreshToken: string | null
+  updatedAt: Generated<Timestamp>
+  username: string
 }
 
 export interface DB {
-  article: Article
-  comment: Comment
   user: User
 }

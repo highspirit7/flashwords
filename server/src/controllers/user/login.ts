@@ -8,7 +8,12 @@ import provideRepos from '@server/trpc/provideRepos'
 import { userRepository } from '@server/repositories/userRepository'
 import { prepareTokenPayload } from '@server/trpc/tokenPayload'
 
-const { expiresIn, tokenKey } = config.auth
+const {
+  accessTokenExpiresIn,
+  accessTokenSecret,
+  refreshTokenExpiresIn,
+  refreshTokenSecret,
+} = config.auth
 
 export default publicProcedure
   .use(
@@ -22,7 +27,7 @@ export default publicProcedure
       password: true,
     })
   )
-  .mutation(async ({ input: { email, password }, ctx: { repos } }) => {
+  .mutation(async ({ input: { email, password }, ctx: { repos, res } }) => {
     const user = await repos.userRepository.findByEmail(email)
 
     if (!user) {
@@ -41,11 +46,25 @@ export default publicProcedure
       })
     }
 
-    // What we will include in the token.
-    const payload = prepareTokenPayload(user)
+    const payload = prepareTokenPayload({
+      id: user.id,
+    })
 
-    const accessToken = jsonwebtoken.sign(payload, tokenKey, {
-      expiresIn,
+    const accessToken = jsonwebtoken.sign(payload, accessTokenSecret, {
+      expiresIn: accessTokenExpiresIn,
+    })
+
+    const refreshToken = jsonwebtoken.sign(payload, refreshTokenSecret, {
+      expiresIn: refreshTokenExpiresIn,
+    })
+
+    await repos.userRepository.updateRefreshToken(refreshToken, user.id)
+
+    res?.cookie('jwt_refresh', refreshToken, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
     })
 
     return {

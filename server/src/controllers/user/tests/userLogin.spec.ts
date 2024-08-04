@@ -1,3 +1,5 @@
+import { hash } from 'bcrypt'
+import config from '@server/config'
 import { createCallerFactory } from '@server/trpc'
 import { wrapInRollbacks } from '@tests/utils/transactions'
 import { createTestDatabase } from '@tests/utils/database'
@@ -7,12 +9,16 @@ import userRouter from '..'
 
 const createCaller = createCallerFactory(userRouter)
 const db = await wrapInRollbacks(createTestDatabase())
-const PASSWORD_CORRECT = 'password.123'
+const PASSWORD_CORRECT = 'passworD.123'
+const hashedCorrectPassword = await hash(
+  PASSWORD_CORRECT,
+  config.auth.passwordCost
+)
 
 const [userSeed] = await insertAll(db, 'user', [
   fakeUser({
     email: 'existing@user.com',
-    password: '$2b$10$sD53fzWIQBjXWfSDzuwmMOyY1ZAygLpRZlLxxPhcNG5r9BFWrNaDC',
+    password: hashedCorrectPassword,
   }),
 ])
 

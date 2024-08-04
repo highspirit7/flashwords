@@ -1,18 +1,18 @@
 import config from '@server/config'
-import jsonwebtoken from 'jsonwebtoken'
 import { TRPCError } from '@trpc/server'
+import jsonwebtoken from 'jsonwebtoken'
 import { parseTokenPayload } from '@server/trpc/tokenPayload'
 import { publicProcedure } from '..'
 
-const { tokenKey } = config.auth
+const { accessTokenSecret } = config.auth
 
-function verify(token: string) {
-  return jsonwebtoken.verify(token, tokenKey)
+function verifyAccessToken(token: string) {
+  return jsonwebtoken.verify(token, accessTokenSecret)
 }
 
-function getUserFromToken(token: string) {
+function getUserFromToken(accessToken: string) {
   try {
-    const tokenVerified = verify(token)
+    const tokenVerified = verifyAccessToken(accessToken)
     const tokenParsed = parseTokenPayload(tokenVerified)
 
     return tokenParsed.user
@@ -50,22 +50,22 @@ export const authenticatedProcedure = publicProcedure.use(({ ctx, next }) => {
   }
 
   // if we do not have an authenticated user, we will try to authenticate
-  const token = ctx.req.header('Authorization')?.replace('Bearer ', '')
+  const accessToken = ctx.req.header('Authorization')?.replace('Bearer ', '')
 
   // if there is no token, we will throw an error
-  if (!token) {
+  if (!accessToken) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'Unauthenticated. Please log in.',
     })
   }
 
-  const authUser = getUserFromToken(token)
+  const authUser = getUserFromToken(accessToken)
 
   if (!authUser) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
-      message: 'Invalid token.',
+      message: 'Invalid access token.',
     })
   }
 

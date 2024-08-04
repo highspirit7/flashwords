@@ -1,3 +1,4 @@
+import type { CorsOptions } from 'cors'
 import 'dotenv/config'
 import { z } from 'zod'
 
@@ -20,14 +21,10 @@ const schema = z
     port: z.coerce.number().default(3000),
 
     auth: z.object({
-      tokenKey: z.string().default(() => {
-        if (isDevTest) {
-          return 'supersecretkey'
-        }
-
-        throw new Error('You must provide a TOKEN_KEY in a production env!')
-      }),
-      expiresIn: z.string().default('7d'),
+      accessTokenSecret: z.string(),
+      accessTokenExpiresIn: z.string().default(isDevTest ? '1m' : '10m'),
+      refreshTokenSecret: z.string(),
+      refreshTokenExpiresIn: z.string().default(isDevTest ? '10m' : '1d'),
       passwordCost: z.coerce.number().default(isDevTest ? 6 : 12),
     }),
 
@@ -43,8 +40,10 @@ const config = schema.parse({
   isCi: env.CI,
 
   auth: {
-    tokenKey: env.TOKEN_KEY,
-    expiresIn: env.TOKEN_EXPIRES_IN,
+    accessTokenSecret: env.ACCESS_TOKEN_SECRET,
+    refreshTokenSecret: env.REFRESH_TOKEN_SECRET,
+    accessTokenExpiresIn: env.ACCESS_TOKEN_EXPIRES_IN,
+    refreshTokenExpiresIn: env.REFRESH_TOKEN_EXPIRES_IN,
     passwordCost: env.PASSWORD_COST,
   },
 
@@ -54,6 +53,19 @@ const config = schema.parse({
 })
 
 export default config
+
+const allowedOrigins = ['http://localhost:5173']
+
+export const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.indexOf(origin as string) !== -1 || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true,
+}
 
 // utility functions
 function coerceBoolean(value: unknown) {

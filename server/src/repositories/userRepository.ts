@@ -5,26 +5,43 @@ import {
   userKeysAll,
   userKeysPublic,
 } from '@server/entities/user'
-import type { Insertable, Selectable } from 'kysely'
+import type { Selectable } from 'kysely'
 
 export function userRepository(db: Database) {
   return {
-    async create(user: Insertable<User>): Promise<UserPublic> {
+    async create(
+      user: Pick<User, 'username' | 'email' | 'password'>
+    ): Promise<UserPublic> {
       return db
         .insertInto('user')
         .values(user)
         .returning(userKeysPublic)
         .executeTakeFirstOrThrow()
     },
-
     async findByEmail(email: string): Promise<Selectable<User> | undefined> {
-      const user = await db
+      const foundUser = await db
         .selectFrom('user')
         .select(userKeysAll)
         .where('email', '=', email)
         .executeTakeFirst()
-
-      return user
+      return foundUser
+    },
+    async findByRefreshToken(
+      refreshToken: string
+    ): Promise<Selectable<User> | undefined> {
+      const foundUser = await db
+        .selectFrom('user')
+        .select(userKeysAll)
+        .where('refreshToken', '=', refreshToken)
+        .executeTakeFirst()
+      return foundUser
+    },
+    async updateRefreshToken(refreshToken: string | null, id: number) {
+      await db
+        .updateTable('user')
+        .set({ refreshToken })
+        .where('id', '=', id)
+        .executeTakeFirstOrThrow()
     },
   }
 }
