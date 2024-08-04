@@ -51,7 +51,6 @@ export const authenticatedProcedure = publicProcedure.use(({ ctx, next }) => {
 
   // if we do not have an authenticated user, we will try to authenticate
   const accessToken = ctx.req.header('Authorization')?.replace('Bearer ', '')
-  //   const refreshToken = ctx.req.cookies.jwt_refresh
 
   // if there is no token, we will throw an error
   if (!accessToken) {

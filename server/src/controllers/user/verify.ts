@@ -19,6 +19,7 @@ export default publicProcedure
   )
   .mutation(async ({ ctx: { repos, req } }) => {
     const cookies = req?.cookies
+
     if (!cookies?.jwt_refresh) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
