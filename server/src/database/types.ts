@@ -25,14 +25,6 @@ export interface Cardset {
   userId: number
 }
 
-export interface Teachers {
-  firstName: string | null
-  gradeLevel: number | null
-  id: number
-  lastName: string | null
-  subject: string | null
-}
-
 export interface User {
   createdAt: Generated<Timestamp>
   email: string
@@ -46,6 +38,5 @@ export interface User {
 export interface DB {
   card: Card
   cardset: Cardset
-  teachers: Teachers
   user: User
 }
