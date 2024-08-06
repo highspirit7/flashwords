@@ -18,7 +18,7 @@ export const cardsetKeysAll = Object.keys(
 
 export const cardsetKeysPublic = cardsetKeysAll
 
-export type CommentPublic = Pick<
+export type CardsetPublic = Pick<
   Selectable<Cardset>,
   (typeof cardsetKeysPublic)[number]
 >
