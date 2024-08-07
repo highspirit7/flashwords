@@ -1,10 +1,8 @@
 import { router } from '@server/trpc'
 import create from './create'
-import findAll from './findAll'
-import get from './get'
+import findAllByUserId from './findAllByUserId'
 
 export default router({
   create,
-  findAll,
-  get,
+  findAllByUserId,
 })

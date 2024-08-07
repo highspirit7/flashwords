@@ -1,11 +1,11 @@
 import { router } from '../trpc'
-import article from './article'
-import comment from './comment'
+import cardset from './cardset'
+import card from './card'
 import user from './user'
 
 export const appRouter = router({
-  article,
-  comment,
+  cardset,
+  card,
   user,
 })
 

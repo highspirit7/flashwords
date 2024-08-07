@@ -4,9 +4,9 @@ import { createTestDatabase } from '@tests/utils/database'
 import { createCallerFactory } from '@server/trpc'
 import { wrapInRollbacks } from '@tests/utils/transactions'
 import { insertAll, selectAll } from '@tests/utils/records'
-import articleRouter from '..'
+import cardsetRouter from '..'
 
-const createCaller = createCallerFactory(articleRouter)
+const createCaller = createCallerFactory(cardsetRouter)
 const db = await wrapInRollbacks(createTestDatabase())
 
 it('should throw an error if user is not authenticated', async () => {
@@ -16,34 +16,33 @@ it('should throw an error if user is not authenticated', async () => {
   // ACT & ASSERT
   await expect(
     create({
-      title: 'My Special Article',
-      content: 'This is the content of my special article.',
+      title: 'Dutch A1',
     })
   ).rejects.toThrow(/unauthenticated/i)
 })
 
-it('should create a persisted article', async () => {
+it('should create a cardset and it should persist', async () => {
   // ARRANGE
   const [user] = await insertAll(db, 'user', fakeUser())
   const { create } = createCaller(authContext({ db }, user))
 
   // ACT
-  const articleReturned = await create({
-    title: 'My Article',
-    content: 'This is the content.',
+  const createdCardset = await create({
+    title: 'Dutch A2',
+    description: 'From Leiden University Class',
   })
 
   // ASSERT
-  expect(articleReturned).toMatchObject({
+  expect(createdCardset).toMatchObject({
     id: expect.any(Number),
-    title: 'My Article',
-    content: 'This is the content.',
+    title: 'Dutch A2',
+    description: 'From Leiden University Class',
     userId: user.id,
   })
 
-  const [articleCreated] = await selectAll(db, 'article', (eb) =>
-    eb('id', '=', articleReturned.id)
+  const [selectedCardset] = await selectAll(db, 'cardset', (eb) =>
+    eb('id', '=', createdCardset.id)
   )
 
-  expect(articleCreated).toMatchObject(articleReturned)
+  expect(selectedCardset).toMatchObject(createdCardset)
 })
