@@ -80,3 +80,4 @@ https://www.figma.com/file/qEP8i8slhP189EQ1RlE3Es/Word-flashcard?type=design&nod
 - [ ] adopt card endpoints(client)
 - [ ] create example endpoint(server)
 - [ ] adopt example endpoint(client)
+- [ ] e2e testings on client
