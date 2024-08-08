@@ -13,21 +13,19 @@ const db = await wrapInRollbacks(createTestDatabase())
 await clearTables(db, ['cardset'])
 const [user] = await insertAll(db, 'user', fakeUser())
 
-const { findAllByUserId } = createCaller(authContext({ db }, user))
+const { findAll } = createCaller(authContext({ db }, user))
 
 it('should throw an error if user is not authenticated', async () => {
   // ARRANGE
-  const { findAllByUserId } = createCaller(requestContext({ db }))
+  const { findAll } = createCaller(requestContext({ db }))
 
   // ACT & ASSERT
-  await expect(findAllByUserId({ userId: user.id })).rejects.toThrow(
-    /unauthenticated/i
-  )
+  await expect(findAll({ userId: user.id })).rejects.toThrow(/unauthenticated/i)
 })
 
 it('should return an empty list if there are no cardsets', async () => {
   // Given (ARRANGE)
-  expect(await findAllByUserId({ userId: user.id })).toHaveLength(0)
+  expect(await findAll({ userId: user.id })).toHaveLength(0)
 })
 
 it('should return a list of cardsets', async () => {
@@ -35,7 +33,7 @@ it('should return a list of cardsets', async () => {
   await insertAll(db, 'cardset', [fakeCardset({ userId: user.id })])
 
   // When (ACT)
-  const cardsets = await findAllByUserId({ userId: user.id })
+  const cardsets = await findAll({ userId: user.id })
 
   // Then (ASSERT)
   expect(cardsets).toHaveLength(1)
@@ -51,7 +49,7 @@ it('should return the latest cardset first', async () => {
   ])
 
   // When (ACT)
-  const cardsets = await findAllByUserId({ userId: user.id })
+  const cardsets = await findAll({ userId: user.id })
 
   // Then (ASSERT)
   expect(cardsets[0]).toMatchObject(cardsetNew)

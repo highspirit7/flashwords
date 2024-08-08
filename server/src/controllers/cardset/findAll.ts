@@ -15,11 +15,15 @@ export default authenticatedProcedure
     z.object({
       offset: z.number().int().min(0).max(POSTGRES_INT_MAX).default(0),
       limit: z.number().int().min(1).max(100).default(20),
-      userId: idSchema,
+      userId: idSchema.optional(),
     })
   )
-  .query(async ({ input, ctx: { repos } }) => {
-    const cardsets = await repos.cardsetRepository.findAllByUserId(input)
+  .query(async ({ input, ctx: { authUser, repos } }) => {
+    const userId = input.userId ? input.userId : authUser.id
+    const cardsets = await repos.cardsetRepository.findAllByUserId({
+      ...input,
+      userId,
+    })
 
     return cardsets
   })
