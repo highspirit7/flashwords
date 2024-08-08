@@ -18,41 +18,49 @@ const [cardset] = await insertAll(
 
 it('should throw an error if user is not authenticated', async () => {
   // ARRANGE
-  const { create } = createCaller(requestContext({ db }))
+  const { createAll } = createCaller(requestContext({ db }))
 
   // ACT & ASSERT
   await expect(
-    create({
-      term: 'lekker',
-      definition: 'tasty',
-      cardsetId: cardset.id,
-    })
+    createAll([
+      {
+        term: 'lekker',
+        definition: 'tasty',
+        cardsetId: cardset.id,
+      },
+    ])
   ).rejects.toThrow(/unauthenticated/i)
 })
 
 it('should create a card and it should persist', async () => {
   // ARRANGE
 
-  const { create } = createCaller(authContext({ db }, user))
+  const { createAll } = createCaller(authContext({ db }, user))
 
   // ACT
-  const createdCard = await create({
-    term: 'lekker',
-    definition: 'tasty',
-    cardsetId: cardset.id,
-  })
+  const createdCard = await createAll([
+    {
+      term: 'lekker',
+      definition: 'tasty',
+      cardsetId: cardset.id,
+    },
+  ])
 
   // ASSERT
-  expect(createdCard).toMatchObject({
-    id: expect.any(Number),
-    term: 'lekker',
-    definition: 'tasty',
-    cardsetId: cardset.id,
-  })
+  expect(createdCard).toEqual([
+    {
+      id: expect.any(Number),
+      term: 'lekker',
+      definition: 'tasty',
+      cardsetId: cardset.id,
+      updatedAt: expect.any(Date),
+      createdAt: expect.any(Date),
+    },
+  ])
 
   const [selectedCard] = await selectAll(db, 'card', (eb) =>
-    eb('id', '=', createdCard.id)
+    eb('id', '=', createdCard[0].id)
   )
 
-  expect(selectedCard).toMatchObject(createdCard)
+  expect(selectedCard).toMatchObject(createdCard[0])
 })

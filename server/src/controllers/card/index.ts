@@ -1,8 +1,8 @@
 import { router } from '@server/trpc'
-import create from './create'
+import createAll from './createAll'
 import findAllByCardsetId from './findAllByCardsetId'
 
 export default router({
-  create,
+  createAll,
   findAllByCardsetId,
 })
