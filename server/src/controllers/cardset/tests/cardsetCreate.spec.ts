@@ -17,6 +17,7 @@ it('should throw an error if user is not authenticated', async () => {
   await expect(
     create({
       title: 'Dutch A1',
+      description: null,
     })
   ).rejects.toThrow(/unauthenticated/i)
 })
