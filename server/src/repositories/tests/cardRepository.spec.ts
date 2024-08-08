@@ -14,15 +14,25 @@ const [cardset, anotherCardset] = await insertAll(db, 'cardset', [
 ])
 
 describe('create', () => {
-  it('should create a card in the cardset matching a given cardset id', async () => {
-    const createdCard = await repository.create(
-      fakeCard({ term: 'leuk', definition: 'nice', cardsetId: cardset.id })
-    )
+  it('should create cards in the cardset matching a given cardset id', async () => {
+    const createdCards = await repository.createAll([
+      fakeCard({ term: 'leuk', definition: 'nice', cardsetId: cardset.id }),
+      fakeCard({ term: 'lekker', definition: 'tasty', cardsetId: cardset.id }),
+    ])
 
-    expect(createdCard).toEqual({
+    expect(createdCards).toHaveLength(2)
+    expect(createdCards[0]).toEqual({
       id: expect.any(Number),
       term: 'leuk',
       definition: 'nice',
+      cardsetId: cardset.id,
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+    })
+    expect(createdCards[1]).toEqual({
+      id: expect.any(Number),
+      term: 'lekker',
+      definition: 'tasty',
       cardsetId: cardset.id,
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
@@ -31,7 +41,7 @@ describe('create', () => {
 
   it('throw an error if referenced cardset does not exist', async () => {
     await expect(
-      repository.create(fakeCard({ cardsetId: cardset.id + 11111 }))
+      repository.createAll([fakeCard({ cardsetId: cardset.id + 11111 })])
     ).rejects.toThrow(/Referenced cardset matching cardsetId does not exist/)
   })
 })

@@ -11,13 +11,14 @@ type RecordRelationshipId = Pick<Card, 'cardsetId'>
 
 export function cardRepository(db: Database) {
   return {
-    async create(record: Insertable<Card>): Promise<CardPublic> {
-      await assertRelationshipsExist(db, record)
+    async createAll(record: Insertable<Card>[]): Promise<CardPublic[]> {
+      await assertRelationshipsExist(db, record[0])
+
       return db
         .insertInto('card')
         .values(record)
         .returning(cardKeysAll)
-        .executeTakeFirstOrThrow()
+        .execute()
     },
 
     async findAllByCardsetId({
