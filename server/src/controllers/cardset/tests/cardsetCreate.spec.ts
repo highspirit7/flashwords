@@ -18,7 +18,7 @@ it('should throw an error if user is not authenticated', async () => {
     create({
       cardset: {
         title: 'Dutch A1',
-        description: null,
+        description: '',
       },
       cards: [fakeCard()],
     })

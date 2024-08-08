@@ -7,7 +7,7 @@ export const cardsetSchema = z.object({
   id: idSchema,
   userId: idSchema,
   title: z.string().trim(),
-  description: z.string().trim().nullable(),
+  description: z.string().trim(),
   createdAt: z.date(),
   updatedAt: z.date(),
 })

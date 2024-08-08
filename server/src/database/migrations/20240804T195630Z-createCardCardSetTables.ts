@@ -7,7 +7,7 @@ export async function up(db: Kysely<any>) {
       column.primaryKey().generatedAlwaysAsIdentity()
     )
     .addColumn('title', 'text', (column) => column.notNull())
-    .addColumn('description', 'text')
+    .addColumn('description', 'text', (column) => column.notNull())
     .addColumn('user_id', 'integer', (column) =>
       column.references('user.id').notNull()
     )

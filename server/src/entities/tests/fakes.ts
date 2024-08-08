@@ -40,6 +40,7 @@ export const fakeCardset = <T extends Partial<Insertable<Cardset>>>(
 ) =>
   ({
     title: random.string(),
+    description: random.string(),
     userId: randomId(),
     ...overrides,
   }) satisfies Insertable<Cardset>
