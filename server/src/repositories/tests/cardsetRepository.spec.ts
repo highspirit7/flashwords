@@ -21,7 +21,7 @@ describe('create', () => {
     expect(createdCardset).toEqual({
       id: expect.any(Number),
       title: 'Dutch A1',
-      description: null,
+      description: expect.any(String),
       userId: user.id,
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
