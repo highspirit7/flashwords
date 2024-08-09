@@ -1,5 +1,5 @@
 import { createTestDatabase } from '@tests/utils/database'
-import { fakeCardset, fakeUser } from '@server/entities/tests/fakes'
+import { fakeCard, fakeCardset, fakeUser } from '@server/entities/tests/fakes'
 import { wrapInRollbacks } from '@tests/utils/transactions'
 import { insertAll } from '@tests/utils/records'
 import { cardsetRepository } from '../cardsetRepository'
@@ -14,17 +14,12 @@ const [user, anotherUser] = await insertAll(db, 'user', [
 
 describe('create', () => {
   it('should create a card set', async () => {
-    const createdCardset = await repository.create(
+    const response = await repository.create(
       fakeCardset({ title: 'Dutch A1', userId: user.id })
     )
 
-    expect(createdCardset).toEqual({
+    expect(response).toEqual({
       id: expect.any(Number),
-      title: 'Dutch A1',
-      description: expect.any(String),
-      userId: user.id,
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
     })
   })
 
@@ -32,6 +27,36 @@ describe('create', () => {
     await expect(
       repository.create(fakeCardset({ userId: user.id + 11111 }))
     ).rejects.toThrow(/Referenced user matching userId does not exist/)
+  })
+})
+
+describe('findById', () => {
+  it('should return a matching cardset with the given id', async () => {
+    const [cardset] = await insertAll(db, 'cardset', [
+      fakeCardset({ userId: user.id }),
+    ])
+    await insertAll(db, 'card', [
+      fakeCard({ cardsetId: cardset.id }),
+      fakeCard({ cardsetId: cardset.id }),
+    ])
+
+    const foundCardset = await repository.findById(cardset.id)
+
+    expect(foundCardset).toMatchObject({
+      id: cardset.id,
+      userId: user.id,
+      cardCount: '2',
+    })
+  })
+
+  it('should return undefined when there is no matching cardset with the given id', async () => {
+    const [cardset] = await insertAll(db, 'cardset', [
+      fakeCardset({ userId: user.id }),
+    ])
+
+    const foundCardset = await repository.findById(cardset.id + 11111)
+
+    expect(foundCardset).toBeUndefined()
   })
 })
 

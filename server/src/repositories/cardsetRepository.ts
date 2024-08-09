@@ -1,6 +1,9 @@
 import type { Database, Cardset } from '@server/database'
-import { type CardsetPublic, cardsetKeysAll } from '@server/entities/cardset'
-import type { Insertable } from 'kysely'
+import {
+  type CardsetPublicWithCardCount,
+  cardsetKeysAll,
+} from '@server/entities/cardset'
+import { type Insertable, sql } from 'kysely'
 import { NotFound } from '@server/utils/errors'
 
 type Pagination = {
@@ -11,26 +14,56 @@ type RecordRelationshipId = Pick<Cardset, 'userId'>
 
 export function cardsetRepository(db: Database) {
   return {
-    async create(record: Insertable<Cardset>): Promise<CardsetPublic> {
+    async create(record: Insertable<Cardset>): Promise<{ id: number }> {
       await assertRelationshipsExist(db, record)
 
-      return db
+      const createdCardset = await db
         .insertInto('cardset')
         .values(record)
         .returning(cardsetKeysAll)
         .executeTakeFirstOrThrow()
-    },
 
+      return { id: createdCardset.id }
+    },
+    async findById(
+      id: number
+    ): Promise<CardsetPublicWithCardCount | undefined> {
+      return db
+        .selectFrom('cardset')
+        .select([
+          'cardset.id',
+          'cardset.title',
+          'cardset.description',
+          'cardset.createdAt',
+          'cardset.updatedAt',
+          'cardset.userId',
+          sql<string>`COUNT(card.id)`.as('cardCount'),
+        ])
+        .leftJoin('card', 'card.cardsetId', 'cardset.id')
+        .where('cardset.id', '=', id)
+        .groupBy('cardset.id')
+        .executeTakeFirst()
+    },
     async findAllByUserId({
       offset,
       limit,
       userId,
-    }: Pagination & { userId: number }): Promise<CardsetPublic[]> {
+    }: Pagination & { userId: number }): Promise<CardsetPublicWithCardCount[]> {
       return db
         .selectFrom('cardset')
-        .select(cardsetKeysAll)
-        .where('userId', '=', userId)
-        .orderBy('id', 'desc')
+        .select([
+          'cardset.id',
+          'cardset.title',
+          'cardset.description',
+          'cardset.createdAt',
+          'cardset.updatedAt',
+          'cardset.userId',
+          sql<string>`COUNT(card.id)`.as('cardCount'),
+        ])
+        .leftJoin('card', 'card.cardsetId', 'cardset.id') // Join card table on cardsetId
+        .where('cardset.userId', '=', userId) // Filter by userId
+        .groupBy('cardset.id')
+        .orderBy('cardset.id', 'desc')
         .offset(offset)
         .limit(limit)
         .execute()

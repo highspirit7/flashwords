@@ -22,3 +22,7 @@ export type CardsetPublic = Pick<
   Selectable<Cardset>,
   (typeof cardsetKeysPublic)[number]
 >
+
+export type CardsetPublicWithCardCount = CardsetPublic & {
+  cardCount: string
+}

@@ -31,7 +31,7 @@ it('should create a cardset with cards and it should persist', async () => {
   const { create } = createCaller(authContext({ db }, user))
 
   // ACT
-  const createdCardset = await create({
+  const { id } = await create({
     cardset: {
       title: 'Dutch A2',
       description: 'From Leiden University Class',
@@ -40,23 +40,16 @@ it('should create a cardset with cards and it should persist', async () => {
   })
 
   // ASSERT
-  expect(createdCardset).toMatchObject({
-    id: expect.any(Number),
-    title: 'Dutch A2',
-    description: 'From Leiden University Class',
-    userId: user.id,
-    createdAt: expect.any(Date),
-    updatedAt: expect.any(Date),
-  })
+  expect(id).toEqual(expect.any(Number))
 
   const [selectedCardset] = await selectAll(db, 'cardset', (eb) =>
-    eb('id', '=', createdCardset.id)
+    eb('id', '=', id)
   )
 
-  expect(selectedCardset).toMatchObject(createdCardset)
+  expect(selectedCardset.id).toBe(id)
 
   const createdCards = await selectAll(db, 'card', (eb) =>
-    eb('cardsetId', '=', createdCardset.id)
+    eb('cardsetId', '=', id)
   )
 
   expect(createdCards).toHaveLength(2)
@@ -64,7 +57,7 @@ it('should create a cardset with cards and it should persist', async () => {
     id: expect.any(Number),
     term: expect.any(String),
     definition: expect.any(String),
-    cardsetId: createdCardset.id,
+    cardsetId: id,
     createdAt: expect.any(Date),
     updatedAt: expect.any(Date),
   })
