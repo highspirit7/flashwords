@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { type CardSet } from '@/stores/cardSet'
+import type { CardsetPublic } from '@server/shared/types'
 import { RouterLink } from 'vue-router'
 
 const props = defineProps<{
-  data: CardSet
+  data: CardsetPublic
 }>()
 </script>
 <template>
@@ -16,10 +16,10 @@ const props = defineProps<{
       <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate">
         {{ props.data.title }}
       </h5>
-      <span
+      <!-- <span
         class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300 w-fit"
         >{{ `${props.data.cards.length} terms` }}</span
-      >
+      > -->
     </div>
   </router-link>
 </template>

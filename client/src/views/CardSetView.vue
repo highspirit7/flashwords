@@ -4,28 +4,27 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ref, type Ref, onMounted } from 'vue'
 import { initFlowbite, Modal, Dropdown } from 'flowbite'
 import type { ModalInterface, DropdownInterface } from 'flowbite'
-
-import type { CardSet, Card } from '@/stores/cardSet'
+import type { CardPublic } from '@server/shared/types'
 import TermCard from '@/components/TermCard.vue'
-import { getCurrentCardSet, getCardsOfCurrentCardSet } from '@/utils/currentCardSet'
-import { useCardSetStore } from '@/stores/cardSet'
+import { useCardsetStore } from '@/stores/cardsets'
 import TermFlashcard from '@/components/TermFlashcard.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
 import { useToasterStore } from '@/stores/toaster'
 import useFlashcardStore from '@/stores/flashcard'
+import { useCardStore } from '@/stores/cards'
 
 const route = useRoute()
 const router = useRouter()
-const { updateCardSet, deleteCardSet } = useCardSetStore()
+const { setCurrentCardset, currentCardset } = useCardsetStore()
+const { setCardsByCardsetId, cardsInCurrentCardset } = useCardStore()
 const toasterStore = useToasterStore()
 const flashcardStore = useFlashcardStore()
 const currentFlashCardIndex = ref(1)
-const currentCardSet: Ref<CardSet> = ref(getCurrentCardSet(route.params.id))
-const flashcards: Ref<Card[]> = ref(getCardsOfCurrentCardSet(route.params.id))
+const flashcards: Ref<CardPublic[]> = ref([])
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
 const dropdown: Ref<DropdownInterface | null> = ref(null)
 
-onMounted(() => {
+onMounted(async () => {
   initFlowbite()
   deleteExampleModal.value = new Modal(document.getElementById('delete-modal'), {
     placement: 'center',
@@ -34,12 +33,17 @@ onMounted(() => {
     document.getElementById('dropdownDotsHorizontal'),
     document.getElementById('dropdownMenuIconHorizontalButton'),
   )
+
+  setCurrentCardset(Number(route.params.id))
+  //   const cards = await authTrpc.card.findAllByCardsetId.query({cardsetId: 1})
+  setCardsByCardsetId(currentCardset.id)
+  flashcards.value = cardsInCurrentCardset
 })
 
 function onFinishEditingCard() {
-  updateCardSet({ ...currentCardSet.value, updatedAt: new Date() })
-
-  flashcards.value = getCardsOfCurrentCardSet(route.params.id)
+  // TODO
+  //   updateCardSet({ ...currentCardset, updatedAt: new Date() })
+  //   flashcards.value = getCardsOfCurrentCardSet(route.params.id)
 }
 
 function toggleDeleteModal() {
@@ -48,7 +52,7 @@ function toggleDeleteModal() {
 }
 
 function handleClickFlashCardNext() {
-  if (currentFlashCardIndex.value === currentCardSet.value.cards.length) {
+  if (currentFlashCardIndex.value === cardsInCurrentCardset.length) {
     currentFlashCardIndex.value = 1
   } else {
     currentFlashCardIndex.value += 1
@@ -59,8 +63,8 @@ function handleClickFlashCardNext() {
 
 function handleClickFlashCardPrev() {
   if (currentFlashCardIndex.value === 1) {
-    currentFlashCardIndex.value = currentCardSet.value.cards.length
-  } else if (currentCardSet.value.cards.length > 1) {
+    currentFlashCardIndex.value = cardsInCurrentCardset.length
+  } else if (cardsInCurrentCardset.length > 1) {
     currentFlashCardIndex.value -= 1
   }
 
@@ -69,7 +73,7 @@ function handleClickFlashCardPrev() {
 
 function handleDeleteCardSet() {
   try {
-    deleteCardSet(currentCardSet.value.id)
+    // deleteCardSet(currentCardset.id)
     toasterStore.success({ text: 'Successfully deleted' })
     router.push('/')
   } catch (error) {
@@ -125,14 +129,14 @@ function handleDeleteCardSet() {
           <router-link
             :to="`/card-set/${route.params.id}`"
             class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white"
-            >{{ currentCardSet.title }}</router-link
+            >{{ currentCardset.title }}</router-link
           >
         </div>
       </li>
     </ol>
     <div class="flex justify-between">
       <fwb-heading class="mb-4" tag="h2" data-testid="cardset-title">{{
-        currentCardSet.title
+        currentCardset.title
       }}</fwb-heading>
       <fwb-button
         color="alternative"
@@ -177,7 +181,7 @@ function handleDeleteCardSet() {
       </div>
     </div>
     <p class="text-gray-500 dark:text-gray-400 mb-8">
-      {{ currentCardSet.description }}
+      {{ currentCardset.description }}
     </p>
 
     <div id="flashcards-carousel" class="relative w-full mb-16" data-carousel="static">
@@ -224,7 +228,7 @@ function handleDeleteCardSet() {
           </span>
         </button>
         <div class="text-xl font-semibold dark:text-gray-400">
-          {{ `${currentFlashCardIndex} / ${currentCardSet.cards.length}` }}
+          {{ `${currentFlashCardIndex} / ${cardsInCurrentCardset.length}` }}
         </div>
         <button
           type="button"
@@ -258,7 +262,7 @@ function handleDeleteCardSet() {
 
     <ul class="my-4">
       <TermCard
-        v-for="card in currentCardSet.cards"
+        v-for="card in cardsInCurrentCardset"
         :key="card.id"
         :card="card"
         @finish-editing="onFinishEditingCard"
@@ -290,7 +294,7 @@ function handleDeleteCardSet() {
     <DeleteModal
       :handleDeleteFunction="handleDeleteCardSet"
       :toggleModal="toggleDeleteModal"
-      :message="`Are you sure you want to delete this card set(${currentCardSet.title})`"
+      :message="`Are you sure you want to delete this card set(${currentCardset.title})`"
     />
   </div>
 </template>
