@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { FwbHeading, FwbButton, FwbInput, FwbTextarea } from 'flowbite-vue'
 import { ref, type Ref, onMounted, computed, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
 import { v4 as uuidv4 } from 'uuid'
 import { useCardsetStore } from '@/stores/cardsets'
 import { useToasterStore } from '@/stores/toaster'
@@ -19,7 +18,6 @@ const newCards: Ref<{ term: string; definition: string; id?: string }[]> = ref([
 
 const { createCardset } = useCardsetStore()
 const toasterStore = useToasterStore()
-const router = useRouter()
 
 const hasAtLeastOneFilledCard = computed(() => {
   if (newCards.value.length > 0) {
@@ -58,8 +56,6 @@ function onSubmit() {
     })
     try {
       createCardset({ cardset: newCardset.value, cards: cardsWithoutId })
-      toasterStore.success({ text: 'You just created a new card set!' })
-      router.push('/')
     } catch (error) {
       if (error instanceof Error) {
         console.log(error)

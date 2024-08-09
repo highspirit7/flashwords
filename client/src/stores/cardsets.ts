@@ -1,7 +1,9 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
+import { useRouter } from 'vue-router'
 import { authTrpc } from '@/trpc'
-import type { CardPublic, CardsetPublic } from '@server/shared/types'
+import { useToasterStore } from '@/stores/toaster'
+import type { CardPublic, CardsetPublicWithCardCount } from '@server/shared/types'
 
 // export interface Card {
 //   id: string
@@ -18,22 +20,26 @@ import type { CardPublic, CardsetPublic } from '@server/shared/types'
 //   createdAt: Date | undefined
 //   updatedAt: Date | undefined
 // }
-const defaultCardSet: CardsetPublic = {
+const defaultCardSet: CardsetPublicWithCardCount = {
   id: 0,
   title: '',
   description: '',
   createdAt: new Date(),
   updatedAt: new Date(),
   userId: 0,
+  cardCount: '0',
 }
 
-type CreatableCardset = Pick<CardsetPublic, 'title' | 'description'>
+type CreatableCardset = Pick<CardsetPublicWithCardCount, 'title' | 'description'>
 type CreatableCard = Pick<CardPublic, 'term' | 'definition'>
 
 export const useCardsetStore = defineStore('cardsets', () => {
-  const cardsets: Ref<CardsetPublic[]> = ref([])
-  const currentCardset: Ref<CardsetPublic> = ref(defaultCardSet)
-  const filteredCardsets: Ref<CardsetPublic[]> = ref([])
+  const toasterStore = useToasterStore()
+  const router = useRouter()
+
+  const cardsets: Ref<CardsetPublicWithCardCount[]> = ref([])
+  const currentCardset: Ref<CardsetPublicWithCardCount> = ref(defaultCardSet)
+  const filteredCardsets: Ref<CardsetPublicWithCardCount[]> = ref([])
 
   async function setInitialCardsets() {
     const initialCardsets = await authTrpc.cardset.findAll.query({})
@@ -45,7 +51,7 @@ export const useCardsetStore = defineStore('cardsets', () => {
     filteredCardsets.value = [...cardsets.value]
   }
 
-  function setFilteredCardsets(cardsets: CardsetPublic[]) {
+  function setFilteredCardsets(cardsets: CardsetPublicWithCardCount[]) {
     filteredCardsets.value = [...cardsets]
   }
 
@@ -67,8 +73,10 @@ export const useCardsetStore = defineStore('cardsets', () => {
   //   }
 
   async function createCardset(input: { cardset: CreatableCardset; cards: CreatableCard[] }) {
-    const createdCardset = await authTrpc.cardset.create.mutate(input)
-    cardsets.value.push(createdCardset)
+    await authTrpc.cardset.create.mutate(input)
+
+    toasterStore.success({ text: 'You just created a new card set!' })
+    router.push('/')
   }
 
   function setCurrentCardset(id: number) {
