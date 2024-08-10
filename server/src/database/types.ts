@@ -18,7 +18,7 @@ export interface Card {
 
 export interface Cardset {
   createdAt: Generated<Timestamp>
-  description: string | null
+  description: string
   id: Generated<number>
   title: string
   updatedAt: Generated<Timestamp>

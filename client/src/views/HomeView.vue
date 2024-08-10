@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { FwbHeading } from 'flowbite-vue'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter, type LocationQuery } from 'vue-router'
-import { useCardSetStore, type CardSet } from '@/stores/cardSet'
+import { useCardsetStore } from '@/stores/cardsets'
 import TermsCard from '@/components/TermsCard.vue'
+import type { CardsetPublic } from '@server/shared/types'
 
 const route = useRoute()
 const router = useRouter()
-const { cardSets } = useCardSetStore()
+const cardsetStore = useCardsetStore()
 const searchQuery = ref('')
-const filteredCardSets = ref([...cardSets])
 
 function updateRouteWithSearchQuery() {
   if (searchQuery.value) {
@@ -17,21 +17,26 @@ function updateRouteWithSearchQuery() {
   }
 }
 
+onMounted(async () => {
+  await cardsetStore.setInitialCardsets()
+})
+
 watch(
   () => route.query,
   (newQuery: LocationQuery) => {
     if (newQuery.search_query && typeof newQuery.search_query === 'string') {
       const lowerCasedQuery = newQuery.search_query.toLocaleLowerCase()
-      filteredCardSets.value = cardSets.filter((cardSet: CardSet) =>
+      const filtered = cardsetStore.cardsets.filter((cardSet: CardsetPublic) =>
         cardSet.title.toLocaleLowerCase().includes(lowerCasedQuery),
       )
+
+      cardsetStore.setFilteredCardsets(filtered)
       searchQuery.value = newQuery.search_query
     } else {
       searchQuery.value = ''
-      filteredCardSets.value = [...cardSets]
+      cardsetStore.resetFilteredCardsets()
     }
   },
-  { immediate: true },
 )
 </script>
 
@@ -73,9 +78,9 @@ watch(
         </button>
       </div>
     </div>
-    <ul class="card-sets-list" v-if="filteredCardSets.length > 0">
-      <li v-for="cardSet in filteredCardSets" class="mb-2 md:mb-0" :key="cardSet.id">
-        <TermsCard :data="cardSet" />
+    <ul class="card-sets-list" v-if="cardsetStore.filteredCardsets.length > 0">
+      <li v-for="cardset in cardsetStore.filteredCardsets" class="mb-2 md:mb-0" :key="cardset.id">
+        <TermsCard :data="cardset" />
       </li>
     </ul>
     <div v-else class="mt-16">

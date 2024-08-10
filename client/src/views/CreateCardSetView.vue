@@ -2,40 +2,37 @@
 import { FwbHeading, FwbButton, FwbInput, FwbTextarea } from 'flowbite-vue'
 import { ref, type Ref, onMounted, computed, nextTick } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
-import { useRouter } from 'vue-router'
-
-import { useCardSetStore } from '@/stores/cardSet'
+import { useCardsetStore } from '@/stores/cardsets'
 import { useToasterStore } from '@/stores/toaster'
-import type { CardSet } from '@/stores/cardSet'
+import type { CardsetPublic } from '@server/shared/types'
+
+type CreatableCardset = Pick<CardsetPublic, 'title' | 'description'>
 
 const loading = ref(false)
 const hasSubmittedOnce = ref(false)
-const newCardSet: Ref<CardSet> = ref({
-  id: uuidv4(),
+const newCardset: Ref<CreatableCardset> = ref({
   title: '',
   description: '',
-  createdAt: undefined,
-  updatedAt: undefined,
-  cards: [],
 })
-const { createCardSet } = useCardSetStore()
+const newCards: Ref<{ term: string; definition: string; id?: string }[]> = ref([])
+
+const { createCardset } = useCardsetStore()
 const toasterStore = useToasterStore()
-const router = useRouter()
 
 const hasAtLeastOneFilledCard = computed(() => {
-  if (newCardSet.value.cards.length > 0) {
-    const { term, definition } = newCardSet.value.cards[0]
+  if (newCards.value.length > 0) {
+    const { term, definition } = newCards.value[0]
     return term.trim() !== '' && definition.trim() !== ''
   }
   return false
 })
 
 async function onClickAddCard() {
-  newCardSet.value.cards.push({
+  newCards.value.push({
     id: uuidv4(),
     term: '',
     definition: '',
-    examples: [],
+    // examples: [],
   })
 
   await nextTick()
@@ -43,7 +40,7 @@ async function onClickAddCard() {
 }
 
 onMounted(() => {
-  if (newCardSet.value.cards.length < 1) {
+  if (newCards.value.length < 1) {
     onClickAddCard()
   }
 })
@@ -51,14 +48,14 @@ onMounted(() => {
 function onSubmit() {
   hasSubmittedOnce.value = true
 
-  if (newCardSet.value.title !== '' && hasAtLeastOneFilledCard.value) {
+  if (newCardset.value.title !== '' && hasAtLeastOneFilledCard.value) {
     loading.value = true
-    newCardSet.value.updatedAt = new Date()
-    newCardSet.value.createdAt = new Date()
+    const cardsWithoutId = newCards.value.map(card => {
+      delete card.id
+      return card
+    })
     try {
-      createCardSet(newCardSet.value)
-      toasterStore.success({ text: 'You just created a new card set!' })
-      router.push('/')
+      createCardset({ cardset: newCardset.value, cards: cardsWithoutId })
     } catch (error) {
       if (error instanceof Error) {
         console.log(error)
@@ -87,15 +84,15 @@ function onSubmit() {
 
     <div class="mt-8 mb-4">
       <fwb-input
-        v-model="newCardSet.title"
+        v-model="newCardset.title"
         label="Title"
         placeholder="Enter a title for this cards set"
         class="mb-2"
-        :class="{ error: hasSubmittedOnce && newCardSet.title.trim() === '' }"
+        :class="{ error: hasSubmittedOnce && newCardset.title.trim() === '' }"
       />
 
       <fwb-textarea
-        v-model="newCardSet.description"
+        v-model="newCardset.description"
         :rows="4"
         label="Description(Not required)"
         placeholder="Add a description"
@@ -113,9 +110,10 @@ function onSubmit() {
     <ul>
       <li
         class="bg-white dark:bg-gray-900 p-4 rounded-lg my-1"
-        v-for="(card, index) in newCardSet.cards"
+        v-for="(card, index) in newCards"
         :key="card.id"
       >
+        <!-- :key="`${card.term} + ${card.definition} + ${index}`" -->
         <fwb-heading tag="h5">{{ index + 1 }}</fwb-heading>
         <hr class="mb-2" />
         <div class="grid grid-cols-2 gap-4">
