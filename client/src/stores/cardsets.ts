@@ -38,7 +38,7 @@ export const useCardsetStore = defineStore('cardsets', () => {
   const router = useRouter()
 
   const cardsets: Ref<CardsetPublicWithCardCount[]> = ref([])
-  const currentCardset: Ref<CardsetPublicWithCardCount> = ref(defaultCardSet)
+  const selectedCardset: Ref<CardsetPublicWithCardCount> = ref(defaultCardSet)
   const filteredCardsets: Ref<CardsetPublicWithCardCount[]> = ref([])
 
   async function setInitialCardsets() {
@@ -79,8 +79,9 @@ export const useCardsetStore = defineStore('cardsets', () => {
     router.push('/')
   }
 
-  function setCurrentCardset(id: number) {
-    currentCardset.value = cardsets.value.filter(cardset => cardset.id === id)[0]
+  async function setSelectedCardset(cardsetId: number) {
+    const foundCardset = await authTrpc.cardset.find.query(cardsetId)
+    selectedCardset.value = foundCardset
   }
 
   //   function setSelectedCard(data: Card) {
@@ -139,14 +140,14 @@ export const useCardsetStore = defineStore('cardsets', () => {
     // selectors
     cardsets,
     filteredCardsets,
-    currentCardset,
+    selectedCardset,
     // selectedCard,
     // getters
     // getCardSetById,
     // actions
     createCardset,
     setInitialCardsets,
-    setCurrentCardset,
+    setSelectedCardset,
     resetFilteredCardsets,
     setFilteredCardsets,
   }
