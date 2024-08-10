@@ -9,7 +9,11 @@ export async function up(db: Kysely<any>) {
     .addColumn('title', 'text', (column) => column.notNull())
     .addColumn('description', 'text', (column) => column.notNull())
     .addColumn('user_id', 'integer', (column) =>
-      column.references('user.id').notNull()
+      column
+        .references('user.id')
+        .onDelete('cascade')
+        .onUpdate('cascade')
+        .notNull()
     )
     .addColumn('created_at', 'timestamptz', (column) =>
       column.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
@@ -27,7 +31,11 @@ export async function up(db: Kysely<any>) {
     .addColumn('term', 'text', (column) => column.notNull())
     .addColumn('definition', 'text', (column) => column.notNull())
     .addColumn('cardset_id', 'integer', (column) =>
-      column.references('cardset.id').notNull()
+      column
+        .references('cardset.id')
+        .onDelete('cascade')
+        .onUpdate('cascade')
+        .notNull()
     )
     .addColumn('created_at', 'timestamptz', (column) =>
       column.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
