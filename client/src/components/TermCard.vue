@@ -3,18 +3,16 @@ import { onClickOutside } from '@vueuse/core'
 import { ref, type Ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
-import { type Card } from '@/stores/cardSet'
-import { useCardSetStore } from '@/stores/cardSet'
 import { isHTMLInputElement } from '@/utils/typePredicates'
+import type { CardPublic } from '@server/shared/types'
 
 const router = useRouter()
 const route = useRoute()
 const isEditing = ref(false)
 const target: Ref<HTMLLIElement | null> = ref(null)
-const props = defineProps<{ card: Card }>()
+const props = defineProps<{ card: CardPublic }>()
 const emit = defineEmits<{ (e: 'finishEditing'): void }>()
 const { card } = props
-const { setSelectedCard } = useCardSetStore()
 
 function handleFinishEditing() {
   isEditing.value = false
@@ -22,7 +20,8 @@ function handleFinishEditing() {
 }
 
 function handleClickOpenBookIcon() {
-  setSelectedCard(card)
+  // TODO
+  //   setSelectedCard(card)
   router.push(`${route.path}/${card.term}`)
 }
 

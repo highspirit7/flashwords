@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { FwbHeading, FwbButton } from 'flowbite-vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { ref, type Ref, onMounted } from 'vue'
+import { ref, type Ref, onMounted, nextTick } from 'vue'
 import { initFlowbite, Modal, Dropdown } from 'flowbite'
 import type { ModalInterface, DropdownInterface } from 'flowbite'
-import type { CardPublic } from '@server/shared/types'
 import TermCard from '@/components/TermCard.vue'
 import { useCardsetStore } from '@/stores/cardsets'
 import TermFlashcard from '@/components/TermFlashcard.vue'
@@ -15,17 +15,17 @@ import { useCardStore } from '@/stores/cards'
 
 const route = useRoute()
 const router = useRouter()
-const { setCurrentCardset, currentCardset } = useCardsetStore()
-const { setCardsByCardsetId, cardsInCurrentCardset } = useCardStore()
+const { setSelectedCardset } = useCardsetStore()
+const { selectedCardset } = storeToRefs(useCardsetStore())
+const { setCardsInSelectedCardset } = useCardStore()
+const { cardsInSelectedCardset } = storeToRefs(useCardStore())
 const toasterStore = useToasterStore()
 const flashcardStore = useFlashcardStore()
 const currentFlashCardIndex = ref(1)
-const flashcards: Ref<CardPublic[]> = ref([])
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
 const dropdown: Ref<DropdownInterface | null> = ref(null)
 
 onMounted(async () => {
-  initFlowbite()
   deleteExampleModal.value = new Modal(document.getElementById('delete-modal'), {
     placement: 'center',
   })
@@ -34,10 +34,12 @@ onMounted(async () => {
     document.getElementById('dropdownMenuIconHorizontalButton'),
   )
 
-  setCurrentCardset(Number(route.params.id))
-  //   const cards = await authTrpc.card.findAllByCardsetId.query({cardsetId: 1})
-  setCardsByCardsetId(currentCardset.id)
-  flashcards.value = cardsInCurrentCardset
+  await setSelectedCardset(Number(route.params.id))
+  await setCardsInSelectedCardset(Number(route.params.id))
+
+  nextTick(() => {
+    initFlowbite()
+  })
 })
 
 function onFinishEditingCard() {
@@ -52,7 +54,10 @@ function toggleDeleteModal() {
 }
 
 function handleClickFlashCardNext() {
-  if (currentFlashCardIndex.value === cardsInCurrentCardset.length) {
+  //   console.log(
+  //     `currentIndex : ${currentFlashCardIndex} / cards length : ${cardsInSelectedCardset.length}`,
+  //   )
+  if (currentFlashCardIndex.value === cardsInSelectedCardset.value.length) {
     currentFlashCardIndex.value = 1
   } else {
     currentFlashCardIndex.value += 1
@@ -63,8 +68,8 @@ function handleClickFlashCardNext() {
 
 function handleClickFlashCardPrev() {
   if (currentFlashCardIndex.value === 1) {
-    currentFlashCardIndex.value = cardsInCurrentCardset.length
-  } else if (cardsInCurrentCardset.length > 1) {
+    currentFlashCardIndex.value = cardsInSelectedCardset.value.length
+  } else if (cardsInSelectedCardset.value.length > 1) {
     currentFlashCardIndex.value -= 1
   }
 
@@ -129,14 +134,14 @@ function handleDeleteCardSet() {
           <router-link
             :to="`/card-set/${route.params.id}`"
             class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white"
-            >{{ currentCardset.title }}</router-link
+            >{{ selectedCardset.title }}</router-link
           >
         </div>
       </li>
     </ol>
     <div class="flex justify-between">
       <fwb-heading class="mb-4" tag="h2" data-testid="cardset-title">{{
-        currentCardset.title
+        selectedCardset.title
       }}</fwb-heading>
       <fwb-button
         color="alternative"
@@ -181,7 +186,7 @@ function handleDeleteCardSet() {
       </div>
     </div>
     <p class="text-gray-500 dark:text-gray-400 mb-8">
-      {{ currentCardset.description }}
+      {{ selectedCardset.description }}
     </p>
 
     <div id="flashcards-carousel" class="relative w-full mb-16" data-carousel="static">
@@ -190,7 +195,7 @@ function handleDeleteCardSet() {
         <div
           class="hidden duration-700 ease-in-out"
           data-carousel-item
-          v-for="card in flashcards"
+          v-for="card in cardsInSelectedCardset"
           :key="card.id"
         >
           <TermFlashcard :card="card" />
@@ -228,7 +233,7 @@ function handleDeleteCardSet() {
           </span>
         </button>
         <div class="text-xl font-semibold dark:text-gray-400">
-          {{ `${currentFlashCardIndex} / ${cardsInCurrentCardset.length}` }}
+          {{ `${currentFlashCardIndex} / ${cardsInSelectedCardset.length}` }}
         </div>
         <button
           type="button"
@@ -262,7 +267,7 @@ function handleDeleteCardSet() {
 
     <ul class="my-4">
       <TermCard
-        v-for="card in cardsInCurrentCardset"
+        v-for="card in cardsInSelectedCardset"
         :key="card.id"
         :card="card"
         @finish-editing="onFinishEditingCard"
@@ -294,7 +299,7 @@ function handleDeleteCardSet() {
     <DeleteModal
       :handleDeleteFunction="handleDeleteCardSet"
       :toggleModal="toggleDeleteModal"
-      :message="`Are you sure you want to delete this card set(${currentCardset.title})`"
+      :message="`Are you sure you want to delete this card set(${selectedCardset.title})`"
     />
   </div>
 </template>
