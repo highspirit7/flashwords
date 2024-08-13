@@ -1,3 +1,4 @@
+import { idSchema } from '@server/entities/shared'
 import { createTestDatabase } from '@tests/utils/database'
 import { fakeCard, fakeCardset, fakeUser } from '@server/entities/tests/fakes'
 import { wrapInRollbacks } from '@tests/utils/transactions'
@@ -128,5 +129,27 @@ describe('findAllByUserId', () => {
     })
 
     expect(cardsets).toHaveLength(3)
+  })
+})
+
+describe('delete', () => {
+  it('the number of deleted rows would be 0 if there is no matching cardset with the given id', async () => {
+    const [cardset] = await insertAll(db, 'cardset', [
+      fakeCardset({ userId: user.id }),
+    ])
+
+    const { numDeletedRows } = await repository.delete(cardset.id + 11111)
+
+    expect(numDeletedRows).toEqual(BigInt(0))
+  })
+
+  it('should delete a cardset with the given id', async () => {
+    const [cardset] = await insertAll(db, 'cardset', [
+      fakeCardset({ userId: user.id }),
+    ])
+
+    const { numDeletedRows } = await repository.delete(cardset.id)
+
+    expect(numDeletedRows).toEqual(BigInt(1))
   })
 })
