@@ -23,7 +23,7 @@ it('should delete a cardset', async () => {
   const { numDeletedRows } = await remove(cardset.id)
 
   // Then (ASSERT)
-  expect(numDeletedRows).toEqual(BigInt(1))
+  expect(numDeletedRows).toEqual('1')
 })
 
 it('should throw an error if the cardset does not exist', async () => {

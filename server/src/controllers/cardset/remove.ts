@@ -4,6 +4,14 @@ import { authenticatedProcedure } from '@server/trpc/authenticatedProcedure'
 import provideRepos from '@server/trpc/provideRepos'
 import { TRPCError } from '@trpc/server'
 
+function serializeBigInt<T extends object>(obj: T): T {
+  return JSON.parse(
+    JSON.stringify(obj, (key, value) =>
+      typeof value === 'bigint' ? value.toString() : value
+    )
+  )
+}
+
 export default authenticatedProcedure
   .use(provideRepos({ cardsetRepository }))
   .input(idSchema)
@@ -27,5 +35,5 @@ export default authenticatedProcedure
 
     const result = await repos.cardsetRepository.delete(cardsetId)
 
-    return result
+    return serializeBigInt(result)
   })
