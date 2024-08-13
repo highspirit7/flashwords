@@ -131,10 +131,9 @@ export const useCardsetStore = defineStore('cardsets', () => {
   //     saveCardSetsInStorage()
   //   }
 
-  //   function deleteCardSet(id: string) {
-  //     cardSets.value = cardSets.value.filter((cardSet: CardSet) => id !== cardSet.id)
-  //     saveCardSetsInStorage()
-  //   }
+  async function deleteCardset(id: number) {
+    await authTrpc.cardset.remove.mutate(id)
+  }
 
   return {
     // selectors
@@ -150,5 +149,6 @@ export const useCardsetStore = defineStore('cardsets', () => {
     setSelectedCardset,
     resetFilteredCardsets,
     setFilteredCardsets,
+    deleteCardset,
   }
 })
