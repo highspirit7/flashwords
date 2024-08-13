@@ -11,13 +11,21 @@ export default authenticatedProcedure
     })
   )
   .input(idSchema)
-  .query(async ({ input: cardsetId, ctx: { repos } }) => {
+  .query(async ({ input: cardsetId, ctx: { repos, authUser } }) => {
     const cardset = await repos.cardsetRepository.findById(cardsetId)
 
     if (!cardset) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Cardset was not found',
+      })
+    }
+
+    if (cardset.userId !== authUser.id) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message:
+          'This authenticated user does not have permission to access this cardset',
       })
     }
 

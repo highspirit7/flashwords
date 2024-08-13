@@ -9,12 +9,17 @@ import cardsetRouter from '..'
 const createCaller = createCallerFactory(cardsetRouter)
 const db = await wrapInRollbacks(createTestDatabase())
 
-const [user] = await insertAll(db, 'user', [fakeUser()])
+const [user, userOther] = await insertAll(db, 'user', [fakeUser(), fakeUser()])
 
-const [cardset, cardsetOther] = await insertAll(db, 'cardset', [
-  fakeCardset({ userId: user.id }),
-  fakeCardset({ userId: user.id }),
-])
+const [cardset, cardsetOther, cardsetOfOtherUser] = await insertAll(
+  db,
+  'cardset',
+  [
+    fakeCardset({ userId: user.id }),
+    fakeCardset({ userId: user.id }),
+    fakeCardset({ userId: userOther.id }),
+  ]
+)
 
 const { find } = createCaller(authContext({ db }, user))
 
@@ -31,4 +36,10 @@ it('should throw an error if the cardset does not exist', async () => {
 
   // When (ACT)
   await expect(find(nonExistantId)).rejects.toThrowError(/not found/i)
+})
+
+it("should throw an error if authUser tries to access another user's cardset", async () => {
+  await expect(find(cardsetOfOtherUser.id)).rejects.toThrowError(
+    /does not have permission to access/i
+  )
 })
