@@ -60,13 +60,19 @@ export function cardsetRepository(db: Database) {
           'cardset.userId',
           sql<string>`COUNT(card.id)`.as('cardCount'),
         ])
-        .leftJoin('card', 'card.cardsetId', 'cardset.id') // Join card table on cardsetId
-        .where('cardset.userId', '=', userId) // Filter by userId
+        .leftJoin('card', 'card.cardsetId', 'cardset.id')
+        .where('cardset.userId', '=', userId)
         .groupBy('cardset.id')
         .orderBy('cardset.id', 'desc')
         .offset(offset)
         .limit(limit)
         .execute()
+    },
+    async delete(cardsetId: number) {
+      return db
+        .deleteFrom('cardset')
+        .where('id', '=', cardsetId)
+        .executeTakeFirstOrThrow()
     },
   }
 }

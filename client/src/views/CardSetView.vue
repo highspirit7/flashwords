@@ -15,7 +15,7 @@ import { useCardStore } from '@/stores/cards'
 
 const route = useRoute()
 const router = useRouter()
-const { setSelectedCardset } = useCardsetStore()
+const { setSelectedCardset, deleteCardset } = useCardsetStore()
 const { selectedCardset } = storeToRefs(useCardsetStore())
 const { setCardsInSelectedCardset } = useCardStore()
 const { cardsInSelectedCardset } = storeToRefs(useCardStore())
@@ -76,9 +76,9 @@ function handleClickFlashCardPrev() {
   flashcardStore.$reset()
 }
 
-function handleDeleteCardSet() {
+function handleDeleteCardset() {
   try {
-    // deleteCardSet(currentCardset.id)
+    deleteCardset(selectedCardset.value.id)
     toasterStore.success({ text: 'Successfully deleted' })
     router.push('/')
   } catch (error) {
@@ -297,7 +297,7 @@ function handleDeleteCardSet() {
       </fwb-button>
     </div>
     <DeleteModal
-      :handleDeleteFunction="handleDeleteCardSet"
+      :handleDeleteFunction="handleDeleteCardset"
       :toggleModal="toggleDeleteModal"
       :message="`Are you sure you want to delete this card set(${selectedCardset.title})`"
     />

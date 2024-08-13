@@ -4,14 +4,18 @@ import { authenticatedProcedure } from '@server/trpc/authenticatedProcedure'
 import provideRepos from '@server/trpc/provideRepos'
 import { TRPCError } from '@trpc/server'
 
-export default authenticatedProcedure
-  .use(
-    provideRepos({
-      cardsetRepository,
-    })
+function serializeBigInt<T extends object>(obj: T): T {
+  return JSON.parse(
+    JSON.stringify(obj, (key, value) =>
+      typeof value === 'bigint' ? value.toString() : value
+    )
   )
+}
+
+export default authenticatedProcedure
+  .use(provideRepos({ cardsetRepository }))
   .input(idSchema)
-  .query(async ({ input: cardsetId, ctx: { repos, authUser } }) => {
+  .mutation(async ({ input: cardsetId, ctx: { repos, authUser } }) => {
     const cardset = await repos.cardsetRepository.findById(cardsetId)
 
     if (!cardset) {
@@ -29,5 +33,7 @@ export default authenticatedProcedure
       })
     }
 
-    return cardset
+    const result = await repos.cardsetRepository.delete(cardsetId)
+
+    return serializeBigInt(result)
   })
