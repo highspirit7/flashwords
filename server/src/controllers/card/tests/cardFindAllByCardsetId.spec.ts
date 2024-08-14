@@ -4,13 +4,11 @@ import { createCallerFactory } from '@server/trpc'
 import { wrapInRollbacks } from '@tests/utils/transactions'
 import { clearTables, insertAll } from '@tests/utils/records'
 import { authContext, requestContext } from '@tests/utils/context'
-import cardsetRouter from '..'
+import cardRouter from '..'
 
-const createCaller = createCallerFactory(cardsetRouter)
+const createCaller = createCallerFactory(cardRouter)
 const db = await wrapInRollbacks(createTestDatabase())
 
-// a general setup for the tests
-await clearTables(db, ['cardset'])
 const [user] = await insertAll(db, 'user', fakeUser())
 const [cardset] = await insertAll(
   db,
