@@ -1,7 +1,7 @@
 import type { Database, Card } from '@server/database'
 import { type CardPublic, cardKeysAll } from '@server/entities/card'
 import { NotFound } from '@server/utils/errors'
-import { type Insertable } from 'kysely'
+import { type Insertable, type Updateable } from 'kysely'
 
 type Pagination = {
   offset: number
@@ -20,7 +20,16 @@ export function cardRepository(db: Database) {
         .returning(cardKeysAll)
         .execute()
     },
-
+    async update(
+      record: Updateable<Pick<Card, 'term' | 'definition'>>,
+      cardId: number
+    ) {
+      return db
+        .updateTable('card')
+        .set(record)
+        .where('id', '=', cardId)
+        .executeTakeFirst()
+    },
     async findAllByCardsetId({
       offset,
       limit,
