@@ -2,15 +2,8 @@ import { idSchema } from '@server/entities/shared'
 import { cardsetRepository } from '@server/repositories/cardsetRepository'
 import { authenticatedProcedure } from '@server/trpc/authenticatedProcedure'
 import provideRepos from '@server/trpc/provideRepos'
+import serializeBigInt from '@server/utils/serializeBigInt'
 import { TRPCError } from '@trpc/server'
-
-function serializeBigInt<T extends object>(obj: T): T {
-  return JSON.parse(
-    JSON.stringify(obj, (key, value) =>
-      typeof value === 'bigint' ? value.toString() : value
-    )
-  )
-}
 
 export default authenticatedProcedure
   .use(provideRepos({ cardsetRepository }))
