@@ -39,7 +39,6 @@ export function cardRepository(db: Database) {
         .selectFrom('card')
         .select(cardKeysAll)
         .where('cardsetId', '=', cardsetId)
-        .orderBy('id', 'desc')
         .offset(offset)
         .limit(limit)
         .execute()
