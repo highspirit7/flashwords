@@ -1,9 +1,9 @@
-import { idSchema } from '@server/entities/shared'
 import { createTestDatabase } from '@tests/utils/database'
-import { fakeCard, fakeCardset, fakeUser } from '@server/entities/tests/fakes'
+import { fakeCardset, fakeUser, fakeCard } from '@server/entities/tests/fakes'
 import { wrapInRollbacks } from '@tests/utils/transactions'
 import { insertAll } from '@tests/utils/records'
 import { cardsetRepository } from '../cardsetRepository'
+import serializeBigInt from '@server/utils/serializeBigInt'
 
 const db = await wrapInRollbacks(createTestDatabase())
 const repository = cardsetRepository(db)
@@ -151,5 +151,41 @@ describe('delete', () => {
     const { numDeletedRows } = await repository.delete(cardset.id)
 
     expect(numDeletedRows).toEqual(BigInt(1))
+  })
+})
+
+describe('update', async () => {
+  it('should update the card with the given cardId', async () => {
+    const [cardset] = await insertAll(db, 'cardset', [
+      fakeCardset({
+        userId: user.id,
+      }),
+    ])
+
+    const updateResult = await repository.update(
+      { title: 'Dutch B1' },
+      cardset.id
+    )
+
+    const numUpdatedRows: string = serializeBigInt(updateResult).numUpdatedRows
+
+    expect(numUpdatedRows).toEqual('1')
+  })
+
+  it('should return 0 numUpdatedRows if there is no matching card with the given cardId', async () => {
+    const [cardset] = await insertAll(db, 'cardset', [
+      fakeCardset({
+        userId: user.id,
+      }),
+    ])
+
+    const updateResult = await repository.update(
+      { title: 'Dutch B1' },
+      cardset.id + 11111
+    )
+
+    const numUpdatedRows: string = serializeBigInt(updateResult).numUpdatedRows
+
+    expect(numUpdatedRows).toEqual('0')
   })
 })

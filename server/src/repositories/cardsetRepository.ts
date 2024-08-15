@@ -3,7 +3,7 @@ import {
   type CardsetPublicWithCardCount,
   cardsetKeysAll,
 } from '@server/entities/cardset'
-import { type Insertable, sql } from 'kysely'
+import { type Insertable, sql, type Updateable } from 'kysely'
 import { NotFound } from '@server/utils/errors'
 
 type Pagination = {
@@ -73,6 +73,16 @@ export function cardsetRepository(db: Database) {
         .deleteFrom('cardset')
         .where('id', '=', cardsetId)
         .executeTakeFirstOrThrow()
+    },
+    async update(
+      record: Updateable<Pick<Cardset, 'title' | 'description'>>,
+      cardsetId: number
+    ) {
+      return db
+        .updateTable('cardset')
+        .set(record)
+        .where('id', '=', cardsetId)
+        .executeTakeFirst()
     },
   }
 }
