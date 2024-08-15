@@ -2,8 +2,8 @@ import { fakeCardset, fakeUser, fakeCard } from '@server/entities/tests/fakes'
 import { createTestDatabase } from '@tests/utils/database'
 import { createCallerFactory } from '@server/trpc'
 import { wrapInRollbacks } from '@tests/utils/transactions'
-import { clearTables, insertAll } from '@tests/utils/records'
-import { authContext, requestContext } from '@tests/utils/context'
+import { insertAll } from '@tests/utils/records'
+import { authContext } from '@tests/utils/context'
 import cardRouter from '..'
 
 const createCaller = createCallerFactory(cardRouter)

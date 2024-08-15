@@ -16,7 +16,7 @@ export default authenticatedProcedure
     )
   )
   .mutation(async ({ input: cards, ctx: { repos } }) => {
-    const createdCardset = await repos.cardRepository.createAll(cards)
+    const createdCards = await repos.cardRepository.createAll(cards)
 
-    return createdCardset
+    return createdCards
   })
