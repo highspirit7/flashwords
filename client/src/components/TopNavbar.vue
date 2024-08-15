@@ -6,7 +6,6 @@ import { useRouter } from 'vue-router'
 import plusPng from '@/assets/plus.png'
 import * as localStorage from '@/utils/storage'
 import useAuthStore from '@/stores/auth'
-import { assertError } from '@/utils/errors'
 import { useToasterStore } from '@/stores/toaster'
 import { DEFAULT_SERVER_ERROR } from '@/consts'
 
@@ -32,7 +31,6 @@ async function onClickLogout() {
     toaster.success({ text: 'Successfully logged out.' })
     router.replace('/login')
   } catch (error) {
-    assertError(error)
     toaster.danger({ text: DEFAULT_SERVER_ERROR })
   }
 }
@@ -83,7 +81,7 @@ async function onClickLogout() {
             </button>
           </li>
           <li v-if="authStore.isLoggedIn">
-            <router-link to="/create-card-set">
+            <router-link to="/create-cardset">
               <fwb-button color="default" pill square>
                 <img :src="plusPng" alt="" />
               </fwb-button>
