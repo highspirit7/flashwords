@@ -107,7 +107,7 @@ it('throws an error when refresh token is expried', async () => {
     { user: { id: exisitingUser.id } },
     refreshTokenSecret,
     {
-      expiresIn: refreshTokenExpiresIn,
+      expiresIn: '1s',
     }
   )
 
