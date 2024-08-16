@@ -2,21 +2,32 @@
 import { onClickOutside } from '@vueuse/core'
 import { ref, type Ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-
 import { isHTMLInputElement } from '@/utils/typePredicates'
 import type { CardPublic } from '@server/shared/types'
+import { authTrpc } from '@/trpc'
+import { assertError } from '@/utils/errors'
+import { useToasterStore } from '@/stores/toaster'
 
 const router = useRouter()
 const route = useRoute()
+const toasterStore = useToasterStore()
 const isEditing = ref(false)
 const target: Ref<HTMLLIElement | null> = ref(null)
 const props = defineProps<{ card: CardPublic }>()
 const emit = defineEmits<{ (e: 'finishEditing'): void }>()
 const { card } = props
 
-function handleFinishEditing() {
+async function handleFinishEditing() {
   isEditing.value = false
-  emit('finishEditing')
+  try {
+    await authTrpc.card.update.mutate({
+      record: { term: card.term, definition: card.definition },
+      cardId: card.id,
+    })
+  } catch (error) {
+    assertError(error)
+    toasterStore.danger({ text: error.message })
+  }
 }
 
 function handleClickOpenBookIcon() {
@@ -25,7 +36,7 @@ function handleClickOpenBookIcon() {
   router.push(`${route.path}/${card.term}`)
 }
 
-onClickOutside(target, () => {
+onClickOutside(target, async () => {
   if (isEditing.value) handleFinishEditing()
 })
 </script>

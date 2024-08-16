@@ -42,12 +42,6 @@ onMounted(async () => {
   })
 })
 
-function onFinishEditingCard() {
-  // TODO
-  //   updateCardSet({ ...currentCardset, updatedAt: new Date() })
-  //   flashcards.value = getCardsOfCurrentCardSet(route.params.id)
-}
-
 function toggleDeleteModal() {
   deleteExampleModal.value?.toggle()
   dropdown.value?.hide()
@@ -266,12 +260,7 @@ function handleDeleteCardset() {
     </div>
 
     <ul class="my-4">
-      <TermCard
-        v-for="card in cardsInSelectedCardset"
-        :key="card.id"
-        :card="card"
-        @finish-editing="onFinishEditingCard"
-      />
+      <TermCard v-for="card in cardsInSelectedCardset" :key="card.id" :card="card" />
     </ul>
     <div class="flex justify-center mb-4">
       <fwb-button outline square @click="router.push(`${route.path}/edit`)">
