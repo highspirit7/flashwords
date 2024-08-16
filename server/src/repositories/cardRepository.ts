@@ -20,6 +20,13 @@ export function cardRepository(db: Database) {
         .returning(cardKeysAll)
         .execute()
     },
+    async findById(id: number): Promise<CardPublic | undefined> {
+      return db
+        .selectFrom('card')
+        .select(cardKeysAll)
+        .where('id', '=', id)
+        .executeTakeFirst()
+    },
     async update(
       record: Updateable<Pick<Card, 'term' | 'definition'>>,
       cardId: number
@@ -42,6 +49,12 @@ export function cardRepository(db: Database) {
         .offset(offset)
         .limit(limit)
         .execute()
+    },
+    async delete(cardId: number) {
+      return db
+        .deleteFrom('card')
+        .where('id', '=', cardId)
+        .executeTakeFirstOrThrow()
     },
   }
 }

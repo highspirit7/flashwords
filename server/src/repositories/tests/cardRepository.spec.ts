@@ -139,3 +139,25 @@ describe('update', async () => {
     expect(numUpdatedRows).toEqual('0')
   })
 })
+
+describe('delete', () => {
+  it('the number of deleted rows would be 0 if there is no matching card with the given id', async () => {
+    const [card] = await insertAll(db, 'card', [
+      fakeCard({ cardsetId: cardset.id }),
+    ])
+
+    const { numDeletedRows } = await repository.delete(card.id + 11111)
+
+    expect(numDeletedRows).toEqual(BigInt(0))
+  })
+
+  it('should delete a cardset with the given id', async () => {
+    const [card] = await insertAll(db, 'card', [
+      fakeCard({ cardsetId: cardset.id }),
+    ])
+
+    const { numDeletedRows } = await repository.delete(card.id)
+
+    expect(numDeletedRows).toEqual(BigInt(1))
+  })
+})
