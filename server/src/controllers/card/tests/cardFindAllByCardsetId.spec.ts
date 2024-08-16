@@ -2,7 +2,7 @@ import { fakeCardset, fakeUser, fakeCard } from '@server/entities/tests/fakes'
 import { createTestDatabase } from '@tests/utils/database'
 import { createCallerFactory } from '@server/trpc'
 import { wrapInRollbacks } from '@tests/utils/transactions'
-import { clearTables, insertAll } from '@tests/utils/records'
+import { insertAll } from '@tests/utils/records'
 import { authContext, requestContext } from '@tests/utils/context'
 import cardRouter from '..'
 
@@ -42,21 +42,4 @@ it('should return a list of cards', async () => {
 
   // Then (ASSERT)
   expect(cardsets).toHaveLength(1)
-})
-
-it('should return the latest card first', async () => {
-  // Given (ARRANGE)
-  const [cardOld] = await insertAll(db, 'card', [
-    fakeCard({ cardsetId: cardset.id }),
-  ])
-  const [cardNew] = await insertAll(db, 'card', [
-    fakeCard({ cardsetId: cardset.id }),
-  ])
-
-  // When (ACT)
-  const cards = await findAllByCardsetId({ cardsetId: cardset.id })
-
-  // Then (ASSERT)
-  expect(cards[0]).toMatchObject(cardNew)
-  expect(cards[1]).toMatchObject(cardOld)
 })

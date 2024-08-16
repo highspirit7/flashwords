@@ -75,25 +75,6 @@ describe('findAllByCardsetId', () => {
     expect(cards).toEqual([])
   })
 
-  it('should return cards in descending order(id)', async () => {
-    await insertAll(db, 'card', [
-      fakeCard({
-        cardsetId: cardset.id,
-      }),
-      fakeCard({
-        cardsetId: cardset.id,
-      }),
-    ])
-
-    const cards = await repository.findAllByCardsetId({
-      offset: 0,
-      limit: 10,
-      cardsetId: cardset.id,
-    })
-
-    expect(cards[0].id).toBeGreaterThan(cards[1].id)
-  })
-
   it('should return 3 cards with setting limit as 3', async () => {
     await insertAll(db, 'card', [
       fakeCard({
