@@ -23,15 +23,13 @@ const [card, cardOther] = await insertAll(db, 'card', [
 const { remove } = createCaller(authContext({ db }, user))
 
 it('should delete a card', async () => {
-  // When (ACT)
-  const { numDeletedRows } = await remove(card.id)
+  const removeResult = await remove(card.id)
 
-  // Then (ASSERT)
-  expect(numDeletedRows).toEqual('1')
+  expect(removeResult.success).toStrictEqual(true)
 })
 
 it('should throw an error if the card does not exist', async () => {
   const nonExistantId = cardset.id + cardOther.id
 
-  await expect(remove(nonExistantId)).rejects.toThrowError(/not found/i)
+  await expect(remove(nonExistantId)).rejects.toThrowError(/deletion failed/i)
 })
