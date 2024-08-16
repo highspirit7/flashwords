@@ -80,7 +80,7 @@ export function cardsetRepository(db: Database) {
     ) {
       return db
         .updateTable('cardset')
-        .set(record)
+        .set({ ...record, updatedAt: new Date() })
         .where('id', '=', cardsetId)
         .executeTakeFirst()
     },
