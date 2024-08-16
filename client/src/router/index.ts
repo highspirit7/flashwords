@@ -47,40 +47,4 @@ const router = createRouter({
   },
 })
 
-router.beforeEach(async (to, from) => {
-  const authStore = useAuthStore()
-  const toasterStore = useToasterStore()
-  const { isLoggedIn, verifyWithRefreshToken } = authStore
-
-  if (isLoggedIn && to.name === 'login') {
-    return { name: 'home' }
-  }
-
-  if (!isLoggedIn) {
-    if (
-      to.name !== 'login' &&
-      to.name !== 'signup' &&
-      from.name !== 'login' &&
-      from.name !== 'signup'
-    ) {
-      try {
-        await verifyWithRefreshToken()
-        return
-      } catch (error) {
-        toasterStore.info({ text: 'Your session has expired. Please log in again.' })
-        return { name: 'login' }
-      }
-    }
-
-    if (to.name !== 'login' && to.name !== 'signup') {
-      toasterStore.warning({ text: 'You must log in first' })
-      return { name: 'login' }
-    }
-
-    return true
-  }
-
-  return true
-})
-
 export default router

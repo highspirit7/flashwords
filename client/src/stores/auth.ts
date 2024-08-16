@@ -1,10 +1,13 @@
-import { getUserIdFromToken } from '@/utils/auth'
-import { publicTrpc } from '@/trpc'
 import { defineStore } from 'pinia'
 import { computed, ref, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { publicTrpc } from '@/trpc'
+import { TRPCClientError } from '@trpc/client'
+import { useToasterStore } from './toaster'
+import { getUserIdFromToken } from '@/utils/auth'
 
 const useAuthStore = defineStore('auth', () => {
+  const router = useRouter()
   const authToken: Ref<string | null> = ref(null)
   const authUserId = computed(() => (authToken.value ? getUserIdFromToken(authToken.value) : null))
   const isLoggedIn = computed(() => !!authToken.value)
@@ -22,14 +25,27 @@ const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout() {
-    const router = useRouter()
+    const toasterStore = useToasterStore()
 
-    await publicTrpc.user.logout.mutate()
-    authToken.value = null
-    router.replace('/login')
+    try {
+      await publicTrpc.user.logout.mutate()
+    } catch (error: unknown) {
+      if (error instanceof TRPCClientError) {
+        if (error.data?.httpStatus === 401) {
+          toasterStore.danger({ text: error.message })
+        }
+      }
+    } finally {
+      $reset()
+      router.replace('/login')
+    }
   }
 
-  return { authToken, authUserId, isLoggedIn, login, logout, verifyWithRefreshToken }
+  function $reset() {
+    authToken.value = null
+  }
+
+  return { authToken, authUserId, isLoggedIn, login, logout, verifyWithRefreshToken, $reset }
 })
 
 export default useAuthStore
