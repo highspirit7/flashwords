@@ -33,21 +33,24 @@ const authTrpc = createTRPCProxyClient<AppRouter>({
           ...options,
           credentials: 'include',
         }).then(async response => {
-          const authStore = useAuthStore()
-
-          // TODO : Need to test this part once this app can make authenticate request
           if (response.status === 401) {
-            await renewAccessToken()
+            const toasterStore = useToasterStore()
+            const authStore = useAuthStore()
 
-            const newToken = authStore.authToken
-            if (newToken) {
-              const headers = options?.headers as Record<string, string>
+            try {
+              await authStore.verifyWithRefreshToken()
 
-              headers['Authorization'] = `Bearer ${newToken}`
-              console.log('set a new access token to header')
+              const newToken = authStore.authToken
+              if (newToken) {
+                const headers = options?.headers as Record<string, string>
+
+                headers['Authorization'] = `Bearer ${newToken}`
+                console.log('set a new access token to header')
+                return fetch(url, options)
+              }
+            } catch (error: unknown) {
+              handleAuthenticationError(error, toasterStore, authStore)
             }
-
-            return fetch(url, options)
           }
 
           return response
@@ -67,26 +70,25 @@ const authTrpc = createTRPCProxyClient<AppRouter>({
   ],
 })
 
-async function renewAccessToken() {
-  const toasterStore = useToasterStore()
-  const authStore = useAuthStore()
-
-  try {
-    await authStore.verifyWithRefreshToken()
-  } catch (error: unknown) {
-    authStore.logout()
-
-    if (error instanceof TRPCClientError) {
-      if (error.data?.httpStatus === 401) {
-        toasterStore.danger({ text: 'Your session has expired. Please log in again.' })
-      } else {
-        toasterStore.danger({ text: DEFAULT_SERVER_ERROR })
-      }
-    }
-
+function handleAuthenticationError(
+  error: unknown,
+  toasterStore: ReturnType<typeof useToasterStore>,
+  authStore: ReturnType<typeof useAuthStore>,
+) {
+  if (error instanceof TRPCClientError) {
+    const errorMessage =
+      error.data?.httpStatus === 401
+        ? error.message.includes('does not exist')
+          ? 'Please log in first.'
+          : 'Your session has expired. Please log in again.'
+        : DEFAULT_SERVER_ERROR
+    toasterStore.danger({ text: errorMessage })
+  } else {
     assertError(error)
-    toasterStore.danger({ text: error.message })
+    toasterStore.danger({ text: 'Please log in' })
   }
+
+  authStore.logout()
 }
 
 export { publicTrpc, authTrpc }
