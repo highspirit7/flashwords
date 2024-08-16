@@ -9,8 +9,6 @@ import cardsetRouter from '..'
 const createCaller = createCallerFactory(cardsetRouter)
 const db = await wrapInRollbacks(createTestDatabase())
 
-// a general setup for the tests
-await clearTables(db, ['cardset'])
 const [user] = await insertAll(db, 'user', fakeUser())
 
 const { findAll } = createCaller(authContext({ db }, user))

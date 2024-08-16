@@ -11,7 +11,7 @@ const toatserStore = useToasterStore()
     <Transition name="toast">
       <div v-if="toatserStore.toasts.length" class="toaster-wrapper">
         <TransitionGroup name="toast" tag="ul">
-          <li v-for="toast in toatserStore.toasts" class="toaster-inner" :key="toast.text">
+          <li v-for="toast in toatserStore.toasts" class="toaster-inner" :key="toast.id">
             <fwb-alert icon :type="toast.status">
               {{ toast.text }}
             </fwb-alert>

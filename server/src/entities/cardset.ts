@@ -6,7 +6,7 @@ import type { Cardset } from '@server/database/types'
 export const cardsetSchema = z.object({
   id: idSchema,
   userId: idSchema,
-  title: z.string().trim(),
+  title: z.string().trim().min(1),
   description: z.string().trim(),
   createdAt: z.date(),
   updatedAt: z.date(),

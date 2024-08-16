@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
-
+import { v4 as uuidv4 } from 'uuid'
 export type ToastStatus = 'success' | 'warning' | 'danger' | 'info'
 
 interface Toast {
   text: string
   status: ToastStatus
-  id: number
+  id: string
 }
 type ToastPayload = { timeout?: number; text: string }
 
@@ -15,7 +15,7 @@ const defaultTimeout = 3000
 const createToast = (text: string, status: ToastStatus): Toast => ({
   text,
   status,
-  id: Math.random() * 1000,
+  id: uuidv4(),
 })
 
 export const useToasterStore = defineStore('toaster', () => {
