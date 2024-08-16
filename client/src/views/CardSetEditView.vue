@@ -1,72 +1,92 @@
 <script setup lang="ts">
 import { FwbHeading, FwbButton, FwbInput, FwbTextarea } from 'flowbite-vue'
-import { ref, type Ref, computed, nextTick } from 'vue'
-import { v4 as uuidv4 } from 'uuid'
+import { ref, computed, nextTick, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter, useRoute } from 'vue-router'
-
-import type { CardSet, Card } from '@/stores/cardSet'
-import { getCurrentCardSet } from '@/utils/currentCardSet'
-import { useCardSetStore } from '@/stores/cardSet'
 import { useToasterStore } from '@/stores/toaster'
+import { useCardsetStore } from '@/stores/cardsets'
+import { useCardStore } from '@/stores/cards'
+import { authTrpc } from '@/trpc'
+import { assertError } from '@/utils/errors'
 
 const route = useRoute()
 const router = useRouter()
-const loading = ref(false)
+// const loading = ref(false)
 const hasSubmittedOnce = ref(false)
-const { updateCardSet } = useCardSetStore()
+const { selectedCardset } = storeToRefs(useCardsetStore())
+const { setCardsInSelectedCardset, addEmptyCard, removeCard } = useCardStore()
+const { cardsInSelectedCardset } = storeToRefs(useCardStore())
+const { setSelectedCardset } = useCardsetStore()
 const toasterStore = useToasterStore()
-const currentCardSet: Ref<CardSet> = ref(getCurrentCardSet(route.params.id))
+
+onMounted(async () => {
+  const cardsetId = Number(route.params.id)
+  if (cardsInSelectedCardset.value.length < 1) setCardsInSelectedCardset(cardsetId)
+
+  if (selectedCardset.value.id === 0) setSelectedCardset(cardsetId)
+})
+
+// TODO
+// 현재 포커싱된 카드 데이터를 위한 상태 필요
+// 포커스 없어질 때 자동적으로 서버로 호출
+// 포커스가 유지된(작업중인 카드가 있는) 상황에서 돌아가기 버튼 누르면 아마도 포커스가 알아서 아웃되면서 서버로 호출이 되지 않을까 싶은데 작업하면서 테스트 필요
+// 서버에서 업데이트, 삭제 호출할때마다 토스트 띄워주기(에러 나는 경우에만)
 
 const hasAtLeastOneFilledCard = computed(() => {
-  if (currentCardSet.value.cards.length > 0) {
-    const { term, definition } = currentCardSet.value.cards[0]
+  if (cardsInSelectedCardset.value.length > 0) {
+    const { term, definition } = cardsInSelectedCardset.value[0]
     return term.trim() !== '' && definition.trim() !== ''
   }
   return false
 })
 
-function onEditingDone() {
+// TODO : maybe better to show up a modal to confirm
+function onClickBackToCardset() {
   hasSubmittedOnce.value = true
 
-  if (currentCardSet.value.title !== '' && hasAtLeastOneFilledCard.value) {
-    loading.value = true
+  if (selectedCardset.value.title !== '' && hasAtLeastOneFilledCard.value) {
+    router.replace({ name: 'cardset', params: { id: selectedCardset.value.id } })
+  }
+}
 
-    try {
-      updateCardSet({ ...currentCardSet.value, updatedAt: new Date() })
-      toasterStore.success({ text: 'This card set was successfully editted!' })
-      router.push({ name: 'cardSet', params: { id: currentCardSet.value.id } })
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(error)
-        toasterStore.danger({ text: error.message })
-      }
-    } finally {
-      loading.value = false
-    }
+async function onBlurCardInput(record: { term?: string; definition?: string }, cardId: number) {
+  try {
+    await authTrpc.card.update.mutate({ record, cardId })
+  } catch (error) {
+    assertError(error)
+    toasterStore.danger({ text: error.message })
+  }
+}
+
+async function onBlurCardsetInput(
+  record: { title?: string; description?: string },
+  cardsetId: number,
+) {
+  if ('title' in record && record.title === '') return
+
+  try {
+    await authTrpc.cardset.update.mutate({ record, cardsetId })
+  } catch (error) {
+    assertError(error)
+    toasterStore.danger({ text: error.message })
   }
 }
 
 async function onClickAddCard() {
-  currentCardSet.value.cards.push({
-    id: uuidv4(),
-    term: '',
-    definition: '',
-    examples: [],
-  })
-
+  await addEmptyCard(selectedCardset.value.id)
   await nextTick()
   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
 }
 
-function handleClickTrashBinIcon(cardId: string) {
-  currentCardSet.value.cards = currentCardSet.value.cards.filter((card: Card) => card.id !== cardId)
+async function onClickTrashBinIcon(cardId: number) {
+  await removeCard(cardId)
 }
 </script>
 
 <template>
   <div class="md:mt-8 p-4 md:p-2">
-    <div class="flex justify-between">
-      <fwb-button color="dark" outline @click="$router.go(-1)">
+    <div class="flex justify-between items-center">
+      <fwb-button color="dark" outline @click="onClickBackToCardset">
         <template #prefix>
           <svg
             class="w-[18px] h-[18px]"
@@ -88,25 +108,29 @@ function handleClickTrashBinIcon(cardId: string) {
         </template>
         Back to card set</fwb-button
       >
-      <fwb-button size="md" :disabled="loading" :loading="loading" @click="onEditingDone"
-        >Done</fwb-button
-      >
+      <!-- ? Not sure if this part is needed or not -->
+      <!-- <fwb-p class="text-sm text-purple-600 dark:text-purple-400 italic"
+        >**Every time you finish editing each information, it will be saved in real time to
+        server.</fwb-p
+      > -->
     </div>
     <div class="mt-8 mb-4">
       <fwb-input
-        v-model="currentCardSet.title"
+        v-model="selectedCardset.title"
         label="Title"
         placeholder="Enter a title for this cards set"
         class="mb-2"
-        :class="{ error: hasSubmittedOnce && currentCardSet.title.trim() === '' }"
+        :class="{ error: hasSubmittedOnce && selectedCardset.title.trim() === '' }"
+        @blur="onBlurCardsetInput({ title: selectedCardset.title }, selectedCardset.id)"
       />
 
       <fwb-textarea
-        v-model="currentCardSet.description"
+        v-model="selectedCardset.description"
         :rows="4"
         label="Description(Not required)"
         placeholder="Add a description"
         class="resize-none"
+        @blur="onBlurCardsetInput({ description: selectedCardset.description }, selectedCardset.id)"
       />
     </div>
 
@@ -120,7 +144,7 @@ function handleClickTrashBinIcon(cardId: string) {
     <ul>
       <li
         class="bg-white dark:bg-gray-900 p-4 rounded-lg my-2"
-        v-for="(card, index) in currentCardSet.cards"
+        v-for="(card, index) in cardsInSelectedCardset"
         :key="card.id"
       >
         <div class="flex justify-between items-center">
@@ -130,7 +154,7 @@ function handleClickTrashBinIcon(cardId: string) {
             class="h-fit mx-2"
             data-modal-target="delete-example-modal"
             data-modal-toggle="delete-example-modal"
-            @click="() => handleClickTrashBinIcon(card.id)"
+            @click="onClickTrashBinIcon(card.id)"
             v-if="index > 0"
           >
             <svg
@@ -159,6 +183,7 @@ function handleClickTrashBinIcon(cardId: string) {
             class="w-full"
             :class="{ error: hasSubmittedOnce && card.term.trim() === '' && index < 1 }"
             data-testid="term-input--edit"
+            @blur="onBlurCardInput({ term: card.term }, card.id)"
           />
           <fwb-input
             v-model="card.definition"
@@ -166,6 +191,7 @@ function handleClickTrashBinIcon(cardId: string) {
             class="w-full"
             :class="{ error: hasSubmittedOnce && card.definition.trim() === '' && index < 1 }"
             data-testid="definition-input--edit"
+            @blur="onBlurCardInput({ definition: card.definition }, card.id)"
           />
         </div>
       </li>
