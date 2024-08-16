@@ -27,7 +27,7 @@ export default authenticatedProcedure
       throw new TRPCError({
         code: 'BAD_REQUEST',
         message:
-          'Update failed. The card with the specified ID may not exist, or no changes were made.',
+          'Update failed. No changes were made. The card with the specified ID may not exist.',
       })
     }
 
