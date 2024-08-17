@@ -94,13 +94,13 @@ describe('findAllByCardsetId', () => {
       }),
     ])
 
-    const cardsets = await repository.findAllByCardsetId({
+    const cards = await repository.findAllByCardsetId({
       offset: 0,
       limit: 3,
       cardsetId: cardset.id,
     })
 
-    expect(cardsets).toHaveLength(3)
+    expect(cards).toHaveLength(3)
   })
 })
 

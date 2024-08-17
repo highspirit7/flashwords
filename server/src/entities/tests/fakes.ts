@@ -1,4 +1,4 @@
-import type { Cardset, Card, User } from '@server/database/types'
+import type { Cardset, Card, User, Example } from '@server/database/types'
 import type { Insertable } from 'kysely'
 import { random } from '@tests/utils/random'
 import type { AuthUser } from '../user'
@@ -31,10 +31,6 @@ export const fakeAuthUser = <T extends Partial<AuthUser>>(
   ...overrides,
 })
 
-/**
- * Generates a fake article with some default test data.
- * @param overrides userId and any properties that should be different from default fake data.
- */
 export const fakeCardset = <T extends Partial<Insertable<Cardset>>>(
   overrides: T = {} as T
 ) =>
@@ -45,10 +41,6 @@ export const fakeCardset = <T extends Partial<Insertable<Cardset>>>(
     ...overrides,
   }) satisfies Insertable<Cardset>
 
-/**
- * Generates a fake comment with some default test data.
- * @param overrides articleId and any properties that should be different from default fake data.
- */
 export const fakeCard = <T extends Partial<Insertable<Card>>>(
   overrides: T = {} as T
 ) =>
@@ -58,3 +50,12 @@ export const fakeCard = <T extends Partial<Insertable<Card>>>(
     definition: random.string(),
     ...overrides,
   }) satisfies Insertable<Card>
+
+export const fakeExample = <T extends Partial<Insertable<Example>>>(
+  overrides: T = {} as T
+) =>
+  ({
+    cardId: randomId(),
+    content: random.string(),
+    ...overrides,
+  }) satisfies Insertable<Example>

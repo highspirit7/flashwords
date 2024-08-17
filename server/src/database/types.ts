@@ -25,6 +25,14 @@ export interface Cardset {
   userId: number
 }
 
+export interface Example {
+  cardId: number
+  content: string
+  createdAt: Generated<Timestamp>
+  id: Generated<number>
+  updatedAt: Generated<Timestamp>
+}
+
 export interface User {
   createdAt: Generated<Timestamp>
   email: string
@@ -38,5 +46,6 @@ export interface User {
 export interface DB {
   card: Card
   cardset: Cardset
+  example: Example
   user: User
 }

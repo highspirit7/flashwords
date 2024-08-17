@@ -33,7 +33,7 @@ export function cardRepository(db: Database) {
     ) {
       return db
         .updateTable('card')
-        .set(record)
+        .set({ ...record, updatedAt: new Date() })
         .where('id', '=', cardId)
         .executeTakeFirst()
     },

@@ -1,27 +1,23 @@
-import { cardRepository } from '@server/repositories/cardRepository'
-import { cardSchema } from '@server/entities/card'
+import { z } from 'zod'
 import { authenticatedProcedure } from '@server/trpc/authenticatedProcedure'
 import provideRepos from '@server/trpc/provideRepos'
-import { z } from 'zod'
 import { NotFound } from '@server/utils/errors'
 import { TRPCError } from '@trpc/server'
+import { idSchema } from '@server/entities/shared'
+import { exampleRepository } from '@server/repositories/exampleRepository'
 
 export default authenticatedProcedure
-  .use(provideRepos({ cardRepository }))
+  .use(provideRepos({ exampleRepository }))
   .input(
-    z.array(
-      cardSchema.pick({
-        term: true,
-        definition: true,
-        cardsetId: true,
-      })
-    )
+    z.object({
+      content: z.string().trim().min(1),
+      cardId: idSchema,
+    })
   )
-  .mutation(async ({ input: cards, ctx: { repos } }) => {
+  .mutation(async ({ input, ctx: { repos } }) => {
     try {
-      const createdCards = await repos.cardRepository.createAll(cards)
-
-      return createdCards
+      const createdExample = await repos.exampleRepository.create(input)
+      return createdExample
     } catch (error) {
       if (error instanceof NotFound) {
         throw new TRPCError({
