@@ -29,7 +29,7 @@ it('should delete a card', async () => {
 })
 
 it('should throw an error if the card does not exist', async () => {
-  const nonExistantId = cardset.id + cardOther.id
+  const nonExistentId = card.id + cardOther.id
 
-  await expect(remove(nonExistantId)).rejects.toThrowError(/deletion failed/i)
+  await expect(remove(nonExistentId)).rejects.toThrowError(/deletion failed/i)
 })

@@ -38,8 +38,8 @@ it('should return a list of cards', async () => {
   await insertAll(db, 'card', [fakeCard({ cardsetId: cardset.id })])
 
   // When (ACT)
-  const cardsets = await findAllByCardsetId({ cardsetId: cardset.id })
+  const cards = await findAllByCardsetId({ cardsetId: cardset.id })
 
   // Then (ASSERT)
-  expect(cardsets).toHaveLength(1)
+  expect(cards).toHaveLength(1)
 })
