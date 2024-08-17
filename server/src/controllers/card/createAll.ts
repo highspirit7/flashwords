@@ -3,6 +3,8 @@ import { cardSchema } from '@server/entities/card'
 import { authenticatedProcedure } from '@server/trpc/authenticatedProcedure'
 import provideRepos from '@server/trpc/provideRepos'
 import { z } from 'zod'
+import { NotFound } from '@server/utils/errors'
+import { TRPCError } from '@trpc/server'
 
 export default authenticatedProcedure
   .use(provideRepos({ cardRepository }))
@@ -16,7 +18,18 @@ export default authenticatedProcedure
     )
   )
   .mutation(async ({ input: cards, ctx: { repos } }) => {
-    const createdCards = await repos.cardRepository.createAll(cards)
+    try {
+      const createdCards = await repos.cardRepository.createAll(cards)
 
-    return createdCards
+      return createdCards
+    } catch (error) {
+      if (error instanceof NotFound) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: error.message,
+        })
+      }
+
+      throw error
+    }
   })
