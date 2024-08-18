@@ -26,12 +26,6 @@ onMounted(async () => {
   if (selectedCardset.value.id === 0) setSelectedCardset(cardsetId)
 })
 
-// TODO
-// 현재 포커싱된 카드 데이터를 위한 상태 필요
-// 포커스 없어질 때 자동적으로 서버로 호출
-// 포커스가 유지된(작업중인 카드가 있는) 상황에서 돌아가기 버튼 누르면 아마도 포커스가 알아서 아웃되면서 서버로 호출이 되지 않을까 싶은데 작업하면서 테스트 필요
-// 서버에서 업데이트, 삭제 호출할때마다 토스트 띄워주기(에러 나는 경우에만)
-
 const hasAtLeastOneFilledCard = computed(() => {
   if (cardsInSelectedCardset.value.length > 0) {
     const { term, definition } = cardsInSelectedCardset.value[0]

@@ -3,33 +3,29 @@ import { ref } from 'vue'
 import { FwbButton, FwbInput } from 'flowbite-vue'
 import { useRoute } from 'vue-router'
 
-import { isString } from '@/utils/typePredicates'
-import { useCardSetStore } from '@/stores/cardSet'
 import { useToasterStore } from '@/stores/toaster'
+import { useExampleStore } from '@/stores/examples'
+import { assertError } from '@/utils/errors'
 
 const route = useRoute()
-const sentence = ref('')
+const example = ref('')
 const props = defineProps<{
   toggleModal: () => void
 }>()
 const { toggleModal } = props
 const toasterStore = useToasterStore()
-const { addExampleOfCard } = useCardSetStore()
+const { addExample } = useExampleStore()
 
 function handleClickAdd() {
-  if (isString(route.params.cardSetId)) {
-    try {
-      addExampleOfCard(sentence.value, route.params.cardSetId)
-      toasterStore.success({ text: 'Successfully added an example!' })
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(error)
-        toasterStore.danger({ text: error.message })
-      }
-    } finally {
-      sentence.value = ''
-      toggleModal()
-    }
+  try {
+    addExample(example.value, Number(route.params.cardId))
+    toasterStore.success({ text: 'Successfully added an example!' })
+  } catch (error) {
+    assertError(error)
+    toasterStore.danger({ text: error.message })
+  } finally {
+    example.value = ''
+    toggleModal()
   }
 }
 </script>
@@ -52,6 +48,7 @@ function handleClickAdd() {
             type="button"
             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
             data-modal-hide="add-example-modal"
+            @click="toggleModal"
           >
             <svg
               class="w-3 h-3"
@@ -73,7 +70,7 @@ function handleClickAdd() {
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5 space-y-4">
-          <fwb-input v-model="sentence" placeholder="Type an example sentence" />
+          <fwb-input v-model="example" placeholder="Type an example sentence" />
         </div>
         <!-- Modal footer -->
         <div

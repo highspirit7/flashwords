@@ -4,20 +4,27 @@ import { useRoute } from 'vue-router'
 import { ref, type Ref, onMounted } from 'vue'
 import { Modal } from 'flowbite'
 import type { ModalInterface } from 'flowbite'
+import { storeToRefs } from 'pinia'
 
-import { useCardSetStore, type CardSet } from '@/stores/cardSet'
+import { useToasterStore } from '@/stores/toaster'
+import { useCardsetStore } from '@/stores/cardsets'
 import ExampleCard from '@/components/ExampleCard.vue'
 import AddExampleModal from '@/components/AddExampleModal.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
-import { getCurrentCardSet } from '@/utils/currentCardSet'
-import { useToasterStore } from '@/stores/toaster'
+import { useCardStore } from '@/stores/cards'
+import { useExampleStore } from '@/stores/examples'
+import { assertError } from '@/utils/errors'
+import { getSafeUrlParams } from '@/utils/url'
 
 const route = useRoute()
-const exampleIdToDelete = ref(0)
 const toasterStore = useToasterStore()
-const { selectedCard, deleteExampleInCard } = useCardSetStore()
-const currentCardset: Ref<CardSet> = ref(getCurrentCardSet(route.params.cardSetId))
-
+const { selectedCardset } = storeToRefs(useCardsetStore())
+const { selectedCard } = storeToRefs(useCardStore())
+const { examplesInSelectedCard } = storeToRefs(useExampleStore())
+const { setSelectedCardset } = useCardsetStore()
+const { setSelectedCard } = useCardStore()
+const { setExamplesInSelectedCard, deleteExample } = useExampleStore()
+const exampleIdToDelete = ref(0)
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
 const addExampleModal: Ref<ModalInterface | null> = ref(null)
 
@@ -28,6 +35,11 @@ onMounted(() => {
   addExampleModal.value = new Modal(document.getElementById('add-example-modal'), {
     placement: 'center',
   })
+
+  if (selectedCardset.value.id === 0) setSelectedCardset(Number(route.params.cardsetId))
+  if (selectedCard.value.id === 0) setSelectedCard(Number(route.params.cardId))
+
+  setExamplesInSelectedCard(Number(route.params.cardId))
 })
 
 function toggleAddExampleModal() {
@@ -40,13 +52,12 @@ function toggleDeleteExampleModal() {
 
 function handleDeleteExample() {
   try {
-    deleteExampleInCard(exampleIdToDelete.value, currentCardset.value.id)
+    deleteExample(exampleIdToDelete.value)
+
     toasterStore.success({ text: 'Successfully deleted' })
   } catch (error) {
-    if (error instanceof Error) {
-      console.log(error)
-      toasterStore.danger({ text: error.message })
-    }
+    assertError(error)
+    toasterStore.danger({ text: error.message })
   } finally {
     toggleDeleteExampleModal()
   }
@@ -92,9 +103,9 @@ function handleDeleteExample() {
             />
           </svg>
           <router-link
-            :to="`/card-set/${currentCardset.id}`"
+            :to="`/${getSafeUrlParams(selectedCardset.title)}/${selectedCardset.id}`"
             class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white max-w-40 truncate"
-            >{{ currentCardset.title }}</router-link
+            >{{ selectedCardset.title }}</router-link
           >
         </div>
       </li>
@@ -117,7 +128,7 @@ function handleDeleteExample() {
           </svg>
           <span
             class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400 truncate max-w-48"
-            >{{ route.params.term }}</span
+            >{{ selectedCard.term }}</span
           >
         </div>
       </li>
@@ -136,9 +147,9 @@ function handleDeleteExample() {
     </div>
     <hr class="h-px mb-6 md:my-8 bg-gray-200 border-0 dark:bg-gray-700" />
     <fwb-heading tag="h4" class="mb-4">Examples</fwb-heading>
-    <ul v-if="selectedCard.examples.length > 0">
+    <ul v-if="examplesInSelectedCard.length > 0">
       <ExampleCard
-        v-for="example in selectedCard.examples"
+        v-for="example in examplesInSelectedCard"
         :key="example.id"
         :example="example"
         @delete="id => (exampleIdToDelete = id)"

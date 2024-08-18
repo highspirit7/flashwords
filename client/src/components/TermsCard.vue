@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import type { CardsetPublicWithCardCount } from '@server/shared/types'
 import { RouterLink } from 'vue-router'
+import { getSafeUrlParams } from '@/utils/url'
 
 const props = defineProps<{
   data: CardsetPublicWithCardCount
 }>()
 </script>
+
 <template>
   <router-link
-    :to="`/cardset/${props.data.id}`"
+    :to="`/${getSafeUrlParams(props.data.title)}/${props.data.id}`"
     class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
     data-testid="terms-card"
   >

@@ -8,11 +8,24 @@ import { useToasterStore } from '@/stores/toaster'
 export const useCardStore = defineStore('cards', () => {
   const toasterStore = useToasterStore()
   const cardsInSelectedCardset: Ref<CardPublic[]> = ref([])
-
+  const selectedCard: Ref<CardPublic> = ref({
+    id: 0,
+    term: '',
+    definition: '',
+    cardsetId: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  })
   async function setCardsInSelectedCardset(cardsetId: number) {
     const cards = await authTrpc.card.findAllByCardsetId.query({ cardsetId })
 
     cardsInSelectedCardset.value = cards
+  }
+
+  async function setSelectedCard(cardId: number) {
+    const card = await authTrpc.card.find.query(cardId)
+
+    selectedCard.value = { ...card }
   }
 
   async function addEmptyCard(cardsetId: number) {
@@ -42,7 +55,9 @@ export const useCardStore = defineStore('cards', () => {
   }
   return {
     cardsInSelectedCardset,
+    selectedCard,
     setCardsInSelectedCardset,
+    setSelectedCard,
     addEmptyCard,
     removeCard,
   }

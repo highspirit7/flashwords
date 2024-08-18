@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
-import useAuthStore from '@/stores/auth'
-import { useToasterStore } from '@/stores/toaster'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,19 +25,19 @@ const router = createRouter({
       component: () => import('../views/CreateCardSetView.vue'),
     },
     {
-      path: '/cardset/:id',
+      path: '/:cardsetTitle/:id',
       name: 'cardset',
       component: () => import('../views/CardSetView.vue'),
     },
     {
-      path: '/cardset/:id/edit',
+      path: '/:cardsetTitle/:id/edit',
       name: 'editCardset',
       component: () => import('../views/CardSetEditView.vue'),
     },
     {
-      path: '/cardset/:cardsetId/:term',
-      name: 'termInCardset',
-      component: () => import('../views/TermView.vue'),
+      path: '/:cardsetTitle/:cardsetId/:cardTerm/:cardId',
+      name: 'card',
+      component: () => import('../views/CardView.vue'),
     },
   ],
   scrollBehavior() {

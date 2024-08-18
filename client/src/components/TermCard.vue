@@ -7,14 +7,19 @@ import type { CardPublic } from '@server/shared/types'
 import { authTrpc } from '@/trpc'
 import { assertError } from '@/utils/errors'
 import { useToasterStore } from '@/stores/toaster'
+import { useCardStore } from '@/stores/cards'
+import { getSafeUrlParams } from '@/utils/url'
 
 const router = useRouter()
 const route = useRoute()
 const toasterStore = useToasterStore()
+const { setSelectedCard } = useCardStore()
+
 const isEditing = ref(false)
 const target: Ref<HTMLLIElement | null> = ref(null)
 const props = defineProps<{ card: CardPublic }>()
 const emit = defineEmits<{ (e: 'finishEditing'): void }>()
+
 const { card } = props
 
 async function handleFinishEditing() {
@@ -31,9 +36,9 @@ async function handleFinishEditing() {
 }
 
 function handleClickOpenBookIcon() {
-  // TODO
-  //   setSelectedCard(card)
-  router.push(`${route.path}/${card.term}`)
+  setSelectedCard(card.id)
+
+  router.push(`${route.path}/${getSafeUrlParams(card.term)}/${card.id}`)
 }
 
 onClickOutside(target, async () => {
