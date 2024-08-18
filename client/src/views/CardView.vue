@@ -14,6 +14,7 @@ import DeleteModal from '@/components/DeleteModal.vue'
 import { useCardStore } from '@/stores/cards'
 import { useExampleStore } from '@/stores/examples'
 import { assertError } from '@/utils/errors'
+import { getSafeUrlParams } from '@/utils/url'
 
 const route = useRoute()
 const toasterStore = useToasterStore()
@@ -102,7 +103,7 @@ function handleDeleteExample() {
             />
           </svg>
           <router-link
-            :to="`/card-set/${selectedCardset.id}`"
+            :to="`/${getSafeUrlParams(selectedCardset.title)}/${selectedCardset.id}`"
             class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white max-w-40 truncate"
             >{{ selectedCardset.title }}</router-link
           >

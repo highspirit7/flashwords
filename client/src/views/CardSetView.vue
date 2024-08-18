@@ -12,6 +12,7 @@ import DeleteModal from '@/components/DeleteModal.vue'
 import { useToasterStore } from '@/stores/toaster'
 import useFlashcardStore from '@/stores/flashcard'
 import { useCardStore } from '@/stores/cards'
+import { getSafeUrlParams } from '@/utils/url'
 
 const route = useRoute()
 const router = useRouter()
@@ -126,7 +127,7 @@ function handleDeleteCardset() {
             />
           </svg>
           <router-link
-            :to="`/card-set/${route.params.id}`"
+            :to="`/${getSafeUrlParams(selectedCardset.title)}/${selectedCardset.id}`"
             class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white"
             >{{ selectedCardset.title }}</router-link
           >
