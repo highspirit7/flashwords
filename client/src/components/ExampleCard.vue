@@ -1,31 +1,27 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
 import { onClickOutside } from '@vueuse/core'
 import { ref, type Ref } from 'vue'
 
-import { useCardSetStore } from '@/stores/cardSet'
-import { isString, isHTMLInputElement } from '@/utils/typePredicates'
+import { isHTMLInputElement } from '@/utils/typePredicates'
+import type { ExamplePublic } from '@server/entities/example'
+import { useExampleStore } from '@/stores/examples'
 
-const route = useRoute()
 const isEditing = ref(false)
 const target: Ref<HTMLLIElement | null> = ref(null)
 const props = defineProps<{
-  example: { id: number; sentence: string }
+  example: ExamplePublic
   toggleDeleteExampleModal: () => void
 }>()
 const emit = defineEmits<{
   (e: 'delete', id: number): void
 }>()
 const { example, toggleDeleteExampleModal } = props
-const { saveSelectedCardInStorage, updateCardInCardSet } = useCardSetStore()
+const { updateExample } = useExampleStore()
 
 function handleFinishEditing() {
   isEditing.value = false
-  saveSelectedCardInStorage()
 
-  if (isString(route.params.cardSetId)) {
-    updateCardInCardSet(route.params.cardSetId)
-  }
+  updateExample(example.content, example.id)
 }
 
 function handleClickTrashBinIcon() {
@@ -34,7 +30,10 @@ function handleClickTrashBinIcon() {
 }
 
 onClickOutside(target, () => {
-  handleFinishEditing()
+  if (isEditing.value) {
+    console.log('onClickOutside')
+    handleFinishEditing()
+  }
 })
 </script>
 <template>
@@ -44,11 +43,11 @@ onClickOutside(target, () => {
         type="text"
         id="floating_standard"
         class="block py-2.5 px-0 me-4 w-full text-sm text-gray-900 dark:text-white bg-transparent border-0 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-        :value="example.sentence"
+        :value="example.content"
         @input="
           (event: Event) => {
             if (isHTMLInputElement(event.target)) {
-              example.sentence = event.target.value
+              example.content = event.target.value
             }
           }
         "
