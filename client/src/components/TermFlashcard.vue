@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { FwbButton } from 'flowbite-vue'
 import { storeToRefs } from 'pinia'
+import { onMounted, type Ref, ref } from 'vue'
+import { authTrpc } from '@/trpc'
 import useFlashcardStore from '@/stores/flashcard'
-import type { CardPublic } from '@server/shared/types'
+import type { CardPublic, ExamplePublic } from '@server/shared/types'
 
 const props = defineProps<{ card: CardPublic }>()
+const examples: Ref<ExamplePublic[]> = ref([])
+
+onMounted(async () => {
+  examples.value = await authTrpc.example.findAllByCardId.query({ cardId: props.card.id })
+})
 
 const { isFlipped, isHintShown } = storeToRefs(useFlashcardStore())
 const { toggleIsFlipped, toggleIsHintShown } = useFlashcardStore()
@@ -19,13 +26,13 @@ const { toggleIsFlipped, toggleIsHintShown } = useFlashcardStore()
     >
       <div class="flashcard" :class="{ 'flashcard-flipped': isFlipped }" data-testid="flashcard">
         <div class="question flex justify-center items-center relative">
-          <!-- <fwb-button
+          <fwb-button
             color="alternative"
             @click.stop="toggleIsHintShown"
             class="focus:ring-0 absolute top-4 left-6 md:left-10"
             pill
             size="xs"
-            v-if="card.examples.length > 0"
+            v-if="examples.length > 0"
           >
             <template #prefix>
               <svg
@@ -44,11 +51,11 @@ const { toggleIsFlipped, toggleIsHintShown } = useFlashcardStore()
                 />
               </svg>
             </template>
-            <span v-if="!isHintShown">Get a hint(example sentence)</span
+            <span v-if="!isHintShown">Get a hint(example)</span
             ><span v-else class="underline decoration-sky-600 font-semibold italic">{{
-              card.examples[Math.floor(Math.random() * card.examples.length)].sentence
+              examples[Math.floor(Math.random() * examples.length)].content
             }}</span></fwb-button
-          > -->
+          >
           <div
             class="text-5xl leading-normal dark:text-white w-full px-16 truncate"
             data-testid="flashcard-term"
