@@ -31,7 +31,6 @@ function handleClickTrashBinIcon() {
 
 onClickOutside(target, () => {
   if (isEditing.value) {
-    console.log('onClickOutside')
     handleFinishEditing()
   }
 })

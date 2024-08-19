@@ -54,9 +54,6 @@ function toggleDeleteModal() {
 }
 
 function handleClickFlashCardNext() {
-  //   console.log(
-  //     `currentIndex : ${currentFlashCardIndex} / cards length : ${cardsInSelectedCardset.length}`,
-  //   )
   if (currentFlashCardIndex.value === cardsInSelectedCardset.value.length) {
     currentFlashCardIndex.value = 1
   } else {
