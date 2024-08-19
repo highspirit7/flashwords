@@ -35,8 +35,13 @@ onMounted(async () => {
     document.getElementById('dropdownMenuIconHorizontalButton'),
   )
 
-  await setSelectedCardset(Number(route.params.id))
-  await setCardsInSelectedCardset(Number(route.params.id))
+  if (selectedCardset.value.id === 0) {
+    await setSelectedCardset(Number(route.params.id))
+  }
+
+  if (cardsInSelectedCardset.value.length < 1) {
+    await setCardsInSelectedCardset(Number(route.params.id))
+  }
 
   nextTick(() => {
     initFlowbite()

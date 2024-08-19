@@ -5,10 +5,12 @@ import { useRoute, useRouter, type LocationQuery } from 'vue-router'
 import { useCardsetStore } from '@/stores/cardsets'
 import TermsCard from '@/components/TermsCard.vue'
 import type { CardsetPublic } from '@server/shared/types'
+import { storeToRefs } from 'pinia'
 
 const route = useRoute()
 const router = useRouter()
-const cardsetStore = useCardsetStore()
+const { setCardsets, setFilteredCardsets, resetFilteredCardsets } = useCardsetStore()
+const { cardsets, filteredCardsets } = storeToRefs(useCardsetStore())
 const searchQuery = ref('')
 
 function updateRouteWithSearchQuery() {
@@ -18,7 +20,9 @@ function updateRouteWithSearchQuery() {
 }
 
 onMounted(async () => {
-  await cardsetStore.setInitialCardsets()
+  if (cardsets.value.length < 1) {
+    await setCardsets()
+  }
 })
 
 watch(
@@ -26,15 +30,15 @@ watch(
   (newQuery: LocationQuery) => {
     if (newQuery.search_query && typeof newQuery.search_query === 'string') {
       const lowerCasedQuery = newQuery.search_query.toLocaleLowerCase()
-      const filtered = cardsetStore.cardsets.filter((cardSet: CardsetPublic) =>
+      const filtered = cardsets.value.filter((cardSet: CardsetPublic) =>
         cardSet.title.toLocaleLowerCase().includes(lowerCasedQuery),
       )
 
-      cardsetStore.setFilteredCardsets(filtered)
+      setFilteredCardsets(filtered)
       searchQuery.value = newQuery.search_query
     } else {
       searchQuery.value = ''
-      cardsetStore.resetFilteredCardsets()
+      resetFilteredCardsets()
     }
   },
 )
@@ -78,8 +82,8 @@ watch(
         </button>
       </div>
     </div>
-    <ul class="card-sets-list" v-if="cardsetStore.filteredCardsets.length > 0">
-      <li v-for="cardset in cardsetStore.filteredCardsets" class="mb-2 md:mb-0" :key="cardset.id">
+    <ul class="card-sets-list" v-if="filteredCardsets.length > 0">
+      <li v-for="cardset in filteredCardsets" class="mb-2 md:mb-0" :key="cardset.id">
         <TermsCard :data="cardset" />
       </li>
     </ul>
