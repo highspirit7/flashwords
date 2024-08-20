@@ -72,12 +72,11 @@ https://www.figma.com/file/qEP8i8slhP189EQ1RlE3Es/Word-flashcard?type=design&nod
 - [x] Change project set up to be monorepo
 - [x] Jwt authentication(server)
 - [x] Jwt authentication(client)
-- [ ] db migrations(cardset, card, example)
-  - example table is not created yet
+- [x] db migrations(cardset, card, example)
 - [x] create cardset endpoints(server)
-- [ ] adopt cardset endpoints(client)
+- [x] adopt cardset endpoints(client)
 - [x] create card endpoints(server)
-- [ ] adopt card endpoints(client)
-- [ ] create example endpoint(server)
-- [ ] adopt example endpoint(client)
+- [x] adopt card endpoints(client)
+- [x] create example endpoint(server)
+- [x] adopt example endpoint(client)
 - [ ] e2e testings on client
