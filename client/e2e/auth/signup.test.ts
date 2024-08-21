@@ -50,7 +50,7 @@ test.describe.serial('signup with validation and errors', () => {
     await expect(page.getByText('Username must be at most 24 characters long')).toBeVisible()
   })
 
-  test('should show server error message if signup fails', async ({ page, browser }) => {
+  test('should show server error message if signup fails', async ({ page }) => {
     await page.fill('input[placeholder="Enter your email"]', testEmail)
     await page.fill('input[placeholder="sunshine2000"]', anotherUsername)
     await page.fill('input[placeholder="Enter your password"]', VALID_PASSWORD)
