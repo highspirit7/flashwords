@@ -32,11 +32,14 @@ export default publicProcedure
       .catch((error: unknown) => {
         assertError(error)
 
-        // wrapping an ugly error into a user-friendly one
         if (error.message.includes('duplicate key')) {
+          const duplicatedKey = error.message.includes('email')
+            ? 'email'
+            : 'username'
+
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'User with this email already exists',
+            message: `User with this ${duplicatedKey} already exists`,
             cause: error,
           })
         }
