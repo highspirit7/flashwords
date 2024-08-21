@@ -24,7 +24,10 @@ const signupUserSchema = z.object({
       message: 'Password must include at least one lowercase letter',
     })
     .regex(/[0-9]/, { message: 'Password must include at least one number' }),
-  username: z.string().min(4).max(24),
+  username: z
+    .string()
+    .min(4, 'Username must be at least 4 characters long')
+    .max(24, 'Username must be at most 24 characters long'),
 })
 type SignupUser = z.infer<typeof signupUserSchema>
 const signupForm: Ref<SignupUser> = ref({
@@ -136,6 +139,7 @@ async function onClickSignup() {
         </p>
       </div>
       <div
+        data-testid="signupErrorMessage"
         v-show="signupErrorMessage !== ''"
         class="my-4 w-full font-semibold p-4 border-2 rounded-md border-red-500 text-red-500"
       >

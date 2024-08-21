@@ -17,7 +17,10 @@ export const userSchema = z.object({
       message: 'Password must include at least one lowercase letter',
     })
     .regex(/[0-9]/, { message: 'Password must include at least one number' }),
-  username: z.string().min(4).max(24),
+  username: z
+    .string()
+    .min(4, 'Username must be at least 4 characters long')
+    .max(24, 'Username must be at most 24 characters long'),
   refreshToken: z.string().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
