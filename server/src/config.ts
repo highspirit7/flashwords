@@ -22,10 +22,10 @@ const schema = z
 
     auth: z.object({
       accessTokenSecret: z.string(),
-      accessTokenExpiresIn: z.string().default(isDevTest ? '1m' : '10m'),
+      accessTokenExpiresIn: z.string().default(isTest ? '1m' : '10m'),
       refreshTokenSecret: z.string(),
-      refreshTokenExpiresIn: z.string().default(isDevTest ? '10m' : '1d'),
-      passwordCost: z.coerce.number().default(isDevTest ? 6 : 12),
+      refreshTokenExpiresIn: z.string().default(isTest ? '1s' : '1d'),
+      passwordCost: z.coerce.number().default(isTest ? 6 : 12),
     }),
 
     database: z.object({
@@ -42,8 +42,6 @@ const config = schema.parse({
   auth: {
     accessTokenSecret: env.ACCESS_TOKEN_SECRET,
     refreshTokenSecret: env.REFRESH_TOKEN_SECRET,
-    accessTokenExpiresIn: env.ACCESS_TOKEN_EXPIRES_IN,
-    refreshTokenExpiresIn: env.REFRESH_TOKEN_EXPIRES_IN,
     passwordCost: env.PASSWORD_COST,
   },
 
