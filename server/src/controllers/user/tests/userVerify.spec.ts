@@ -96,13 +96,12 @@ it('throws an error when there is no found user matching the refresh token in co
   )
 })
 
-it('throws an error when refresh token is expried', async () => {
+it('throws an error when refresh token is expired', async () => {
   const exisitingUser = await signup({
     username: 'existingUser',
     email: 'existing@user.com',
     password: 'passworD.123',
   })
-
   const refreshToken = jsonwebtoken.sign(
     { user: { id: exisitingUser.id } },
     refreshTokenSecret,
@@ -111,7 +110,12 @@ it('throws an error when refresh token is expried', async () => {
     }
   )
 
-  await login({ email: 'existing@user.com', password: 'passworD.123' })
+  // * If expriesIn of refresh token is not 1s, a different token will be generated through login
+  const { accessToken } = await login({
+    email: 'existing@user.com',
+    password: 'passworD.123',
+  })
+  console.log(accessToken)
 
   const { verify } = createCaller(
     requestContext({
@@ -123,10 +127,8 @@ it('throws an error when refresh token is expried', async () => {
       } as any,
     })
   )
-
   await new Promise((resolve) => {
     setTimeout(resolve, 1100)
   })
-
   await expect(verify).rejects.toThrow(/expire/)
 })
