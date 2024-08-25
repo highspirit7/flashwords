@@ -19,7 +19,9 @@ export default authenticatedProcedure
     })
   )
   .query(async ({ input, ctx: { repos } }) => {
-    const cards = await repos.cardRepository.findAllByCardsetId(input)
+    // if use try catch -> 200 response
+    // without try catch -> 500 response
 
+    const cards = await repos.cardRepository.findAllByCardsetId(input)
     return cards
   })

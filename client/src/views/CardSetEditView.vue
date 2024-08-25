@@ -21,9 +21,9 @@ const toasterStore = useToasterStore()
 
 onMounted(async () => {
   const cardsetId = Number(route.params.id)
-  if (cardsInSelectedCardset.value.length < 1) setCardsInSelectedCardset(cardsetId)
+  if (cardsInSelectedCardset.value.length < 1) await setCardsInSelectedCardset(cardsetId)
 
-  if (selectedCardset.value.id === 0) setSelectedCardset(cardsetId)
+  if (selectedCardset.value.id === 0) await setSelectedCardset(cardsetId)
 })
 
 const hasAtLeastOneFilledCard = computed(() => {
