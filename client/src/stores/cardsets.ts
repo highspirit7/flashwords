@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { authTrpc } from '@/trpc'
 import { useToasterStore } from '@/stores/toaster'
 import type { CardPublic, CardsetPublicWithCardCount } from '@server/shared/types'
+import { assertError } from '@/utils/errors'
 
 const defaultCardSet: CardsetPublicWithCardCount = {
   id: 0,
@@ -41,22 +42,39 @@ export const useCardsetStore = defineStore('cardsets', () => {
   }
 
   async function createCardset(input: { cardset: CreatableCardset; cards: CreatableCard[] }) {
-    await authTrpc.cardset.create.mutate(input)
+    try {
+      await authTrpc.cardset.create.mutate(input)
 
-    toasterStore.success({ text: 'You just created a new card set!' })
-    router.push('/')
+      toasterStore.success({ text: 'You just created a new cardset!' })
+      router.push('/')
+    } catch (error) {
+      assertError(error)
+      console.log(error)
+      toasterStore.danger({ text: 'Failed to create a cardset. Try again later' })
+    }
   }
 
   async function setSelectedCardset(cardsetId: number) {
-    const foundCardset = await authTrpc.cardset.find.query(cardsetId)
-    selectedCardset.value = foundCardset
+    try {
+      const foundCardset = await authTrpc.cardset.find.query(cardsetId)
+      selectedCardset.value = foundCardset
+    } catch (error) {
+      assertError(error)
+      toasterStore.danger({
+        text: 'Failed to fetch the cardset data. Try again later.',
+      })
+    }
   }
 
   // TODO : better to add return type of function as well
   // TODO : even void bettter to add anyway
 
   async function deleteCardset(id: number) {
-    await authTrpc.cardset.remove.mutate(id)
+    try {
+      await authTrpc.cardset.remove.mutate(id)
+    } catch (error) {
+      throw error
+    }
   }
 
   return {

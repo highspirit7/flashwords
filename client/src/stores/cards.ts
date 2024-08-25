@@ -16,16 +16,32 @@ export const useCardStore = defineStore('cards', () => {
     createdAt: new Date(),
     updatedAt: new Date(),
   })
-  async function setCardsInSelectedCardset(cardsetId: number) {
-    const cards = await authTrpc.card.findAllByCardsetId.query({ cardsetId })
 
-    cardsInSelectedCardset.value = cards
+  async function setCardsInSelectedCardset(cardsetId: number) {
+    try {
+      const cards = await authTrpc.card.findAllByCardsetId.query({ cardsetId })
+      cardsInSelectedCardset.value = cards
+    } catch (error) {
+      assertError(error)
+      console.log(error)
+
+      toasterStore.danger({
+        text: 'Failed to load cards. Try again later.',
+      })
+    }
   }
 
   async function setSelectedCard(cardId: number) {
-    const card = await authTrpc.card.find.query(cardId)
+    try {
+      const card = await authTrpc.card.find.query(cardId)
 
-    selectedCard.value = { ...card }
+      selectedCard.value = { ...card }
+    } catch (error) {
+      assertError(error)
+      toasterStore.danger({
+        text: 'Failed to fetch the card data. Try again later.',
+      })
+    }
   }
 
   async function addEmptyCard(cardsetId: number) {
