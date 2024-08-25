@@ -10,7 +10,7 @@ if (!env.NODE_ENV) env.NODE_ENV = 'development'
 env.TZ = 'UTC'
 
 const isTest = env.NODE_ENV === 'test'
-const isDevTest = env.NODE_ENV === 'development' || isTest
+// const isDevTest = env.NODE_ENV === 'development' || isTest
 
 const schema = z
   .object({
@@ -52,7 +52,7 @@ const config = schema.parse({
 
 export default config
 
-const allowedOrigins = ['http://localhost:5173']
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:3001']
 
 export const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
