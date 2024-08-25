@@ -13,12 +13,14 @@ import { useToasterStore } from '@/stores/toaster'
 import useFlashcardStore from '@/stores/flashcard'
 import { useCardStore } from '@/stores/cards'
 import { getSafeUrlParams } from '@/utils/url'
+import { assertError } from '@/utils/errors'
 
 const route = useRoute()
 const router = useRouter()
 const { setSelectedCardset, deleteCardset } = useCardsetStore()
 const { selectedCardset } = storeToRefs(useCardsetStore())
 const { setCardsInSelectedCardset } = useCardStore()
+
 const { cardsInSelectedCardset } = storeToRefs(useCardStore())
 const toasterStore = useToasterStore()
 const flashcardStore = useFlashcardStore()
@@ -35,13 +37,8 @@ onMounted(async () => {
     document.getElementById('dropdownMenuIconHorizontalButton'),
   )
 
-  if (selectedCardset.value.id === 0) {
-    await setSelectedCardset(Number(route.params.id))
-  }
-
-  if (cardsInSelectedCardset.value.length < 1) {
-    await setCardsInSelectedCardset(Number(route.params.id))
-  }
+  await setSelectedCardset(Number(route.params.id))
+  await setCardsInSelectedCardset(Number(route.params.id))
 
   nextTick(() => {
     initFlowbite()
@@ -79,10 +76,9 @@ function handleDeleteCardset() {
     toasterStore.success({ text: 'Successfully deleted' })
     router.push('/')
   } catch (error) {
-    if (error instanceof Error) {
-      console.log(error)
-      toasterStore.danger({ text: error.message })
-    }
+    assertError(error)
+    console.log(error)
+    toasterStore.danger({ text: 'Failed to delete a cardset. Try again later.' })
   } finally {
     toggleDeleteModal()
   }

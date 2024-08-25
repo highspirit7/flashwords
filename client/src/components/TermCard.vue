@@ -35,8 +35,8 @@ async function handleFinishEditing() {
   }
 }
 
-function handleClickOpenBookIcon() {
-  setSelectedCard(card.id)
+async function handleClickOpenBookIcon() {
+  await setSelectedCard(card.id)
 
   router.push(`${route.path}/${getSafeUrlParams(card.term)}/${card.id}`)
 }

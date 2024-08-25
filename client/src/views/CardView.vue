@@ -28,7 +28,7 @@ const exampleIdToDelete = ref(0)
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
 const addExampleModal: Ref<ModalInterface | null> = ref(null)
 
-onMounted(() => {
+onMounted(async () => {
   deleteExampleModal.value = new Modal(document.getElementById('delete-modal'), {
     placement: 'center',
   })
@@ -36,8 +36,8 @@ onMounted(() => {
     placement: 'center',
   })
 
-  if (selectedCardset.value.id === 0) setSelectedCardset(Number(route.params.cardsetId))
-  if (selectedCard.value.id === 0) setSelectedCard(Number(route.params.cardId))
+  if (selectedCardset.value.id === 0) await setSelectedCardset(Number(route.params.cardsetId))
+  await setSelectedCard(Number(route.params.cardId))
 
   setExamplesInSelectedCard(Number(route.params.cardId))
 })
@@ -57,7 +57,7 @@ function handleDeleteExample() {
     toasterStore.success({ text: 'Successfully deleted' })
   } catch (error) {
     assertError(error)
-    toasterStore.danger({ text: error.message })
+    toasterStore.danger({ text: 'Failed to delete an example, Try again later' })
   } finally {
     toggleDeleteExampleModal()
   }
