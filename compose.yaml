@@ -1,0 +1,60 @@
+name: flashwords
+
+services:
+  # spin up a database
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: grownuprince
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: flashwords_dev
+    ports:
+      - '5432'
+    volumes:
+      - flashwords_dev-db:/var/lib/postgresql/data
+
+  # start up an API server
+  server:
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
+    # If we would have some secrets that we want to pass:
+    # env_file:
+    #   - ./server/.env
+    environment:
+      DATABASE_URL: postgres://grownuprince:password@postgres:5432/flashwords_dev
+      PORT: 3000
+      ACCESS_TOKEN_SECRET: 438e18317bd2c363d8e25b79538e0ec0975bf718d9d55a9461ceb46f1ee9445b213de25e994de83ebf20281f1c7a0b5a77a53559d670d43ea5ec95b8e67ecfd9
+      REFRESH_TOKEN_SECRET: 94d65805550da90f221a627bac2d47fe51c80eeeec4556439518f21a4e3453f628ff5b5a7771e2a04baba2c8ce114f6dee821097b0b0e972c330a9406e2435a4
+    ports:
+      - '3000'
+    depends_on:
+      - postgres
+
+  # start up a client (and proxy) server
+  client:
+    build:
+      context: .
+      dockerfile: ./client/Dockerfile
+    environment:
+      # Since our client NGINX server is not only serving static
+      # files, but also routing /api requests to our API server,
+      # we need to inform NGINX how it can reach the API server.
+      # Our API server is accessible as "http://server:3000".
+      # Docker Compose does some magic for us to map the
+      # service name (server) to the internal container IP.
+      # However, when we will deploy our application to
+      # production, we will not use Docker Compose, and we
+      # might need to use localhost instead.
+      # To support both environments, we will use an environment
+      # variable to configure the proxy pass.
+      # Our development environment will use the provided value
+      # below.
+      API_PROXY_PASS: http://server:3000
+    ports:
+      - '3001:80'
+    depends_on:
+      - server
+
+volumes:
+  flashwords_dev-db:
