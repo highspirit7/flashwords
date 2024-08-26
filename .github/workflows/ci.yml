@@ -78,7 +78,7 @@ jobs:
 
         # TODO: currently only have e2e tests for authentication. Once more tests are added, need to modify this command.
       - name: Test client E2E
-        run: npm run test:e2e -w=client auth
+        run: npm run test:e2e -w=client auth.test.ts
 
       # To upload playwright report as an artifact
       - uses: actions/upload-artifact@v4
