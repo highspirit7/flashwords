@@ -36,7 +36,7 @@ it('should successfully verify refersh token and return a new access token', asy
         cookies: {
           jwt_refresh: refreshToken,
         },
-      },
+      } as any,
     })
   )
 
@@ -54,7 +54,7 @@ it('throws an error when there is no refresh token in cookies', async () => {
         cookies: {
           jwt_refresh: null,
         },
-      },
+      } as any,
     })
   )
 
@@ -87,7 +87,7 @@ it('throws an error when there is no found user matching the refresh token in co
         cookies: {
           jwt_refresh: refreshToken,
         },
-      },
+      } as any,
     })
   )
 
@@ -123,7 +123,7 @@ it('throws an error when refresh token is expired', async () => {
         cookies: {
           jwt_refresh: refreshToken,
         },
-      },
+      } as any,
     })
   )
   await new Promise((resolve) => {
