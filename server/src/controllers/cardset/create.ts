@@ -34,9 +34,7 @@ export default authenticatedProcedure
         userId: authUser.id,
       })
 
-      const cardsWithCardsetId: CreatableCard[] = cards.map((card) => {
-        return { ...card, cardsetId: createdCardset.id }
-      })
+      const cardsWithCardsetId: CreatableCard[] = cards.map((card) => ({ ...card, cardsetId: createdCardset.id }))
 
       await repos.cardRepository.createAll(cardsWithCardsetId)
 

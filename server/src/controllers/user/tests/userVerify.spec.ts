@@ -10,7 +10,7 @@ const createCaller = createCallerFactory(userRouter)
 const db = await wrapInRollbacks(createTestDatabase())
 const { refreshTokenSecret, refreshTokenExpiresIn } = config.auth
 
-const { login, signup } = createCaller({ db } as any)
+const { login, signup } = createCaller({ db })
 
 it('should successfully verify refersh token and return a new access token', async () => {
   const exisitingUser = await signup({
@@ -111,11 +111,10 @@ it('throws an error when refresh token is expired', async () => {
   )
 
   // * If expriesIn of refresh token is not 1s, a different token will be generated through login
-  const { accessToken } = await login({
+  await login({
     email: 'existing@user.com',
     password: 'passworD.123',
   })
-  console.log(accessToken)
 
   const { verify } = createCaller(
     requestContext({

@@ -18,7 +18,6 @@ const { setSelectedCard } = useCardStore()
 const isEditing = ref(false)
 const target: Ref<HTMLLIElement | null> = ref(null)
 const props = defineProps<{ card: CardPublic }>()
-const emit = defineEmits<{ (e: 'finishEditing'): void }>()
 
 const { card } = props
 

@@ -44,15 +44,11 @@ export const useExampleStore = defineStore('examples', () => {
   }
 
   async function deleteExample(exampleId: number) {
-    try {
-      await authTrpc.example.remove.mutate(exampleId)
+    await authTrpc.example.remove.mutate(exampleId)
 
-      examplesInSelectedCard.value = examplesInSelectedCard.value.filter(
-        example => example.id !== exampleId,
-      )
-    } catch (error) {
-      throw error
-    }
+    examplesInSelectedCard.value = examplesInSelectedCard.value.filter(
+      example => example.id !== exampleId,
+    )
   }
 
   return {

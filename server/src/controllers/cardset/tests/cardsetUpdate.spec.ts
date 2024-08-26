@@ -1,4 +1,4 @@
-import { fakeCardset, fakeUser, fakeCard } from '@server/entities/tests/fakes'
+import { fakeCardset, fakeUser } from '@server/entities/tests/fakes'
 import { createTestDatabase } from '@tests/utils/database'
 import { createCallerFactory } from '@server/trpc'
 import { wrapInRollbacks } from '@tests/utils/transactions'

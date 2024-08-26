@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import type { Selectable } from 'kysely'
-import { idSchema } from './shared'
 import type { Cardset } from '@server/database/types'
+import { idSchema } from './shared'
 
 export const cardsetSchema = z.object({
   id: idSchema,

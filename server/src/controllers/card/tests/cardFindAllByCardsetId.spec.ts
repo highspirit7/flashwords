@@ -16,8 +16,6 @@ const [cardset] = await insertAll(
   fakeCardset({ userId: user.id })
 )
 
-const { findAllByCardsetId } = createCaller(authContext({ db }, user))
-
 it('should throw an error if user is not authenticated', async () => {
   // ARRANGE
   const { findAllByCardsetId } = createCaller(requestContext({ db }))
@@ -29,11 +27,13 @@ it('should throw an error if user is not authenticated', async () => {
 })
 
 it('should return an empty list if there are no cards', async () => {
+  const { findAllByCardsetId } = createCaller(authContext({ db }, user))
   // Given (ARRANGE)
   expect(await findAllByCardsetId({ cardsetId: cardset.id })).toHaveLength(0)
 })
 
 it('should return a list of cards', async () => {
+  const { findAllByCardsetId } = createCaller(authContext({ db }, user))
   // Given (ARRANGE)
   await insertAll(db, 'card', [fakeCard({ cardsetId: cardset.id })])
 

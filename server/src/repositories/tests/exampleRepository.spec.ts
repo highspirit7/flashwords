@@ -123,7 +123,7 @@ describe('update', async () => {
   })
 
   it('should return 0 numUpdatedRows if there is no matching example with the given exampleId', async () => {
-    const [example] = await insertAll(db, 'example', [
+    await insertAll(db, 'example', [
       fakeExample({
         cardId: card.id,
       }),

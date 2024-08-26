@@ -117,7 +117,7 @@ describe('update', async () => {
       card.id
     )
 
-    const numUpdatedRows: string = serializeBigInt(updateResult).numUpdatedRows
+    const {numUpdatedRows} = serializeBigInt(updateResult)
 
     expect(numUpdatedRows).toEqual('1')
   })
@@ -134,7 +134,7 @@ describe('update', async () => {
       card.id + 11111
     )
 
-    const numUpdatedRows: string = serializeBigInt(updateResult).numUpdatedRows
+    const {numUpdatedRows} = serializeBigInt(updateResult)
 
     expect(numUpdatedRows).toEqual('0')
   })

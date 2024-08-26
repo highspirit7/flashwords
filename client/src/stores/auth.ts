@@ -19,13 +19,9 @@ const useAuthStore = defineStore('auth', () => {
   }
 
   async function verifyWithRefreshToken() {
-    try {
-      const { accessToken } = await publicTrpc.user.verify.mutate()
-      console.log('successfully verified with refresh token')
-      authToken.value = accessToken
-    } catch (error) {
-      throw error
-    }
+    const { accessToken } = await publicTrpc.user.verify.mutate()
+    console.log('successfully verified with refresh token')
+    authToken.value = accessToken
   }
 
   async function logout() {

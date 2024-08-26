@@ -1,5 +1,7 @@
-import { test, expect } from '@playwright/test'
 import Chance from 'chance'
+import { test, expect } from '@playwright/test'
+import { login } from 'utils/auth'
+import { baseUrlDev } from 'utils/config'
 
 const chance = new Chance()
 const testEmail = `test_${String(chance.integer({ min: 10, max: 99 }))}_${chance.email()}`
@@ -8,13 +10,9 @@ const VALID_PASSWORD = 'Testuser123'
 const username = chance.name().replaceAll(' ', '')
 const anotherUsername = chance.name().replaceAll(' ', '')
 
-test.describe.serial('signup with validation and errors', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/signup')
-  })
-
-  //   await asUser()
+test.describe.serial('authentication', () => {
   test('should sign up successfully', async ({ page }) => {
+    await page.goto('/signup')
     await page.fill('input[placeholder="Enter your email"]', testEmail)
     await page.fill('input[placeholder="sunshine2000"]', username)
     await page.fill('input[placeholder="Enter your password"]', VALID_PASSWORD)
@@ -27,6 +25,7 @@ test.describe.serial('signup with validation and errors', () => {
   })
 
   test('should show validation errors for invalid inputs', async ({ page }) => {
+    await page.goto('/signup')
     await page.fill('input[placeholder="Enter your email"]', 'invalid-email')
     await page.fill('input[placeholder="sunshine2000"]', 'a')
     await page.fill('input[placeholder="Enter your password"]', 'short')
@@ -51,6 +50,7 @@ test.describe.serial('signup with validation and errors', () => {
   })
 
   test('should show server error message if signup fails', async ({ page }) => {
+    await page.goto('/signup')
     await page.fill('input[placeholder="Enter your email"]', testEmail)
     await page.fill('input[placeholder="sunshine2000"]', anotherUsername)
     await page.fill('input[placeholder="Enter your password"]', VALID_PASSWORD)
@@ -65,5 +65,39 @@ test.describe.serial('signup with validation and errors', () => {
     await page.getByRole('main').getByRole('button', { name: 'Sign up' }).click()
 
     await expect(page.getByText('User with this username already exists')).toBeVisible()
+  })
+
+  test('fail to log in because of using wrong password', async ({ page }) => {
+    await page.goto('/login')
+    await login(page, { email: testEmail, password: 'Incorrectpassword123' })
+
+    await expect(
+      page.getByText('Your login details are not correct. Please try again.'),
+    ).toBeVisible()
+  })
+
+  test('fail to log in because of using wrong email', async ({ page }) => {
+    await login(page, { email: 'nottestuser@example.com', password: VALID_PASSWORD })
+
+    await expect(
+      page.getByText('Your login details are not correct. Please try again.'),
+    ).toBeVisible()
+  })
+
+  test('should log in successfully', async ({ page }) => {
+    await page.goto('/login')
+    await login(page, { email: testEmail, password: VALID_PASSWORD })
+    await page.waitForURL('/')
+    await expect(page.url()).toBe(`${baseUrlDev}/`)
+
+    await expect(page.getByRole('button', { name: 'Log out' })).toBeVisible()
+  })
+
+  test('user should log out and will be redirected to login page', async ({ page }) => {
+    await login(page, { email: testEmail, password: VALID_PASSWORD })
+    await page.waitForURL('/')
+    await page.getByRole('button', { name: 'Log out' }).click()
+    await page.waitForURL('/login')
+    await expect(page.getByRole('main').getByRole('button', { name: 'Log in' })).toBeVisible()
   })
 })

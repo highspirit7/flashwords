@@ -22,7 +22,7 @@ const [userSeed] = await insertAll(db, 'user', [
   }),
 ])
 
-const { login } = createCaller({ db } as any)
+const { login } = createCaller({ db })
 
 it('returns a token if the password matches', async () => {
   const { accessToken } = await login({

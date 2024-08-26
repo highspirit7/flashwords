@@ -6,7 +6,6 @@ import { TRPCError } from '@trpc/server'
 import provideRepos from '@server/trpc/provideRepos'
 import { userRepository } from '@server/repositories/userRepository'
 import { prepareTokenPayload } from '@server/trpc/tokenPayload'
-import { assertError } from '@server/utils/errors'
 
 const { accessTokenExpiresIn, accessTokenSecret, refreshTokenSecret } =
   config.auth
@@ -40,25 +39,16 @@ export default publicProcedure
       })
     }
 
-    try {
-      const decoded = jsonwebtoken.verify(
-        refreshToken,
-        refreshTokenSecret
-      ) as JwtPayload
+    const decoded = jsonwebtoken.verify(
+      refreshToken,
+      refreshTokenSecret
+    ) as JwtPayload
 
-      if (foundUser.id !== decoded.user.id) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message:
-            'User data does not match decoded user data from refresh token',
-        })
-      }
-    } catch (error) {
-      assertError(error)
-
+    if (foundUser.id !== decoded.user.id) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
-        message: error.message,
+        message:
+          'User data does not match decoded user data from refresh token',
       })
     }
 
