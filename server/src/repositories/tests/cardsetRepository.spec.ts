@@ -2,8 +2,8 @@ import { createTestDatabase } from '@tests/utils/database'
 import { fakeCardset, fakeUser, fakeCard } from '@server/entities/tests/fakes'
 import { wrapInRollbacks } from '@tests/utils/transactions'
 import { insertAll } from '@tests/utils/records'
-import { cardsetRepository } from '../cardsetRepository'
 import serializeBigInt from '@server/utils/serializeBigInt'
+import { cardsetRepository } from '../cardsetRepository'
 
 const db = await wrapInRollbacks(createTestDatabase())
 const repository = cardsetRepository(db)
@@ -167,7 +167,7 @@ describe('update', async () => {
       cardset.id
     )
 
-    const numUpdatedRows: string = serializeBigInt(updateResult).numUpdatedRows
+    const {numUpdatedRows} = serializeBigInt(updateResult)
 
     expect(numUpdatedRows).toEqual('1')
   })
@@ -184,7 +184,7 @@ describe('update', async () => {
       cardset.id + 11111
     )
 
-    const numUpdatedRows: string = serializeBigInt(updateResult).numUpdatedRows
+    const {numUpdatedRows} = serializeBigInt(updateResult)
 
     expect(numUpdatedRows).toEqual('0')
   })

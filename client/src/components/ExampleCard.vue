@@ -3,7 +3,7 @@ import { onClickOutside } from '@vueuse/core'
 import { ref, type Ref } from 'vue'
 
 import { isHTMLInputElement } from '@/utils/typePredicates'
-import type { ExamplePublic } from '@server/entities/example'
+import type { ExamplePublic } from '@server/shared/types'
 import { useExampleStore } from '@/stores/examples'
 
 const isEditing = ref(false)

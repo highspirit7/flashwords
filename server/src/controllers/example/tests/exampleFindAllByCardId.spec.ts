@@ -26,10 +26,12 @@ const { findAllByCardId } = createCaller(authContext({ db }, user))
 
 it('should throw an error if user is not authenticated', async () => {
   // ARRANGE
-  const { findAllByCardId } = createCaller(requestContext({ db }))
+  const { findAllByCardId: findAllByCardIdWithoutAuth } = createCaller(
+    requestContext({ db })
+  )
 
   // ACT & ASSERT
-  await expect(findAllByCardId({ cardId: card.id })).rejects.toThrow(
+  await expect(findAllByCardIdWithoutAuth({ cardId: card.id })).rejects.toThrow(
     /unauthenticated/i
   )
 })

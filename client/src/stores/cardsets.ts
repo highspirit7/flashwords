@@ -70,11 +70,7 @@ export const useCardsetStore = defineStore('cardsets', () => {
   // TODO : even void bettter to add anyway
 
   async function deleteCardset(id: number) {
-    try {
-      await authTrpc.cardset.remove.mutate(id)
-    } catch (error) {
-      throw error
-    }
+    await authTrpc.cardset.remove.mutate(id)
   }
 
   return {

@@ -5,11 +5,11 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    // 'airbnb', // or any other config you want to extend
-    // 'airbnb-typescript/base',
+    'airbnb',
+    'airbnb-typescript/base',
     'prettier',
   ],
-  plugins: ['@typescript-eslint/parser', 'vitest'],
+  plugins: ['vitest'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
@@ -44,5 +44,6 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': ['error', { functions: false }],
 
     'import/prefer-default-export': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 }

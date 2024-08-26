@@ -10,7 +10,7 @@ const createCaller = createCallerFactory(userRouter)
 const db = await wrapInRollbacks(createTestDatabase())
 const { refreshTokenSecret, refreshTokenExpiresIn } = config.auth
 
-const { login, signup } = createCaller({ db } as any)
+const { login, signup } = createCaller({ db })
 
 it('should successfully verify refersh token and return a new access token', async () => {
   const exisitingUser = await signup({
@@ -36,7 +36,7 @@ it('should successfully verify refersh token and return a new access token', asy
         cookies: {
           jwt_refresh: refreshToken,
         },
-      } as any,
+      },
     })
   )
 
@@ -54,7 +54,7 @@ it('throws an error when there is no refresh token in cookies', async () => {
         cookies: {
           jwt_refresh: null,
         },
-      } as any,
+      },
     })
   )
 
@@ -87,7 +87,7 @@ it('throws an error when there is no found user matching the refresh token in co
         cookies: {
           jwt_refresh: refreshToken,
         },
-      } as any,
+      },
     })
   )
 
@@ -111,11 +111,10 @@ it('throws an error when refresh token is expired', async () => {
   )
 
   // * If expriesIn of refresh token is not 1s, a different token will be generated through login
-  const { accessToken } = await login({
+  await login({
     email: 'existing@user.com',
     password: 'passworD.123',
   })
-  console.log(accessToken)
 
   const { verify } = createCaller(
     requestContext({
@@ -124,7 +123,7 @@ it('throws an error when refresh token is expired', async () => {
         cookies: {
           jwt_refresh: refreshToken,
         },
-      } as any,
+      },
     })
   )
   await new Promise((resolve) => {

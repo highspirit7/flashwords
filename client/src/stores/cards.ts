@@ -1,7 +1,7 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
 import { authTrpc } from '@/trpc'
-import type { CardPublic } from '@server/entities/card'
+import type { CardPublic } from '@server/shared/types'
 import { assertError } from '@/utils/errors'
 import { useToasterStore } from '@/stores/toaster'
 
