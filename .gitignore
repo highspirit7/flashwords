@@ -1,2 +1,6 @@
 node_modules
 /local
+
+# For Lightsail deployment
+containers.json
+public-endpoint.json
