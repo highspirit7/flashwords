@@ -146,6 +146,6 @@ it('throws an error when refresh token is expired', async () => {
     })
   )
 
-  vi.advanceTimersByTime(4000)
+  vi.advanceTimersByTime(1000 * 61)
   await expect(verify).rejects.toThrow(/expire/)
 })
