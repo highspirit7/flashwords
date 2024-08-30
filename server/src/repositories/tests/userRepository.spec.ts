@@ -1,3 +1,4 @@
+import Chance from 'chance'
 import config from '@server/config'
 import { createTestDatabase } from '@tests/utils/database'
 import { fakeUser } from '@server/entities/tests/fakes'
@@ -7,12 +8,13 @@ import jsonwebtoken from 'jsonwebtoken'
 import { pick } from 'lodash-es'
 import { userRepository } from '../userRepository'
 
+const chance = new Chance()
 const db = await wrapInRollbacks(createTestDatabase())
 const repository = userRepository(db)
 
 const fakeCreatableUser = fakeUser({
-  username: 'grownuprince',
-  email: 'grownuprince@gp.com',
+  username: chance.name().replaceAll(' ', ''),
+  email: `test_${String(chance.integer({ min: 10, max: 99 }))}_${chance.email()}`,
   password: 'AbdcDefg88',
 })
 const [user] = await insertAll(db, 'user', [fakeUser()])
