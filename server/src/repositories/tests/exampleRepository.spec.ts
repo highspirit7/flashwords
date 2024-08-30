@@ -1,25 +1,14 @@
 import { createTestDatabase } from '@tests/utils/database'
-import {
-  fakeCardset,
-  fakeUser,
-  fakeCard,
-  fakeExample,
-} from '@server/entities/tests/fakes'
+import { fakeExample } from '@server/entities/tests/fakes'
 import { wrapInRollbacks } from '@tests/utils/transactions'
 import { clearTables, insertAll } from '@tests/utils/records'
+import { POSTGRES_INT_MAX } from '@server/consts'
+import presetDataInfo from '@tests/utils/presetDataInfo'
 import { exampleRepository } from '../exampleRepository'
 
 const db = await wrapInRollbacks(createTestDatabase())
 const repository = exampleRepository(db)
-
-const [user] = await insertAll(db, 'user', [fakeUser()])
-const [cardset] = await insertAll(db, 'cardset', [
-  fakeCardset({ userId: user.id }),
-])
-const [card, cardOther] = await insertAll(db, 'card', [
-  fakeCard({ cardsetId: cardset.id }),
-  fakeCard({ cardsetId: cardset.id }),
-])
+const { cards } = presetDataInfo
 
 beforeEach(async () => {
   await clearTables(db, ['example'])
@@ -28,13 +17,13 @@ beforeEach(async () => {
 describe('create', () => {
   it('should create a example matching a given cardId', async () => {
     const createdExample = await repository.create(
-      fakeExample({ cardId: card.id, content: 'Ik hou van jou' })
+      fakeExample({ cardId: cards[0].id, content: 'Ik hou van jou' })
     )
 
     expect(createdExample).toEqual({
       id: expect.any(Number),
       content: 'Ik hou van jou',
-      cardId: card.id,
+      cardId: cards[0].id,
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     })
@@ -42,7 +31,7 @@ describe('create', () => {
 
   it('throw an error if referenced card does not exist', async () => {
     await expect(
-      repository.create(fakeExample({ cardId: card.id + cardOther.id }))
+      repository.create(fakeExample({ cardId: POSTGRES_INT_MAX }))
     ).rejects.toThrow(/Referenced card matching cardId does not exist/)
   })
 })
@@ -60,27 +49,27 @@ describe('findAllByCardId', () => {
 
   it('should return examples by the given cardId', async () => {
     await insertAll(db, 'example', [
-      fakeExample({ cardId: card.id, content: 'Wat lekker!' }),
-      fakeExample({ cardId: card.id, content: 'Je bent mooi' }),
+      fakeExample({ cardId: cards[0].id, content: 'Wat lekker!' }),
+      fakeExample({ cardId: cards[0].id, content: 'Je bent mooi' }),
     ])
 
     const examples = await repository.findAllByCardId({
       offset: 0,
       limit: 5,
-      cardId: card.id,
+      cardId: cards[0].id,
     })
 
     expect(examples).toHaveLength(2)
     expect(examples[0]).toEqual({
       id: expect.any(Number),
-      cardId: card.id,
+      cardId: cards[0].id,
       content: 'Wat lekker!',
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     })
     expect(examples[1]).toEqual({
       id: expect.any(Number),
-      cardId: card.id,
+      cardId: cards[0].id,
       content: 'Je bent mooi',
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
@@ -89,17 +78,17 @@ describe('findAllByCardId', () => {
 
   it('should return 3 examples with setting limit as 3', async () => {
     await insertAll(db, 'example', [
-      fakeExample({ cardId: card.id }),
-      fakeExample({ cardId: card.id }),
-      fakeExample({ cardId: card.id }),
-      fakeExample({ cardId: card.id }),
-      fakeExample({ cardId: card.id }),
+      fakeExample({ cardId: cards[0].id }),
+      fakeExample({ cardId: cards[0].id }),
+      fakeExample({ cardId: cards[0].id }),
+      fakeExample({ cardId: cards[0].id }),
+      fakeExample({ cardId: cards[0].id }),
     ])
 
     const examples = await repository.findAllByCardId({
       offset: 0,
       limit: 3,
-      cardId: card.id,
+      cardId: cards[0].id,
     })
 
     expect(examples).toHaveLength(3)
@@ -110,7 +99,7 @@ describe('update', async () => {
   it('should update the example with the given exampleId', async () => {
     const [example] = await insertAll(db, 'example', [
       fakeExample({
-        cardId: card.id,
+        cardId: cards[0].id,
       }),
     ])
 
@@ -125,13 +114,13 @@ describe('update', async () => {
   it('should return 0 numUpdatedRows if there is no matching example with the given exampleId', async () => {
     await insertAll(db, 'example', [
       fakeExample({
-        cardId: card.id,
+        cardId: cards[0].id,
       }),
     ])
 
     const updateResult = await repository.update(
       { content: 'huis' },
-      card.id + cardOther.id
+      POSTGRES_INT_MAX
     )
 
     expect(Number(updateResult.numUpdatedRows)).toEqual(0)
@@ -140,13 +129,7 @@ describe('update', async () => {
 
 describe('delete', () => {
   it('the number of deleted rows would be 0 if there is no matching example with the given id', async () => {
-    const [example] = await insertAll(db, 'example', [
-      fakeExample({
-        cardId: card.id,
-      }),
-    ])
-
-    const { numDeletedRows } = await repository.delete(example.id + 11111)
+    const { numDeletedRows } = await repository.delete(POSTGRES_INT_MAX)
 
     expect(Number(numDeletedRows)).toEqual(0)
   })
@@ -154,7 +137,7 @@ describe('delete', () => {
   it('should delete a example with the given id', async () => {
     const [example] = await insertAll(db, 'example', [
       fakeExample({
-        cardId: card.id,
+        cardId: cards[0].id,
       }),
     ])
 

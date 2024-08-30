@@ -24,7 +24,7 @@ const schema = z
       accessTokenSecret: z.string(),
       accessTokenExpiresIn: z.string().default(isTest ? '1m' : '10m'),
       refreshTokenSecret: z.string(),
-      refreshTokenExpiresIn: z.string().default(isTest ? '1s' : '1d'),
+      refreshTokenExpiresIn: z.string().default(isTest ? '1m' : '1d'),
       passwordCost: z.coerce.number().default(isTest ? 6 : 12),
     }),
 

@@ -1,3 +1,4 @@
+import Chance from 'chance'
 import { requestContext } from '@tests/utils/context'
 import { createTestDatabase } from '@tests/utils/database'
 import { createCallerFactory } from '@server/trpc'
@@ -6,6 +7,8 @@ import jsonwebtoken from 'jsonwebtoken'
 import config from '@server/config'
 import userRouter from '..'
 
+const chance = new Chance()
+
 const createCaller = createCallerFactory(userRouter)
 const db = await wrapInRollbacks(createTestDatabase())
 const { refreshTokenSecret, refreshTokenExpiresIn } = config.auth
@@ -13,21 +16,27 @@ const { refreshTokenSecret, refreshTokenExpiresIn } = config.auth
 const { login, signup } = createCaller({ db })
 
 it('should successfully verify refersh token and return a new access token', async () => {
-  const exisitingUser = await signup({
-    username: 'existingUser',
-    email: 'existing@user.com',
-    password: 'passworD.123',
-  })
+  const testEmail = `test_${String(chance.integer({ min: 10, max: 99 }))}_${chance.email()}`
+  const testUsername = chance.name().replaceAll(' ', '')
+  const VALID_PASSWORD = 'Testuser123'
 
+  const newUser = await signup({
+    username: testUsername,
+    email: testEmail,
+    password: VALID_PASSWORD,
+  })
   const refreshToken = jsonwebtoken.sign(
-    { user: { id: exisitingUser.id } },
+    { user: { id: newUser.id } },
     refreshTokenSecret,
     {
       expiresIn: refreshTokenExpiresIn,
     }
   )
 
-  await login({ email: 'existing@user.com', password: 'passworD.123' })
+  await login({
+    email: testEmail,
+    password: VALID_PASSWORD,
+  })
 
   const { verify } = createCaller(
     requestContext({
@@ -64,21 +73,25 @@ it('throws an error when there is no refresh token in cookies', async () => {
 })
 
 it('throws an error when there is no found user matching the refresh token in cookies', async () => {
-  const exisitingUser = await signup({
-    username: 'existingUser',
-    email: 'existing@user.com',
-    password: 'passworD.123',
+  const testEmail = `test_${String(chance.integer({ min: 10, max: 99 }))}_${chance.email()}`
+  const testUsername = chance.name().replaceAll(' ', '')
+  const VALID_PASSWORD = 'Testuser123'
+
+  const newUser = await signup({
+    username: testUsername,
+    email: testEmail,
+    password: VALID_PASSWORD,
   })
 
   const refreshToken = jsonwebtoken.sign(
-    { user: { id: exisitingUser.id } },
+    { user: { id: newUser.id } },
     'diffrent_token_secret',
     {
       expiresIn: refreshTokenExpiresIn,
     }
   )
 
-  await login({ email: 'existing@user.com', password: 'passworD.123' })
+  await login({ email: testEmail, password: VALID_PASSWORD })
 
   const { verify } = createCaller(
     requestContext({
@@ -97,23 +110,29 @@ it('throws an error when there is no found user matching the refresh token in co
 })
 
 it('throws an error when refresh token is expired', async () => {
-  const exisitingUser = await signup({
-    username: 'existingUser',
-    email: 'existing@user.com',
-    password: 'passworD.123',
+  vi.useFakeTimers()
+
+  const testEmail = `test_${String(chance.integer({ min: 10, max: 99 }))}_${chance.email()}`
+  const testUsername = chance.name().replaceAll(' ', '')
+  const VALID_PASSWORD = 'Testuser123'
+
+  const newUser = await signup({
+    username: testUsername,
+    email: testEmail,
+    password: VALID_PASSWORD,
   })
   const refreshToken = jsonwebtoken.sign(
-    { user: { id: exisitingUser.id } },
+    { user: { id: newUser.id } },
     refreshTokenSecret,
     {
-      expiresIn: '1s',
+      expiresIn: refreshTokenExpiresIn,
     }
   )
 
-  // * If expriesIn of refresh token is not 1s, a different token will be generated through login
+  // * If expriesIn of refresh token is not same, a different token will be generated through login
   await login({
-    email: 'existing@user.com',
-    password: 'passworD.123',
+    email: testEmail,
+    password: VALID_PASSWORD,
   })
 
   const { verify } = createCaller(
@@ -126,8 +145,7 @@ it('throws an error when refresh token is expired', async () => {
       } as any,
     })
   )
-  await new Promise((resolve) => {
-    setTimeout(resolve, 1100)
-  })
+
+  vi.advanceTimersByTime(4000)
   await expect(verify).rejects.toThrow(/expire/)
 })
