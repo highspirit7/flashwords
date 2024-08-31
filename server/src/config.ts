@@ -52,7 +52,11 @@ const config = schema.parse({
 
 export default config
 
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:3001']
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3001',
+  'https://flashwords-container.h4b71er768rva.ap-northeast-2.cs.amazonlightsail.com',
+]
 
 export const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
