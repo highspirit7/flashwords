@@ -38,7 +38,7 @@ async function onClickLogin() {
   try {
     await login(loginForm.value)
     toasterStore.success({ text: 'Successfully logged in!', timeout: 2000 })
-    router.replace('/')
+    router.replace('/cardsets')
   } catch (error: unknown) {
     if (error instanceof TRPCClientError) {
       if (error.data?.httpStatus === 500) {

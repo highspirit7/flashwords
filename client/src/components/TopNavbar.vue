@@ -87,15 +87,10 @@ async function onClickLogout() {
               </fwb-button>
             </router-link>
           </li>
-          <div v-if="!authStore.isLoggedIn" class="flex px-4 gap-2">
+          <div v-if="!authStore.isLoggedIn" class="flex pl-4 gap-2">
             <li>
               <router-link to="login">
                 <fwb-button color="alternative">Log in</fwb-button>
-              </router-link>
-            </li>
-            <li>
-              <router-link to="signup">
-                <fwb-button gradient="cyan-blue">Sign up</fwb-button>
               </router-link>
             </li>
           </div>
