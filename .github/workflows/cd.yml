@@ -1,96 +1,13 @@
-name: CI_CD
+name: CD
 
 on:
-  #   push:
-  #     branches:
-  #       - main
-  pull_request:
+  push:
     branches:
       - main
 
 jobs:
-  test:
-    runs-on: ubuntu-22.04
-    env:
-      VITE_API_ORIGIN: http://localhost:3000
-      VITE_API_PATH: /api/v1/trpc
-      DATABASE_URL: postgresql://flashwords_db_owner:KP0S8CnlUtoi@ep-proud-sound-a1f5c859.ap-southeast-1.aws.neon.tech/flashwords_db?sslmode=require
-      ACCESS_TOKEN_SECRET: 438e18317bd2c363d8e25b79538e0ec0975bf718d9d55a9461ceb46f1ee9445b213de25e994de83ebf20281f1c7a0b5a77a53559d670d43ea5ec95b8e67ecfd9
-      REFRESH_TOKEN_SECRET: 94d65805550da90f221a627bac2d47fe51c80eeeec4556439518f21a4e3453f628ff5b5a7771e2a04baba2c8ce114f6dee821097b0b0e972c330a9406e2435a4
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: grownuprince
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: flashwords_dev
-        ports:
-          - 5432:5432
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Type check server
-        run: npm run type-check -w=server
-
-      - name: Type check client
-        run: npm run type-check -w=client
-
-      - name: Lint server
-        run: npm run lint -w=server
-
-      - name: Lint client
-        run: npm run lint -w=client
-
-      #   - name: Test client (unit)
-      #     run: npm run test:unit -w=client
-
-      - name: Run server database migrations
-        run: npm run migrate:latest -w=server
-
-      - name: Test server
-        run: npm run test -w=server
-
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Start server for E2E tests
-        run: npm run dev -w=server &
-
-      - name: Build front end for E2E tests
-        run: npm run build -w=client
-
-      - name: Wait for server to startup
-        uses: Jtalk/url-health-check-action@v4
-        with:
-          max-attempts: 5
-          retry-delay: 5s
-          url: ${{ env.VITE_API_ORIGIN }}/api/health
-
-        # TODO: currently only have e2e tests for authentication. Once more tests are added, need to modify this command.
-      - name: Test client E2E
-        run: npm run test:e2e -w=client auth.test.ts
-
-      # To upload playwright report as an artifact
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: client/playwright-report/
-          retention-days: 7
   build-deploy:
-    needs: test
     runs-on: ubuntu-22.04
-    if: github.ref == 'refs/heads/main'
     env:
       CLIENT_IMAGE_TAG: client-${{ github.sha }}
       SERVER_IMAGE_TAG: server-${{ github.sha }}
