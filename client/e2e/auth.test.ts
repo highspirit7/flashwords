@@ -87,15 +87,15 @@ test.describe.serial('authentication', () => {
   test('should log in successfully', async ({ page }) => {
     await page.goto('/login')
     await login(page, { email: testEmail, password: VALID_PASSWORD })
-    await page.waitForURL('/')
-    await expect(page.url()).toBe(`${baseUrlDev}/`)
+    await page.waitForURL('/cardsets')
+    await expect(page.url()).toBe(`${baseUrlDev}/cardsets`)
 
     await expect(page.getByRole('button', { name: 'Log out' })).toBeVisible()
   })
 
   test('user should log out and will be redirected to login page', async ({ page }) => {
     await login(page, { email: testEmail, password: VALID_PASSWORD })
-    await page.waitForURL('/')
+    await page.waitForURL('/cardsets')
     await page.getByRole('button', { name: 'Log out' }).click()
     await page.waitForURL('/login')
     await expect(page.getByRole('main').getByRole('button', { name: 'Log in' })).toBeVisible()
