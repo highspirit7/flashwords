@@ -90,7 +90,7 @@ jobs:
   build-deploy:
     needs: test
     runs-on: ubuntu-22.04
-    if: github.ref == 'refs/head/main'
+    if: github.ref == 'refs/heads/main'
     env:
       CLIENT_IMAGE_TAG: client-${{ github.sha }}
       SERVER_IMAGE_TAG: server-${{ github.sha }}
