@@ -11,7 +11,7 @@ jobs:
     env:
       VITE_API_ORIGIN: http://localhost:3000
       VITE_API_PATH: /api/v1/trpc
-      DATABASE_URL: postgresql://flashwords_db_owner:KP0S8CnlUtoi@ep-proud-sound-a1f5c859.ap-southeast-1.aws.neon.tech/flashwords_db?sslmode=require
+      DATABASE_URL: '${{secrets.DEV_DATABASE_URL}}'
       ACCESS_TOKEN_SECRET: 438e18317bd2c363d8e25b79538e0ec0975bf718d9d55a9461ceb46f1ee9445b213de25e994de83ebf20281f1c7a0b5a77a53559d670d43ea5ec95b8e67ecfd9
       REFRESH_TOKEN_SECRET: 94d65805550da90f221a627bac2d47fe51c80eeeec4556439518f21a4e3453f628ff5b5a7771e2a04baba2c8ce114f6dee821097b0b0e972c330a9406e2435a4
     services:
