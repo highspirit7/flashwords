@@ -28,17 +28,17 @@ const router = createRouter({
     {
       path: '/create-cardset',
       name: 'createCardset',
-      component: () => import('../views/CreateCardSetView.vue'),
+      component: () => import('../views/CreateCardsetView.vue'),
     },
     {
       path: '/:cardsetTitle/:id',
       name: 'cardset',
-      component: () => import('../views/CardSetView.vue'),
+      component: () => import('../views/CardsetView.vue'),
     },
     {
       path: '/:cardsetTitle/:id/edit',
       name: 'editCardset',
-      component: () => import('../views/CardSetEditView.vue'),
+      component: () => import('../views/CardsetEditView.vue'),
     },
     {
       path: '/:cardsetTitle/:cardsetId/:cardTerm/:cardId',
