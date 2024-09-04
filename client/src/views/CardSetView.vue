@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { FwbHeading, FwbButton } from 'flowbite-vue'
+import { FwbHeading, FwbButton, FwbSpinner } from 'flowbite-vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ref, type Ref, onMounted, nextTick } from 'vue'
 import { initFlowbite, Modal, Dropdown } from 'flowbite'
 import type { ModalInterface, DropdownInterface } from 'flowbite'
+
 import TermCard from '@/components/TermCard.vue'
 import { useCardsetStore } from '@/stores/cardsets'
 import TermFlashcard from '@/components/TermFlashcard.vue'
@@ -14,9 +15,12 @@ import useFlashcardStore from '@/stores/flashcard'
 import { useCardStore } from '@/stores/cards'
 import { getSafeUrlParams } from '@/utils/url'
 import { assertError } from '@/utils/errors'
+import { useLoadingStore } from '@/stores/loading'
 
 const route = useRoute()
 const router = useRouter()
+const { isLoading } = storeToRefs(useLoadingStore())
+const { startLoading, stopLoading } = useLoadingStore()
 const { setSelectedCardset, deleteCardset } = useCardsetStore()
 const { selectedCardset } = storeToRefs(useCardsetStore())
 const { setCardsInSelectedCardset } = useCardStore()
@@ -37,8 +41,19 @@ onMounted(async () => {
     document.getElementById('dropdownMenuIconHorizontalButton'),
   )
 
-  await setSelectedCardset(Number(route.params.id))
-  await setCardsInSelectedCardset(Number(route.params.id))
+  try {
+    startLoading()
+    await Promise.all([
+      setSelectedCardset(Number(route.params.id)),
+      setCardsInSelectedCardset(Number(route.params.id)),
+    ])
+  } catch (error) {
+    assertError(error)
+    console.log(error)
+    toasterStore.danger({ text: 'Failed to load data. Please try again later.' })
+  } finally {
+    stopLoading()
+  }
 
   nextTick(() => {
     initFlowbite()
@@ -86,7 +101,7 @@ function handleDeleteCardset() {
 </script>
 
 <template>
-  <div class="p-4 md:p-2">
+  <div v-if="!isLoading" class="p-4 md:pt-10 md:p-2">
     <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse mb-4">
       <li class="inline-flex items-center">
         <router-link
@@ -289,5 +304,8 @@ function handleDeleteCardset() {
       :toggleModal="toggleDeleteModal"
       :message="`Are you sure you want to delete this card set(${selectedCardset.title})`"
     />
+  </div>
+  <div v-else class="flex items-center justify-center grow h-full">
+    <fwb-spinner size="10" />
   </div>
 </template>

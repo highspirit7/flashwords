@@ -55,15 +55,8 @@ export const useCardsetStore = defineStore('cardsets', () => {
   }
 
   async function setSelectedCardset(cardsetId: number) {
-    try {
-      const foundCardset = await authTrpc.cardset.find.query(cardsetId)
-      selectedCardset.value = foundCardset
-    } catch (error) {
-      assertError(error)
-      toasterStore.danger({
-        text: 'Failed to fetch the cardset data. Try again later.',
-      })
-    }
+    const foundCardset = await authTrpc.cardset.find.query(cardsetId)
+    selectedCardset.value = foundCardset
   }
 
   // TODO : better to add return type of function as well

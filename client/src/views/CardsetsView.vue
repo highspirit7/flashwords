@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FwbHeading } from 'flowbite-vue'
+import { FwbHeading, FwbSpinner } from 'flowbite-vue'
 import { onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter, type LocationQuery } from 'vue-router'
@@ -7,9 +7,16 @@ import { useRoute, useRouter, type LocationQuery } from 'vue-router'
 import { useCardsetStore } from '@/stores/cardsets'
 import TermsCard from '@/components/TermsCard.vue'
 import type { CardsetPublic } from '@server/shared/types'
+import { assertError } from '@/utils/errors'
+import { useToasterStore } from '@/stores/toaster'
+import { useLoadingStore } from '@/stores/loading'
 
 const route = useRoute()
 const router = useRouter()
+const toasterStore = useToasterStore()
+
+const { isLoading } = storeToRefs(useLoadingStore())
+const { startLoading, stopLoading } = useLoadingStore()
 const { setCardsets, setFilteredCardsets, resetFilteredCardsets } = useCardsetStore()
 
 const { cardsets, filteredCardsets } = storeToRefs(useCardsetStore())
@@ -23,7 +30,15 @@ function updateRouteWithSearchQuery() {
 
 onMounted(async () => {
   if (cardsets.value.length < 1) {
-    await setCardsets()
+    try {
+      startLoading()
+      await setCardsets()
+    } catch (error) {
+      assertError(error)
+      toasterStore.danger({ text: 'Failed to fetch cardsets data. Please Try again later.' })
+    } finally {
+      stopLoading()
+    }
   }
 })
 
@@ -47,7 +62,7 @@ watch(
 </script>
 
 <template>
-  <div class="p-4 md:mt-8 md:p-2">
+  <div class="p-4 md:pt-10 md:p-2 h-full flex flex-col">
     <fwb-heading tag="h1">Card sets</fwb-heading>
     <div class="my-8 md:my-4">
       <div class="w-full flex">
@@ -84,16 +99,21 @@ watch(
         </button>
       </div>
     </div>
-    <ul class="card-sets-list" v-if="filteredCardsets.length > 0">
-      <li v-for="cardset in filteredCardsets" class="mb-2 md:mb-0" :key="cardset.id">
-        <TermsCard :data="cardset" />
-      </li>
-    </ul>
-    <div v-else class="mt-16">
-      <fwb-heading tag="h5" class="text-gray-500 text-center"
-        >No card sets.. <br />
-        Please click a plus button to create your first card set.
-      </fwb-heading>
+    <div v-if="!isLoading">
+      <ul class="card-sets-list" v-if="filteredCardsets.length > 0">
+        <li v-for="cardset in filteredCardsets" class="mb-2 md:mb-0" :key="cardset.id">
+          <TermsCard :data="cardset" />
+        </li>
+      </ul>
+      <div v-else class="mt-16">
+        <fwb-heading tag="h5" class="text-gray-500 text-center"
+          >No card sets.. <br />
+          Please click a plus button to create your first card set.
+        </fwb-heading>
+      </div>
+    </div>
+    <div v-else class="flex items-center justify-center grow">
+      <fwb-spinner size="10" />
     </div>
   </div>
 </template>
