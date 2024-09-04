@@ -6,6 +6,7 @@ import provideRepos from '@server/trpc/provideRepos'
 import { userRepository } from '@server/repositories/userRepository'
 import { assertError } from '@server/utils/errors'
 import { userSchema } from '@server/entities/user'
+import logger from '@server/utils/logger'
 
 export default publicProcedure
   .use(
@@ -43,7 +44,7 @@ export default publicProcedure
             cause: error,
           })
         }
-
+        logger.error(error)
         throw error
       })
 
