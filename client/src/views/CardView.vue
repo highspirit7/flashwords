@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FwbHeading, FwbButton } from 'flowbite-vue'
+import { FwbHeading, FwbButton, FwbSpinner } from 'flowbite-vue'
 import { useRoute } from 'vue-router'
 import { ref, type Ref, onMounted } from 'vue'
 import { Modal } from 'flowbite'
@@ -15,9 +15,12 @@ import { useCardStore } from '@/stores/cards'
 import { useExampleStore } from '@/stores/examples'
 import { assertError } from '@/utils/errors'
 import { getSafeUrlParams } from '@/utils/url'
+import { useLoadingStore } from '@/stores/loading'
 
 const route = useRoute()
 const toasterStore = useToasterStore()
+const { isLoading } = storeToRefs(useLoadingStore())
+const { startLoading, stopLoading } = useLoadingStore()
 const { selectedCardset } = storeToRefs(useCardsetStore())
 const { selectedCard } = storeToRefs(useCardStore())
 const { examplesInSelectedCard } = storeToRefs(useExampleStore())
@@ -28,6 +31,10 @@ const exampleIdToDelete = ref(0)
 const deleteExampleModal: Ref<ModalInterface | null> = ref(null)
 const addExampleModal: Ref<ModalInterface | null> = ref(null)
 
+async function handleSelectedCardset() {
+  if (selectedCardset.value.id === 0) await setSelectedCardset(Number(route.params.cardsetId))
+}
+
 onMounted(async () => {
   deleteExampleModal.value = new Modal(document.getElementById('delete-modal'), {
     placement: 'center',
@@ -36,10 +43,20 @@ onMounted(async () => {
     placement: 'center',
   })
 
-  if (selectedCardset.value.id === 0) await setSelectedCardset(Number(route.params.cardsetId))
-  await setSelectedCard(Number(route.params.cardId))
-
-  setExamplesInSelectedCard(Number(route.params.cardId))
+  try {
+    startLoading()
+    await Promise.all([
+      handleSelectedCardset(),
+      setSelectedCard(Number(route.params.cardId)),
+      setExamplesInSelectedCard(Number(route.params.cardId)),
+    ])
+  } catch (error) {
+    assertError(error)
+    console.error(error)
+    toasterStore.danger({ text: 'Failed to load data. Please try again later.' })
+  } finally {
+    stopLoading()
+  }
 })
 
 function toggleAddExampleModal() {
@@ -64,7 +81,7 @@ function handleDeleteExample() {
 }
 </script>
 <template>
-  <div class="p-4 md:p-2">
+  <div v-if="!isLoading" class="p-4 md:pt-10 md:p-2">
     <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse mb-4">
       <li class="inline-flex items-center">
         <router-link
@@ -165,5 +182,8 @@ function handleDeleteExample() {
       :toggleModal="toggleDeleteExampleModal"
       :message="'Are you sure you want to delete this example?'"
     />
+  </div>
+  <div v-else class="flex items-center justify-center grow h-full">
+    <fwb-spinner size="10" />
   </div>
 </template>

@@ -20,7 +20,7 @@ if (
   <header class="flex justify-center bg-white w-full sticky top-0 z-50 dark:bg-gray-900">
     <TopNavbar />
   </header>
-  <main class="max-w-3xl w-full h-full py-4">
+  <main class="max-w-3xl w-full h-full">
     <RouterView />
   </main>
 </template>

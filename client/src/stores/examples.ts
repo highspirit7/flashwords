@@ -11,15 +11,9 @@ export const useExampleStore = defineStore('examples', () => {
   const examplesInSelectedCard: Ref<ExamplePublic[]> = ref([])
 
   async function setExamplesInSelectedCard(cardId: number) {
-    try {
-      const examples = await authTrpc.example.findAllByCardId.query({ cardId })
+    const examples = await authTrpc.example.findAllByCardId.query({ cardId })
 
-      examplesInSelectedCard.value = examples
-    } catch (error) {
-      assertError(error)
-      console.log(error)
-      toasterStore.danger({ text: 'Failed to load examples. Try again later.' })
-    }
+    examplesInSelectedCard.value = examples
   }
 
   async function addExample(content: string, cardId: number) {
