@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import 'dotenv/config'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -10,6 +9,7 @@ import {
   Migrator,
 } from 'kysely'
 import config from '@server/config'
+import logger from '@server/utils/logger'
 import { createDatabase } from '..'
 
 const MIGRATIONS_PATH = '../migrations'
@@ -26,22 +26,21 @@ async function migrateDown(db: Kysely<any>) {
   const { error, results } = await migrateOneStepDown(nodeProvider, db)
 
   if (!results?.length) {
-    console.log('No migrations to roll back.')
+    logger.info('No migrations to roll back.')
   }
 
   results?.forEach((it) => {
     if (it.status === 'Success') {
-      console.log(
+      logger.info(
         `Migration "${it.migrationName}" was roll backed successfully.`
       )
     } else if (it.status === 'Error') {
-      console.error(`Failed to roll back this migration "${it.migrationName}".`)
+      logger.error(`Failed to roll back this migration "${it.migrationName}".`)
     }
   })
 
   if (error) {
-    console.error('Failed to roll back.')
-    console.error(error)
+    logger.error('Failed to roll back.', error)
     process.exit(1)
   }
 

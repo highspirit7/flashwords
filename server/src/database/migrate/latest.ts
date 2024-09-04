@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import 'dotenv/config'
 import * as path from 'node:path'
 import * as fs from 'node:fs/promises'
@@ -10,6 +9,7 @@ import {
   type MigrationProvider,
 } from 'kysely'
 import config from '@server/config'
+import logger from '@server/utils/logger'
 import { createDatabase } from '..'
 
 const MIGRATIONS_PATH = '../migrations'
@@ -26,20 +26,19 @@ async function migrateLatest(db: Kysely<any>) {
   const { results, error } = await migrateToLatest(nodeProvider, db)
 
   if (!results?.length && !error) {
-    console.log('No migrations to run.')
+    logger.info('No migrations to run.')
   }
 
   results?.forEach((it) => {
     if (it.status === 'Success') {
-      console.info(`Migration "${it.migrationName}" was executed successfully.`)
+      logger.info(`Migration "${it.migrationName}" was executed successfully.`)
     } else if (it.status === 'Error') {
-      console.error(`Failed to execute migration "${it.migrationName}".`)
+      logger.error(`Failed to execute migration "${it.migrationName}".`)
     }
   })
 
   if (error) {
-    console.error('Failed to migrate.')
-    console.error(error)
+    logger.error(error, 'Failed to migrate.')
     process.exit(1)
   }
 
