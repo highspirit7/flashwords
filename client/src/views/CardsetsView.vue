@@ -102,7 +102,7 @@ watch(
     <div v-if="!isLoading">
       <ul class="card-sets-list" v-if="filteredCardsets.length > 0">
         <li v-for="cardset in filteredCardsets" class="mb-2 md:mb-0" :key="cardset.id">
-          <TermsCard :data="cardset" />
+          <TermsCard :data="cardset" data-testid="terms-card" />
         </li>
       </ul>
       <div v-else class="mt-16">

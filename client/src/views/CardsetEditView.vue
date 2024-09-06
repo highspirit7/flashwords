@@ -148,6 +148,7 @@ async function onClickTrashBinIcon(cardId: number) {
             class="h-fit mx-2"
             data-modal-target="delete-example-modal"
             data-modal-toggle="delete-example-modal"
+            data-testid="remove-card-button"
             @click="onClickTrashBinIcon(card.id)"
             v-if="index > 0"
           >
