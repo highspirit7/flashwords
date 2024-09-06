@@ -64,6 +64,9 @@ export const useCardsetStore = defineStore('cardsets', () => {
 
   async function deleteCardset(id: number) {
     await authTrpc.cardset.remove.mutate(id)
+
+    cardsets.value = cardsets.value.filter(cardset => cardset.id !== id)
+    filteredCardsets.value = filteredCardsets.value.filter(cardset => cardset.id !== id)
   }
 
   return {
