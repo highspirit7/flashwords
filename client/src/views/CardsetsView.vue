@@ -29,16 +29,14 @@ function updateRouteWithSearchQuery() {
 }
 
 onMounted(async () => {
-  if (cardsets.value.length < 1) {
-    try {
-      startLoading()
-      await setCardsets()
-    } catch (error) {
-      assertError(error)
-      toasterStore.danger({ text: 'Failed to fetch cardsets data. Please Try again later.' })
-    } finally {
-      stopLoading()
-    }
+  try {
+    startLoading()
+    await setCardsets()
+  } catch (error) {
+    assertError(error)
+    toasterStore.danger({ text: 'Failed to fetch cardsets data. Please Try again later.' })
+  } finally {
+    stopLoading()
   }
 })
 
