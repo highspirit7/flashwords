@@ -11,7 +11,7 @@ import { assertError } from '@/utils/errors'
 
 const route = useRoute()
 const router = useRouter()
-// const loading = ref(false)
+
 const hasSubmittedOnce = ref(false)
 const { selectedCardset } = storeToRefs(useCardsetStore())
 const { setCardsInSelectedCardset, addEmptyCard, removeCard } = useCardStore()
@@ -100,7 +100,7 @@ async function onClickTrashBinIcon(cardId: number) {
             />
           </svg>
         </template>
-        Back to card set</fwb-button
+        Back to cardset</fwb-button
       >
       <!-- ? Not sure if this part is needed or not -->
       <!-- <fwb-p class="text-sm text-purple-600 dark:text-purple-400 italic"

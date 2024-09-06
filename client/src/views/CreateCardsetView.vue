@@ -32,7 +32,6 @@ async function onClickAddCard() {
     id: uuidv4(),
     term: '',
     definition: '',
-    // examples: [],
   })
 
   await nextTick()
@@ -86,7 +85,7 @@ function onSubmit() {
       <fwb-input
         v-model="newCardset.title"
         label="Title"
-        placeholder="Enter a title for this cards set"
+        placeholder="Enter a title for this cardset"
         class="mb-2"
         :class="{ error: hasSubmittedOnce && newCardset.title.trim() === '' }"
       />
