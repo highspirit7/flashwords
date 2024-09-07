@@ -55,6 +55,7 @@ export default config
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3001',
+  'http://localhost:3000',
   'https://flashwords-container.h4b71er768rva.ap-northeast-2.cs.amazonlightsail.com',
 ]
 
