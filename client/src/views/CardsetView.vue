@@ -299,13 +299,13 @@ function handleDeleteCardset() {
         </template>
       </fwb-button>
     </div>
-    <DeleteModal
-      :handleDeleteFunction="handleDeleteCardset"
-      :toggleModal="toggleDeleteModal"
-      :message="`Are you sure you want to delete this card set(${selectedCardset.title})`"
-    />
   </div>
   <div v-else class="flex items-center justify-center grow h-full">
     <fwb-spinner size="10" />
   </div>
+  <DeleteModal
+    :handleDeleteFunction="handleDeleteCardset"
+    :toggleModal="toggleDeleteModal"
+    :message="`Are you sure you want to delete this card set(${selectedCardset.title})`"
+  />
 </template>

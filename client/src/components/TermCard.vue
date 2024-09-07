@@ -79,7 +79,12 @@ onClickOutside(target, async () => {
         :disabled="!isEditing"
         @keydown.enter="handleFinishEditing"
       />
-      <button type="button" class="h-fit mx-2" @click="isEditing = !isEditing">
+      <button
+        type="button"
+        class="h-fit mx-2"
+        @click="isEditing = !isEditing"
+        data-testid="card-edit-button"
+      >
         <svg
           class="w-[18px] h-[18px] text-gray-800 dark:text-white"
           aria-hidden="true"

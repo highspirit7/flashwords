@@ -82,7 +82,7 @@ async function onClickLogout() {
           </li>
           <li v-if="authStore.isLoggedIn">
             <router-link to="/create-cardset">
-              <fwb-button color="default" pill square>
+              <fwb-button color="default" pill square data-testid="plus-button">
                 <img :src="plusPng" alt="" />
               </fwb-button>
             </router-link>

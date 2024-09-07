@@ -176,14 +176,14 @@ function handleDeleteExample() {
     <div v-else class="mt-16">
       <fwb-heading tag="h6" class="text-center text-gray-500">No examples</fwb-heading>
     </div>
-    <AddExampleModal :toggleModal="toggleAddExampleModal" />
-    <DeleteModal
-      :handleDeleteFunction="handleDeleteExample"
-      :toggleModal="toggleDeleteExampleModal"
-      :message="'Are you sure you want to delete this example?'"
-    />
   </div>
   <div v-else class="flex items-center justify-center grow h-full">
     <fwb-spinner size="10" />
   </div>
+  <AddExampleModal :toggleModal="toggleAddExampleModal" />
+  <DeleteModal
+    :handleDeleteFunction="handleDeleteExample"
+    :toggleModal="toggleDeleteExampleModal"
+    :message="'Are you sure you want to delete this example?'"
+  />
 </template>
