@@ -36,13 +36,8 @@ test.describe.serial('cardset', () => {
     await page.getByRole('button', { name: 'Create' }).click()
     await page.waitForURL('/cardsets')
 
-    await expect(page.url()).toBe('http://localhost:5173/cardsets')
-
-    await expect(page.getByTestId('terms-card').first()).toBeVisible()
-
-    await page.getByTestId('terms-card').first().click()
-
-    await expect(page.getByTestId('term-card')).toHaveCount(2)
+    await expect(page.getByTestId('terms-card-title').first()).toHaveText(testData.cardsetTitle)
+    await expect(page.getByTestId('terms-card-cardcount').first()).toHaveText('2 terms')
   })
 
   test('add one card to the newly created cardset', async ({ page }) => {
@@ -54,7 +49,7 @@ test.describe.serial('cardset', () => {
     await page.getByTestId('term-input--edit').nth(5).fill(chance.word())
     await page.getByTestId('definition-input--edit').nth(5).fill(chance.word())
 
-    await page.getByRole('button', { name: 'Back to card set' }).click()
+    await page.getByRole('button', { name: 'Back to cardset' }).click()
 
     await page.waitForURL('/new_cardset/**')
     await expect(page.getByTestId('term-card')).toHaveCount(3)
