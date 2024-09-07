@@ -41,6 +41,7 @@ onClickOutside(target, () => {
       <input
         type="text"
         id="floating_standard"
+        data-testid="example-input"
         class="block py-2.5 px-0 me-4 w-full text-sm text-gray-900 dark:text-white bg-transparent border-0 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
         :value="example.content"
         @input="
