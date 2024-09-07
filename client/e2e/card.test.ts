@@ -11,11 +11,10 @@ test.describe.serial('card', () => {
   })
 
   test('update one card by clicking a pen icon', async ({ page }) => {
-    test.setTimeout(20000)
-
     // add a new card first
     await page.waitForURL('/cardsets')
-    await page.getByTestId('terms-card').first().click()
+
+    await page.goto('/test_set/1')
     await page.getByRole('button', { name: 'Add or Remove terms' }).click()
 
     await page.getByRole('button', { name: 'Add a card' }).click()
@@ -40,7 +39,8 @@ test.describe.serial('card', () => {
 
   test('delete the newly updated card', async ({ page }) => {
     await page.waitForURL('/cardsets')
-    await page.getByTestId('terms-card').first().click()
+
+    await page.goto('/test_set/1')
     await page.getByRole('button', { name: 'Add or Remove terms' }).click()
 
     await page.getByTestId('remove-card-button').last().click()
