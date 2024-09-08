@@ -7,12 +7,6 @@
 ## Tests
 
 ```bash
-# front end unit and E2E tests
-npm test -w client
-
-# front end unit tests
-npm run test:unit -w client
-
 # front end E2E tests
 npm run test:e2e -w client
 
@@ -62,21 +56,12 @@ https://www.figma.com/file/qEP8i8slhP189EQ1RlE3Es/Word-flashcard?type=design&nod
 
 ## Pages design
 
-### Card set page
+### cardsets page
+<img width="782" alt="Screenshot 2024-09-08 at 10 37 57 AM" src="https://github.com/user-attachments/assets/97ab9030-5435-4410-9e59-c680576e7dc9">
 
-![Screenshot 2024-05-03 at 11 10 05 PM](https://github.com/highspirit7/flashwords/assets/37180000/a2de64b5-c91c-4ac7-8b6b-f7d13db313b9)
-![Screenshot 2024-05-03 at 11 09 55 PM](https://github.com/highspirit7/flashwords/assets/37180000/880a384e-aa07-4a72-a9ba-4968d72477a1)
+### each cardset page
+<img width="783" alt="Screenshot 2024-09-08 at 10 38 26 AM" src="https://github.com/user-attachments/assets/cd7ce52a-15a5-4b80-b47b-2d2fcbf67a69">
 
-## To-dos current progress to make it fullstack project
+### each card page
+<img width="783" alt="Screenshot 2024-09-08 at 10 38 53 AM" src="https://github.com/user-attachments/assets/8df69dce-c1bd-43d6-8b0d-3d585f51ee70">
 
-- [x] Change project set up to be monorepo
-- [x] Jwt authentication(server)
-- [x] Jwt authentication(client)
-- [x] db migrations(cardset, card, example)
-- [x] create cardset endpoints(server)
-- [x] adopt cardset endpoints(client)
-- [x] create card endpoints(server)
-- [x] adopt card endpoints(client)
-- [x] create example endpoint(server)
-- [x] adopt example endpoint(client)
-- [ ] e2e testings on client
