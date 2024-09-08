@@ -69,5 +69,6 @@ export default publicProcedure
 
     return {
       accessToken,
+      userId: user.id,
     }
   })

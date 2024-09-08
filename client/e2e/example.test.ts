@@ -11,9 +11,8 @@ test.describe('card', () => {
   })
 
   test('add an example, modify it and delete it', async ({ page }) => {
-    test.setTimeout(20000)
     await page.waitForURL('/cardsets')
-    await page.getByTestId('terms-card').click()
+    await page.goto('/test_set/1')
     await page.getByRole('button', { name: 'Open Term Icon' }).first().click()
     await page.waitForURL('/test_set/**/leuk/**')
 

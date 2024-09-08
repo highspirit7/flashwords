@@ -15,11 +15,15 @@ const props = defineProps<{
     data-testid="terms-card"
   >
     <div class="flex flex-col justify-between p-4 leading-normal w-full">
-      <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate">
+      <h5
+        class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate"
+        data-testid="terms-card-title"
+      >
         {{ props.data.title }}
       </h5>
       <span
         class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300 w-fit"
+        data-testid="terms-card-cardcount"
         >{{ `${props.data.cardCount} terms` }}</span
       >
     </div>

@@ -2,9 +2,11 @@ import type { Database, Cardset } from '@server/database'
 import {
   type CardsetPublicWithCardCount,
   cardsetKeysAll,
+  cardsetKeysPublic,
 } from '@server/entities/cardset'
 import { type Insertable, sql, type Updateable } from 'kysely'
 import { NotFound } from '@server/utils/errors'
+import { prefixTable } from '@server/utils/strings'
 
 type Pagination = {
   offset: number
@@ -31,12 +33,7 @@ export function cardsetRepository(db: Database) {
       return db
         .selectFrom('cardset')
         .select([
-          'cardset.id',
-          'cardset.title',
-          'cardset.description',
-          'cardset.createdAt',
-          'cardset.updatedAt',
-          'cardset.userId',
+          ...prefixTable('cardset', cardsetKeysPublic),
           sql<string>`COUNT(card.id)`.as('cardCount'),
         ])
         .leftJoin('card', 'card.cardsetId', 'cardset.id')
