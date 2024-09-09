@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import useAuthStore from '@/stores/auth'
-import { handleAuthenticationError } from '@/utils/auth'
-import { useToasterStore } from '@/stores/toaster'
 import { authTrpc } from '@/trpc'
 import { isString } from '@/utils/typePredicates'
 import { TRPCClientError } from '@trpc/client'
