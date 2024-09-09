@@ -11,6 +11,22 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      beforeEnter: async () => {
+        const authStore = useAuthStore()
+        const toasterStore = useToasterStore()
+        const { isLoggedIn } = authStore
+
+        if (isLoggedIn) return { name: 'cardsets' }
+        else {
+          try {
+            await authStore.verifyWithRefreshToken()
+            router.replace('/cardsets')
+          } catch (error) {
+            handleAuthenticationError(error, toasterStore)
+          }
+          return true
+        }
+      },
     },
     {
       path: '/cardsets',
@@ -56,26 +72,6 @@ const router = createRouter({
   scrollBehavior() {
     return { top: 0, behavior: 'smooth' }
   },
-})
-
-router.beforeEach(async to => {
-  const authStore = useAuthStore()
-  const toasterStore = useToasterStore()
-  const { isLoggedIn } = authStore
-
-  if (to.name === 'home') {
-    if (isLoggedIn) return { name: 'cardsets' }
-    else {
-      try {
-        await authStore.verifyWithRefreshToken()
-        router.replace('/cardsets')
-      } catch (error) {
-        handleAuthenticationError(error, toasterStore)
-      }
-    }
-  }
-
-  return true
 })
 
 export default router
