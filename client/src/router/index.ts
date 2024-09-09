@@ -45,6 +45,11 @@ const router = createRouter({
       name: 'card',
       component: () => import('../views/CardView.vue'),
     },
+    {
+      path: '/:catchAll(.*)*',
+      name: 'NotFound',
+      component: () => import('../views/NotFound.vue'),
+    },
   ],
   scrollBehavior() {
     return { top: 0, behavior: 'smooth' }
