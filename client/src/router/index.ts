@@ -16,7 +16,6 @@ const router = createRouter({
       component: HomeView,
       beforeEnter: async (_to, _from, next) => {
         const authStore = useAuthStore()
-        const toasterStore = useToasterStore()
         const { isLoggedIn } = authStore
 
         if (isLoggedIn) {
@@ -27,7 +26,7 @@ const router = createRouter({
             await authStore.verifyWithRefreshToken()
             next({ path: '/cardsets', replace: true })
           } catch (error) {
-            handleAuthenticationError(error, toasterStore)
+            next()
           }
           return true
         }
