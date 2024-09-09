@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import useAuthStore from '@/stores/auth'
-import { handleAuthenticationError } from '@/utils/auth'
-import { useToasterStore } from '@/stores/toaster'
 import { authTrpc } from '@/trpc'
 import { isString } from '@/utils/typePredicates'
 import { TRPCClientError } from '@trpc/client'
@@ -16,7 +14,6 @@ const router = createRouter({
       component: HomeView,
       beforeEnter: async (_to, _from, next) => {
         const authStore = useAuthStore()
-        const toasterStore = useToasterStore()
         const { isLoggedIn } = authStore
 
         if (isLoggedIn) {
@@ -27,7 +24,7 @@ const router = createRouter({
             await authStore.verifyWithRefreshToken()
             next({ path: '/cardsets', replace: true })
           } catch (error) {
-            handleAuthenticationError(error, toasterStore)
+            next()
           }
           return true
         }
