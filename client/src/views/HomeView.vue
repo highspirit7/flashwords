@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { FwbJumbotron, FwbButton } from 'flowbite-vue'
-import { onBeforeMount } from 'vue'
-
-onBeforeMount(async () => {})
 </script>
 
 <template>
