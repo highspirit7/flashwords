@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import useAuthStore from '@/stores/auth'
+import { handleAuthenticationError } from '@/utils/auth'
+import { useToasterStore } from '@/stores/toaster'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -56,19 +58,23 @@ const router = createRouter({
   },
 })
 
-router.beforeEach(to => {
+router.beforeEach(async to => {
   const authStore = useAuthStore()
+  const toasterStore = useToasterStore()
   const { isLoggedIn } = authStore
 
-  if (isLoggedIn && to.name === 'home') {
-    return { name: 'cardsets' }
+  if (to.name === 'home') {
+    if (isLoggedIn) return { name: 'cardsets' }
+    else {
+      try {
+        await authStore.verifyWithRefreshToken()
+        router.replace('/cardsets')
+      } catch (error) {
+        handleAuthenticationError(error, toasterStore)
+      }
+    }
   }
 
-  //   if (!isLoggedIn) {
-  //     if (to.name !== 'home' && to.name !== 'login') {
-  //       return { name: 'login' }
-  //     }
-  //   }
   return true
 })
 

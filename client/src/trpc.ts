@@ -1,11 +1,11 @@
-import { createTRPCProxyClient, httpBatchLink, TRPCClientError } from '@trpc/client'
-import useAuthStore from '@/stores/auth'
-import { useToasterStore } from './stores/toaster'
-import type { AppRouter } from '@server/shared/trpc'
+import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
 import SuperJSON from 'superjson'
+import useAuthStore from '@/stores/auth'
+import type { AppRouter } from '@server/shared/trpc'
+import { useToasterStore } from '@/stores/toaster'
 import { apiBase } from './config'
-import { DEFAULT_SERVER_ERROR } from './consts'
-import { assertError } from './utils/errors'
+import { handleAuthenticationError } from '@/utils/auth'
+import { useRouter } from 'vue-router'
 
 const publicTrpc = createTRPCProxyClient<AppRouter>({
   // auto convert Date <-> string
@@ -36,6 +36,7 @@ const authTrpc = createTRPCProxyClient<AppRouter>({
           if (response.status === 401) {
             const toasterStore = useToasterStore()
             const authStore = useAuthStore()
+            const router = useRouter()
 
             try {
               await authStore.verifyWithRefreshToken()
@@ -49,7 +50,9 @@ const authTrpc = createTRPCProxyClient<AppRouter>({
                 return fetch(url, options)
               }
             } catch (error: unknown) {
-              handleAuthenticationError(error, toasterStore, authStore)
+              handleAuthenticationError(error, toasterStore)
+              authStore.$reset()
+              router.replace('/login')
             }
           }
 
@@ -70,25 +73,30 @@ const authTrpc = createTRPCProxyClient<AppRouter>({
   ],
 })
 
-function handleAuthenticationError(
-  error: unknown,
-  toasterStore: ReturnType<typeof useToasterStore>,
-  authStore: ReturnType<typeof useAuthStore>,
-) {
-  if (error instanceof TRPCClientError) {
-    const errorMessage =
-      error.data?.httpStatus === 401
-        ? error.message.includes('does not exist')
-          ? 'Please log in first.'
-          : 'Your session has expired. Please log in again.'
-        : DEFAULT_SERVER_ERROR
-    toasterStore.danger({ text: errorMessage })
-  } else {
-    assertError(error)
-    toasterStore.danger({ text: 'Please log in' })
-  }
+// function handleAuthenticationError(
+//   error: unknown,
+//   toasterStore: ReturnType<typeof useToasterStore>,
+//   authStore: ReturnType<typeof useAuthStore>,
+// ) {
+//   const router = useRouter()
 
-  authStore.logout()
-}
+//   if (error instanceof TRPCClientError) {
+//     const errorMessage =
+//       error.data?.httpStatus === 401
+//         ? error.message.includes('does not exist')
+//           ? 'Please log in first.'
+//           : 'Your session has expired. Please log in again.'
+//         : DEFAULT_SERVER_ERROR
+//     toasterStore.danger({ text: errorMessage })
+//   } else {
+//     assertError(error)
+//     toasterStore.danger({ text: 'Please log in' })
+//   }
+
+//   // No need to show logout toast at this point
+//   // No need to execute server's logout api at this point
+//   authStore.$reset()
+//   router.replace('/login')
+// }
 
 export { publicTrpc, authTrpc }

@@ -3,10 +3,8 @@ import { FwbJumbotron, FwbButton } from 'flowbite-vue'
 import { RouterLink } from 'vue-router'
 import { onMounted } from 'vue'
 import useAuthStore from '@/stores/auth'
-import { TRPCClientError } from '@trpc/client'
-import { DEFAULT_SERVER_ERROR } from '@/consts'
 import { useToasterStore } from '@/stores/toaster'
-import { assertError } from '@/utils/errors'
+import { handleAuthenticationError } from '@/utils/auth'
 
 const authStore = useAuthStore()
 const toasterStore = useToasterStore()
@@ -15,18 +13,7 @@ onMounted(async () => {
   try {
     await authStore.verifyWithRefreshToken()
   } catch (error: unknown) {
-    if (error instanceof TRPCClientError) {
-      const errorMessage =
-        error.data?.httpStatus === 401
-          ? error.message.includes('does not exist')
-            ? 'Please log in first.'
-            : 'Your session has expired. Please log in again.'
-          : DEFAULT_SERVER_ERROR
-      toasterStore.danger({ text: errorMessage })
-    } else {
-      assertError(error)
-      toasterStore.danger({ text: 'Please log in' })
-    }
+    handleAuthenticationError(error, toasterStore)
   }
 })
 </script>
