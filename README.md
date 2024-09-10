@@ -84,3 +84,5 @@ https://www.figma.com/file/qEP8i8slhP189EQ1RlE3Es/Word-flashcard?type=design&nod
 ### each card page
 <img width="640" alt="Screenshot 2024-09-08 at 10 38 53 AM" src="https://github.com/user-attachments/assets/8df69dce-c1bd-43d6-8b0d-3d585f51ee70">
 
+## Deployed App URL
+https://flashwords-container.h4b71er768rva.ap-northeast-2.cs.amazonlightsail.com/
