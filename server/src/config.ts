@@ -10,6 +10,7 @@ if (!env.NODE_ENV) env.NODE_ENV = 'development'
 env.TZ = 'UTC'
 
 const isTest = env.NODE_ENV === 'test'
+const isProd = env.NODE_ENV === 'production'
 // const isDevTest = env.NODE_ENV === 'development' || isTest
 
 const schema = z
@@ -31,6 +32,7 @@ const schema = z
     database: z.object({
       connectionString: z.string().url(),
     }),
+    allowedOrigins: z.array(z.string()),
   })
   .readonly()
 
@@ -48,20 +50,22 @@ const config = schema.parse({
   database: {
     connectionString: env.DATABASE_URL,
   },
+  allowedOrigins: isProd
+    ? [
+        'https://flashwords-container.h4b71er768rva.ap-northeast-2.cs.amazonlightsail.com',
+      ]
+    : [
+        'http://localhost:5173', // vite local
+        'http://localhost:3000', // dev server local
+        'http://localhost:4173', // vite preview
+      ],
 })
 
 export default config
 
-const allowedOrigins = [
-  'http://localhost:5173', // vite local
-  'http://localhost:3000', // dev server local
-  'http://localhost:4173', // vite preview
-  'https://flashwords-container.h4b71er768rva.ap-northeast-2.cs.amazonlightsail.com', // deployed prod
-]
-
 export const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    if (allowedOrigins.indexOf(origin as string) !== -1 || !origin) {
+    if (config.allowedOrigins.indexOf(origin as string) !== -1 || !origin) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
