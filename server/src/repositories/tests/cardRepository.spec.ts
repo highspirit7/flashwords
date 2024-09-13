@@ -1,16 +1,40 @@
+import Chance from 'chance'
 import { createTestDatabase } from '@tests/utils/database'
 import { fakeCard } from '@server/entities/tests/fakes'
 import serializeBigInt from '@server/utils/serializeBigInt'
 import { wrapInRollbacks } from '@tests/utils/transactions'
 import { insertAll } from '@tests/utils/records'
-import presetDataInfo from '@tests/utils/presetDataInfo'
 import { random } from '@tests/utils/random'
 import { POSTGRES_INT_MAX } from '@server/consts'
+import type { UserPublic } from '@server/shared/types'
+
 import { cardRepository } from '../cardRepository'
+import { userRepository } from '../userRepository'
+import { cardsetRepository } from '../cardsetRepository'
 
 const db = await wrapInRollbacks(createTestDatabase())
-const repository = cardRepository(db)
-const { cardset } = presetDataInfo
+const repository = {
+  card: cardRepository(db),
+  user: userRepository(db),
+  cardset: cardsetRepository(db),
+}
+const chance = new Chance()
+let testuser: UserPublic
+let cardset: { id: number }
+
+beforeAll(async () => {
+  testuser = await repository.user.create({
+    username: chance.name().replaceAll(' ', ''),
+    email: `test_${String(chance.integer({ min: 10, max: 99 }))}_${chance.email()}`,
+    password: 'Testuser123',
+  })
+
+  cardset = await repository.cardset.create({
+    title: 'test set',
+    description: '',
+    userId: testuser?.id,
+  })
+})
 
 describe('create', () => {
   it('should create cards in the cardset matching a given cardset id', async () => {
@@ -19,7 +43,7 @@ describe('create', () => {
     const randomDefinition0 = random.word()
     const randomDefinition1 = random.word()
 
-    const createdCards = await repository.createAll([
+    const createdCards = await repository.card.createAll([
       fakeCard({
         term: randomTerm0,
         definition: randomDefinition0,
@@ -53,30 +77,20 @@ describe('create', () => {
 
   it('throw an error if referenced cardset does not exist', async () => {
     await expect(
-      repository.createAll([fakeCard({ cardsetId: cardset.id + 11111 })])
+      repository.card.createAll([fakeCard({ cardsetId: cardset.id + 11111 })])
     ).rejects.toThrow(/Referenced cardset matching cardsetId does not exist/)
   })
 })
 
 describe('findAllByCardsetId', () => {
-  it('should return an empty array when there are no cards in the cardset', async () => {
-    const cards = await repository.findAllByCardsetId({
-      offset: 0,
-      limit: 5,
-      cardsetId: POSTGRES_INT_MAX,
-    })
-
-    expect(cards).toEqual([])
-  })
-
   it('should return an empty array when there are no cards in the cardset matching the given cardset id', async () => {
-    const cards = await repository.findAllByCardsetId({
+    const noExistentCards = await repository.card.findAllByCardsetId({
       offset: 0,
       limit: 5,
       cardsetId: POSTGRES_INT_MAX,
     })
 
-    expect(cards).toEqual([])
+    expect(noExistentCards).toEqual([])
   })
 
   it('should return 3 cards with setting limit as 3', async () => {
@@ -98,13 +112,13 @@ describe('findAllByCardsetId', () => {
       }),
     ])
 
-    const cards = await repository.findAllByCardsetId({
+    const threeCards = await repository.card.findAllByCardsetId({
       offset: 0,
       limit: 3,
       cardsetId: cardset.id,
     })
 
-    expect(cards).toHaveLength(3)
+    expect(threeCards).toHaveLength(3)
   })
 })
 
@@ -116,7 +130,7 @@ describe('update', async () => {
       }),
     ])
 
-    const updateResult = await repository.update(
+    const updateResult = await repository.card.update(
       { term: 'huis', definition: 'house' },
       card.id
     )
@@ -127,7 +141,7 @@ describe('update', async () => {
   })
 
   it('should return 0 numUpdatedRows if there is no matching card with the given cardId', async () => {
-    const updateResult = await repository.update(
+    const updateResult = await repository.card.update(
       { term: 'huis', definition: 'house' },
       POSTGRES_INT_MAX
     )
@@ -140,7 +154,7 @@ describe('update', async () => {
 
 describe('delete', () => {
   it('the number of deleted rows would be 0 if there is no matching card with the given id', async () => {
-    const { numDeletedRows } = await repository.delete(POSTGRES_INT_MAX)
+    const { numDeletedRows } = await repository.card.delete(POSTGRES_INT_MAX)
 
     expect(numDeletedRows).toEqual(BigInt(0))
   })
@@ -150,7 +164,7 @@ describe('delete', () => {
       fakeCard({ cardsetId: cardset.id }),
     ])
 
-    const { numDeletedRows } = await repository.delete(card.id)
+    const { numDeletedRows } = await repository.card.delete(card.id)
 
     expect(numDeletedRows).toEqual(BigInt(1))
   })
