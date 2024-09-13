@@ -1,22 +1,55 @@
+import Chance from 'chance'
 import { createTestDatabase } from '@tests/utils/database'
-import { fakeExample } from '@server/entities/tests/fakes'
+import { fakeCard, fakeExample } from '@server/entities/tests/fakes'
 import { wrapInRollbacks } from '@tests/utils/transactions'
-import { clearTables, insertAll } from '@tests/utils/records'
+import { insertAll } from '@tests/utils/records'
 import { POSTGRES_INT_MAX } from '@server/consts'
-import presetDataInfo from '@tests/utils/presetDataInfo'
+import type { CardPublic } from '@server/entities/card'
+import type { UserPublic } from '@server/shared/types'
+
 import { exampleRepository } from '../exampleRepository'
+import { cardsetRepository } from '../cardsetRepository'
+import { userRepository } from '../userRepository'
+import { cardRepository } from '../cardRepository'
 
 const db = await wrapInRollbacks(createTestDatabase())
-const repository = exampleRepository(db)
-const { cards } = presetDataInfo
+const repository = {
+  user: userRepository(db),
+  cardset: cardsetRepository(db),
+  card: cardRepository(db),
+  example: exampleRepository(db),
+}
+const chance = new Chance()
+let testuser: UserPublic
+// let cardset: CardsetPublicWithCardCount
+let cards: CardPublic[]
 
-beforeEach(async () => {
-  await clearTables(db, ['example'])
+// beforeEach(async () => {
+//   await clearTables(db, ['example'])
+// })
+
+beforeAll(async () => {
+  testuser = await repository.user.create({
+    username: chance.name().replaceAll(' ', ''),
+    email: `test_${String(chance.integer({ min: 10, max: 99 }))}_${chance.email()}`,
+    password: 'Testuser123',
+  })
+
+  const { id } = await repository.cardset.create({
+    title: 'test set',
+    description: '',
+    userId: testuser?.id,
+  })
+
+  cards = await repository.card.createAll([
+    fakeCard({ cardsetId: id, term: 'lekker', definition: 'delicious' }),
+    fakeCard({ cardsetId: id, term: 'leuk', definition: 'nice' }),
+  ])
 })
 
 describe('create', () => {
   it('should create a example matching a given cardId', async () => {
-    const createdExample = await repository.create(
+    const createdExample = await repository.example.create(
       fakeExample({ cardId: cards[0].id, content: 'Ik hou van jou' })
     )
 
@@ -31,14 +64,14 @@ describe('create', () => {
 
   it('throw an error if referenced card does not exist', async () => {
     await expect(
-      repository.create(fakeExample({ cardId: POSTGRES_INT_MAX }))
+      repository.example.create(fakeExample({ cardId: POSTGRES_INT_MAX }))
     ).rejects.toThrow(/Referenced card matching cardId does not exist/)
   })
 })
 
 describe('findAllByCardId', () => {
   it('should return an empty array when there are no examples for the card with the given cardId', async () => {
-    const examples = await repository.findAllByCardId({
+    const examples = await repository.example.findAllByCardId({
       offset: 0,
       limit: 5,
       cardId: 1,
@@ -53,7 +86,7 @@ describe('findAllByCardId', () => {
       fakeExample({ cardId: cards[0].id, content: 'Je bent mooi' }),
     ])
 
-    const examples = await repository.findAllByCardId({
+    const examples = await repository.example.findAllByCardId({
       offset: 0,
       limit: 5,
       cardId: cards[0].id,
@@ -85,7 +118,7 @@ describe('findAllByCardId', () => {
       fakeExample({ cardId: cards[0].id }),
     ])
 
-    const examples = await repository.findAllByCardId({
+    const examples = await repository.example.findAllByCardId({
       offset: 0,
       limit: 3,
       cardId: cards[0].id,
@@ -103,7 +136,7 @@ describe('update', async () => {
       }),
     ])
 
-    const updateResult = await repository.update(
+    const updateResult = await repository.example.update(
       { content: 'Ik en je' },
       example.id
     )
@@ -118,7 +151,7 @@ describe('update', async () => {
       }),
     ])
 
-    const updateResult = await repository.update(
+    const updateResult = await repository.example.update(
       { content: 'huis' },
       POSTGRES_INT_MAX
     )
@@ -129,7 +162,7 @@ describe('update', async () => {
 
 describe('delete', () => {
   it('the number of deleted rows would be 0 if there is no matching example with the given id', async () => {
-    const { numDeletedRows } = await repository.delete(POSTGRES_INT_MAX)
+    const { numDeletedRows } = await repository.example.delete(POSTGRES_INT_MAX)
 
     expect(Number(numDeletedRows)).toEqual(0)
   })
@@ -141,7 +174,7 @@ describe('delete', () => {
       }),
     ])
 
-    const { numDeletedRows } = await repository.delete(example.id)
+    const { numDeletedRows } = await repository.example.delete(example.id)
 
     expect(Number(numDeletedRows)).toEqual(1)
   })
